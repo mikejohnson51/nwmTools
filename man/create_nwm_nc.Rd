@@ -8,6 +8,9 @@ create_nwm_nc(
   fileList = NULL,
   variable = "streamflow",
   dstfile = NULL,
+  type = NULL,
+  num = NULL,
+  ensemble = NULL,
   nco = TRUE,
   pivot = TRUE,
   purge = FALSE
@@ -19,6 +22,12 @@ create_nwm_nc(
 \item{variable}{the channel file variable to extract}
 
 \item{dstfile}{the file path to write to}
+
+\item{type}{a NWM configuration}
+
+\item{num}{a number of files to download, default = all}
+
+\item{ensemble}{an ensemble member number}
 
 \item{nco}{should NCO be used? Default = TRUE}
 
@@ -33,5 +42,5 @@ file path
 This function will take a set of NWM files and concatenate them
 along the time access. If NCO is installed, this file will be pivoted and 
 optimized for time series extraction. While this function will work without NCO
-it is highly recommended to install the NCO binaries (http://nco.sourceforge.net/#Source)
+it is highly recommended to install the NCO binaries (http://nco.sourceforge.net/#Source). If a file list is not provided, defining the type,ensemble, and number (num) of files to download, will query the most current NWM forecasts on NOMADS.
 }

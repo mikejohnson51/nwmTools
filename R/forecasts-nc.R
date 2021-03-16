@@ -25,10 +25,13 @@ check_nco = function(){
 #' @description This function will take a set of NWM files and concatenate them
 #' along the time access. If NCO is installed, this file will be pivoted and 
 #' optimized for time series extraction. While this function will work without NCO
-#' it is highly recommended to install the NCO binaries (http://nco.sourceforge.net/#Source)
+#' it is highly recommended to install the NCO binaries (http://nco.sourceforge.net/#Source). If a file list is not provided, defining the type,ensemble, and number (num) of files to download, will query the most current NWM forecasts on NOMADS.
 #' @param fileList a vector of file paths to merge
 #' @param variable the channel file variable to extract
 #' @param dstfile the file path to write to
+#' @param type a NWM configuration
+#' @param ensemble an ensemble member number
+#' @param num a number of files to download, default = all
 #' @param nco should NCO be used? Default = TRUE
 #' @param pivot should the concatenated file be pivoted? Default = TRUE
 #' @param purge should the fileList files be deleted? Default = FALSE
@@ -38,6 +41,9 @@ check_nco = function(){
 create_nwm_nc = function(fileList = NULL,
                          variable = "streamflow",
                          dstfile = NULL,
+                         type = NULL,
+                         num  = NULL,
+                         ensemble = NULL,
                          nco = TRUE,
                          pivot = TRUE, 
                          purge = FALSE) {
@@ -47,12 +53,12 @@ create_nwm_nc = function(fileList = NULL,
                                to FALSE or install NCO")}
   
   if(file.exists(dstfile)){file.remove(dstfile)}
-  
-  # if(is.null(fileList)) {
-  #   fileList = get_nomads_filelist(type = type, num  = num, ensemble = ensemble)
-  #   dir      = paste0(dirname(dstfile), "/")
-  #   fileList = download_nomads(fileList, dir = dir)
-  # }
+
+  if(is.null(fileList)) {
+    fileList = get_nomads_filelist(type = type, num  = num, ensemble = ensemble)
+    dir      = paste0(dirname(dstfile), "/")
+    fileList = download_nomads(fileList, dir = dir)
+  }
   
   if(nco){
     use_nco(in_files = fileList, variable =  variable, dstfile = dstfile, pivot = pivot)
