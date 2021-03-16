@@ -12,31 +12,30 @@ Status](https://travis-ci.org/mikejohnson51/nwmHistoric.svg?branch=master)](http
 
 # Description
 
-`nwmHistoric` facilitates access to NOAA National Water Model reanalysis
-data through a convenient API and Shiny GUI.
+`nwmTools` facilitates access to NOAA National Water Model operational
+and historic data through a convenient API.
 
 # Features
 
-  - Access historic NWM Reanalysis v1.2 or 2.0 data by feature
-  - Data requests can be constrained temporally, and adjusted for
+-   Query operational NWM channel output and format for timeseries
+    access
+-   Access historic NWM Reanalysis v1.2 or 2.0 data by feature
+-   Data requests can be constrained temporally, and adjusted for
     timezone
-  - Functions for finding appropriate NHD and NWIS Identifiers
-  - Family of aggregate functions to group and summarize data to new
+-   Functions for finding appropriate NHD and NWIS Identifiers
+-   Family of aggregate functions to group and summarize data to new
     time periods
-  - On-call shiny app for data exploration (in development)
+-   On-call shiny app for data exploration (in development)
 
 ## Installation
 
 ``` r
-remotes::install_github('mikejohnson51/nwmHistoric')
+remotes::install_github('mikejohnson51/nwmTools')
 ```
 
 # Collaborators:
 
-[Mike Johnson](https://mikejohnson51.github.io/) & [David
-Blodgett](https://www.usgs.gov/staff-profiles/david-l-blodgett?qt-staff_profile_science_products=3#qt-staff_profile_science_products)
-
-# Data Documentation:
+[Mike Johnson](https://mikejohnson51.github.io/) \# Data Documentation:
 
 [HydroShare](https://www.hydroshare.org/resource/89b0952512dd4b378dc5be8d2093310f/)
 
