@@ -1,0 +1,178 @@
+---
+title: "Operational Forecasts"
+vignette: >
+  %\VignetteIndexEntry{pkgdown}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4,
+  warning = FALSE,
+  message = FALSE)
+```
+
+```{r setup, echo = FALSE}
+library(dplyr)
+library(nhdplusTools)
+library(nwmHistoric)
+library(RNetCDF)
+library(cowplot)
+```
+
+## Intro
+
+These are some basic examples illustrating how to query concatenated NWM streamflow files.
+
+There are many useful utilities supplied by 
+Lets download the most current medium range files (18 hours out so 18 files) and consolidate them into a single time series optimized NetCDF file:
+
+```{r}
+nomads_data = "data"
+# t1      = tempfile(fileext = ".nc")
+# t2      = tempfile(fileext = ".nc")
+# t3      = tempfile(fileext = ".nc")
+
+t1      = "data/tmp1.nc"
+t2      = "data/tmp2.nc"
+t3      = "data/tmp3.nc"
+
+urls     = get_nomads_filelist(type = "medium_range", num = 1,  ensemble = 4)
+in_files = download_nomads(urls, dir = nomads_data)
+
+system.time({ create_nwm_nc(fileList = in_files, dstfile = t1) })
+#system.time({ create_nwm_nc(fileList = in_files, dstfile = t2, pivot = FALSE) })
+system.time({ create_nwm_nc(fileList = in_files, 
+                            dstfile  = t3, 
+                            pivot = FALSE, nco = FALSE) })
+```
+
+Lets look at the new streamflow 2D variable using RNetCDF:
+
+```{r}
+4*4.7
+file.size(t1)     / 1e6
+file.size(t2)     / 1e6
+file.size(t3)     / 1e6
+```
+
+Now, here is a annoying detail when using R for NetCDF manipulation (per `?RNetCDF::print.nc()`)
+
+> The output of this function is similar to the ncdump -h command supplied with the NetCDF C library. One important difference is that array dimensions are shown by print.nc in the order used by R, where the leftmost subscript varies fastest.
+
+This is in contrast to the NetCDF/CDL convention in which the rightmost dimension varies the fastest.
+
+```{r}
+ncmeta::nc_dims(t1)
+
+ncmeta::nc_grids(t1)
+ncmeta::nc_grids(t2)
+ncmeta::nc_grids(t3)
+```
+
+Great! We have the \~2.7 million reaches over 20 time slices, in ~80 Mb file.
+
+Say instead you wanted an a single timeseries for COMID-1001, to facilitate this, `extract_nwm` will pull the correct time series out from a provided set of COMID(s),
+
+```{r}
+test = sample(var.get.nc(open.nc(in_files), "feature_id"), 1000)
+
+system.time({ Q1 <-  extract_nwm(t1, comids = test) })
+system.time({ Q3 <-  extract_nwm(t3, comids = test) })
+system.time({ Q4 <-  extract_nwm(in_files, comids = test) })
+
+plot(Q1$values,Q4$values)
+abline(0,1)
+
+fivenum(Q1$values)
+fivenum(Q3$values)
+fivenum(Q4$values)
+
+plot(Q1$values, Q4$values)
+plot(Q3$values, Q4$values)
+plot(Q1$values, Q3$values)
+abline(0,1)
+plot(Q1$dateTime, Q1$values, main = "NHD Catchment with Index 102991", 
+     xlab = "Hours from now...", ylab = "Streamflow (cms)")
+```
+
+# Specific ID requests
+
+Lets take it one step further, lets say you don't know your location
+(e.g. Colorado Springs), and what to find the streamflow record related
+to your catchment. To do this we can use the NLDI client in
+[dataRetrieval](https://usgs-r.github.io/dataRetrieval/):
+
+```{r}
+# use dataRetrieval::findNLDI to identify your catchment COMID
+Q <-  extract_nwm(r_nco, 
+                  comids = findNLDI(location = c(-104.8253, 38.83396))$comid)
+
+#plot
+plot(Q$dateTime, Q$values, main = "Streamflow at POINT[-104.8253, 38.83396]", 
+     xlab = "Hours from now...", ylab = "Streamflow (cms)")
+```
+
+# Area requests
+
+Lets say you wanted a map of the maximum streamflow in the entire current
+forecast for the HUC8 experiencing the single largest flow in this
+forecast… wow this is a little trickier but totally doable...
+
+```{r}
+# From the flow matrix, which ID has the most flow?
+row_id         <- arrayInd(which.max(allQ), dim(allQ))[1]
+# What COMID is at that index?
+max_flow_comid <- var.get.nc(open.nc(dest), "feature_id", unpack = TRUE)[row_id]
+
+# Using the VAA tools in nhdplusTools, find the associated HUC8
+# Which are the first 8 digits of the REACHCODE
+feature_of_interest <- nhdplusTools::get_vaa("reachcode") %>% 
+  filter(comid == max_flow_comid) %>% 
+  mutate(huc8 = substr(reachcode, 1, 8))
+
+# Get the HUC8 boundary ...
+huc8 <-  nhdplusTools::get_huc8(id = feature_of_interest$huc8)
+# And the associated NHD Flowlines ...
+nhd  <-  nhdplusTools::get_nhdplus(AOI = huc8)
+
+# Add columns for max flow and min date for each reach to the NHD lines ...
+nhd = cbind(nhd, extract_nwm("data/example.nc", comids = nhd$comid) %>% 
+  group_by(comid) %>% 
+  summarize(maxFlow = max(values, na.rm = TRUE), forecast_hr = min(dateTime))) 
+
+plot(nhd['maxFlow'])
+```
+
+
+```{r}
+# What states intersect our HUC8?
+states = AOI::aoi_get(state = "conus") %>% 
+  st_transform(st_crs(huc8)) %>% 
+  st_filter(huc8)
+
+# Map the region for an inset map ...
+inset = ggplot() + 
+  geom_sf(data = states, alpha = .2, size = .08) + 
+  geom_sf(data = huc8, fill = "red", color = "red") + 
+  theme_void()
+  
+# Map the flows on there flowlines, and HUC8 ...
+flows = ggplot() + 
+  geom_sf(data = huc8, color = NA, fill = 'gray90') +
+  geom_sf(data = nhd, aes(color = maxFlow)) + 
+  theme_void() + 
+  theme(legend.position = "bottom") + 
+  labs(title = "Max flow over the next 60 hours: \nNWM Medium-range forecast",
+          subtitle = paste0("HUC08-", huc8$huc8, "\ntime: ", nhd$forecast_hr))
+
+final_plot = ggdraw() +
+  draw_plot(flows) +
+  draw_plot(inset, x = 0.65, y = 0.05, width = 0.3, height = 0.3)
+
+final_plot
+```

@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+LICENSE
+.travis.yml
+inst/doc/*.html
+docs
+_pkgdown.yml
+^doc$
+.Renviron
+pkgdown
+README.Rmd
+data

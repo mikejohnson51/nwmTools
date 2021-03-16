@@ -1,0 +1,29 @@
+title: "National Water Model"
+url: https://github.com/mikejohnson51/nwmHistoric
+toc:
+  depth: 3
+template:
+  package: miketheme
+navbar:
+  left:
+    - icon: fa-home
+      href: index.html
+    - icon: fa-file-code-o
+      text: "Reference"
+      href: reference/index.html
+    - text: "Articles"
+      icon: fas fa-book
+      menu:
+      -  text: Historic Simulation Records
+         href: articles/01-api.html
+      -  text: Feature Discovery
+         href: articles/02-discovery.html
+      -  text: Time Aggregation
+         href: articles/03-time.html
+      -  text: Operational Forecasts
+         href: articles/04-time.html
+
+
+
+
+

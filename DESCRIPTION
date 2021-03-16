@@ -1,0 +1,37 @@
+Package: nwmTools
+Title: Tools for working with National Water Model Data
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Mike", family = "Johnson", role = c("aut", "cre"), 
+    email = "jmj00@ucsb.edu", comment = c(ORCID = "0000-0002-5288-8350")))
+Maintainer: Mike Johnson <jmj00@ucsb.edu>
+Depends:
+    R(>= 3.5.0)
+Imports:
+    dataRetrieval,
+    dplyr,
+    fst,
+    httr,
+    lubridate,
+    magrittr,
+    RNetCDF,
+    tibble,
+    utils,
+    sys
+Description: Collection of tools for using historic and operational 
+    data from the National Water Model. Currently, streamflow is supported.
+License: CC0
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Suggests: 
+    AOI, 
+    knitr,
+    ggplot2,
+    gridExtra,
+    nhdplusTools,
+    rmarkdown
+VignetteBuilder: knitr
+URL: https://github.com/mikejohnson51/nwmTools
+BugReports: https://github.com/mikejohnson51/nwmTools/issues
+Language: en-US

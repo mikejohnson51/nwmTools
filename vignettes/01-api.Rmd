@@ -1,0 +1,122 @@
+---
+title: "Historic Simulation Records"
+vignette: >
+  %\VignetteIndexEntry{pkgdown}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  maessage = FALSE,
+  fig.width  = 6,
+  fig.height = 4
+)
+```
+
+```{r setup, echo = FALSE, message=FALSE}
+library(ggplot2)
+library(nwmTools)
+```
+
+As part of a collaborative research effort, the multi-decadal hitoric simulation products from the [NOAA National Water Model](https://water.noaa.gov/about/nwm) (versions 1.2 and 2.0) have been reformatted and exposed through [CUAHSI](https://www.cuahsi.org/) at the [RENCI computing facility](https://renci.org/research/hydroshare/). This document outlines how someone can interact with the interface.
+
+## Data Extraction by ...
+
+Reanalysis data can be found with the `readNWMdata` function. The API requires users to specify NHD Common Identifier(s) (COMID), or NWIS site ID(s) for time series extraction.
+
+### NHD Catchment Identifier (COMID)
+
+NWM reanalysis data can be extracted by NHD Catchment Identifier(s). The following code pulls the complete reanalysis data archive for COMID 17595383, a NHD reach near Goleta, California.
+
+```{r, eval = TRUE}
+library(nwmTools)
+flows = readNWMdata(comid = 17595383)
+head(flows)
+dim(flows)
+```
+
+### USGS NWIS Site Number
+
+Alternatively, data can be extracted using USGS NWIS site ID(s).
+
+```{r, eval = TRUE}
+flows = readNWMdata(siteID  = 11120000)
+head(flows)
+dim(flows)
+```
+
+## Query modification by ...
+
+The default behavior is to extract the complete, hourly timeseries in UTC, for the most current model version. Parameters allow data to be modified by data range, timezone and model version as follows: 
+
+### date range
+
+By default, the API extracts the complete flow record for each ID. This range can constrained by providing a `startDate` and/or `endDate` in the form of ("YYYY-MM-DD"). 
+
+```{r}
+utc <- readNWMdata(comid = 17595383, 
+                   startDate = "2010-01-01", 
+                   endDate   = "2010-01-31")
+
+# Check time dimensions
+range(utc$dateTime)
+```
+
+### time-zone
+
+NWM output is recorded in UTC. Instead, users can specify a timezone. For our COMID in Goleta, California we can request data in `US/Pacific` time. Valid times zone can be found with `OlsonNames()`.
+
+```{r}
+pst = readNWMdata(comid = 17595383, 
+                  startDate = "2010-01-01", 
+                  endDate = "2010-01-31", 
+                  tz = "US/Pacific")
+
+# Check time dimensions
+range(pst$dateTime)
+```
+
+Finally, we can plot the UTC return against the PST return:
+
+```{r, echo = FALSE}
+ggplot() +
+  geom_line(data = utc, aes(x = dateTime, 
+                            y = flow_cms, 
+                            color = "UTC")) +
+  geom_line(data = pst, aes(x = utc$dateTime, 
+                            y = flow_cms, 
+                            color = "PST")) +
+  theme_bw() +
+  labs(x = 'Flows', y = "DateTime", title = "Time Zone Comparison", color = "Timezone") + theme(legend.position = "bottom")
+```
+
+### model version
+
+The reanalysis product for versions 1.2 and 2.0 of the NWM are available. By default the API extracts data from version 2.0, but data from 1.2 can be requested as well.
+
+```{r}
+pst_v12 = readNWMdata(comid = 17595383, 
+                      startDate = "2010-01-01", 
+                      endDate   = "2010-01-31",
+                      tz        = "US/Pacific",
+                      version =  1.2)
+```
+
+```{r, echo = FALSE}
+ggplot() + 
+  geom_line(data = pst_v12,   
+            aes(x = dateTime, y = flow_cms, color = "v1.2")) + 
+  geom_line(data = utc, 
+            aes(x = dateTime, y = flow_cms, color = "v2.0")) +
+  labs(x = 'Flows', y = "DateTime", title = "Model Comparison", 
+       color = "Model") + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+In section 2, we will look at how we can facilitate COMID and USGS NWIS discovery. In section 3 we will look at some techniques to handle time aggregations and splitting.
+
