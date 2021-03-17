@@ -65,7 +65,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/01-api.html">Historic Simulation Records</a>
+      <a href="../articles/01-api.html">Historic Records</a>
     </li>
     <li>
       <a href="../articles/02-discovery.html">Feature Discovery</a>
@@ -99,10 +99,11 @@
 
       
 
-      </header><script src="04-operations_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
+      </header><script src="04-operations_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Operational Forecasts</h1>
+                        <h4 class="author"><a href="mailto:mikecp11@gmail.com" class="email">mikecp11@gmail.com</a></h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/mikejohnson51/nwmTools/blob/master/vignettes/04-operations.Rmd"><code>vignettes/04-operations.Rmd</code></a></small>
@@ -123,48 +124,51 @@
 <h3 class="hasAnchor">
 <a href="#identify-and-download-files" class="anchor"></a>Identify and Download files</h3>
 <p>Here we identify the most current forecasts available on NOMADs with <code>get_nomads_filelist</code>, and then proceed to download them to a temporary directory with <code>download_nomads</code>. Specifically we are looking at the <em>4th</em> ensemble member of the <em>medium range</em> configuration and we limit the data to the first <em>20 timesteps</em>.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">urls</span>     <span class="kw">&lt;-</span>  <span class="fu"><a href="../reference/get_nomads_filelist.html">get_nomads_filelist</a></span>(<span class="kw">type</span> <span class="kw">=</span> <span class="st">"medium_range"</span>, <span class="kw">num</span> <span class="kw">=</span> <span class="fl">20</span>,  <span class="kw">ensemble</span> <span class="kw">=</span> <span class="fl">4</span>)
-<span class="fu">glimpse</span>(<span class="no">urls</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">urls</span>     <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/get_nomads_filelist.html">get_nomads_filelist</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"medium_range"</span>, num <span class="op">=</span> <span class="fl">20</span>,  ensemble <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">urls</span><span class="op">)</span> 
 
-<span class="no">in_files</span> <span class="kw">&lt;-</span>  <span class="fu"><a href="../reference/download_nomads.html">download_nomads</a></span>(<span class="no">urls</span>, <span class="kw">dir</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span>())
-<span class="fu">glimpse</span>(<span class="no">in_files</span>)</pre></body></html></div>
+<span class="va">in_files</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/download_nomads.html">download_nomads</a></span><span class="op">(</span><span class="va">urls</span>, dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">in_files</span><span class="op">)</span> </code></pre></div>
 </div>
 <div id="mergingpivoting-our-files" class="section level3">
 <h3 class="hasAnchor">
 <a href="#mergingpivoting-our-files" class="anchor"></a>Merging/Pivoting our files</h3>
 <p>After downloading files, we want to merge them into a single file. <code>nwmTools</code> offers a number of ways to do this. The preferred way is if you have <a href="http://nco.sourceforge.net/">NCO</a> install, otherwise there is a RNetCDF variant available. There is also an option to pivot the resulting NetCDF (only available with NCO), such that the data is time eries oriented.</p>
 <p>These three options are highlighted below:</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">nco_pivot</span>     <span class="kw">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span>(<span class="kw">fileext</span> <span class="kw">=</span> <span class="st">".nc"</span>)
-<span class="no">nco_nopivot</span>   <span class="kw">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span>(<span class="kw">fileext</span> <span class="kw">=</span> <span class="st">".nc"</span>)
-<span class="no">r_nopivot</span>     <span class="kw">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span>(<span class="kw">fileext</span> <span class="kw">=</span> <span class="st">".nc"</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">nco_pivot</span>     <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".nc"</span><span class="op">)</span>
+<span class="va">nco_nopivot</span>   <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".nc"</span><span class="op">)</span>
+<span class="va">r_nopivot</span>     <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".nc"</span><span class="op">)</span>
 
 <span class="co"># Use NCO and pivot (default)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({ <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span>(<span class="kw">fileList</span> <span class="kw">=</span> <span class="no">in_files</span>, <span class="kw">dstfile</span> <span class="kw">=</span> <span class="no">nco_pivot</span>) })
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">in_files</span>, dstfile <span class="op">=</span> <span class="va">nco_pivot</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;  18.841   7.550  29.675</span>
+<span class="co">#&gt;  20.354   8.404  42.430</span>
 
 <span class="co"># Use NCO but do not pivot</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({ <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span>(<span class="kw">fileList</span> <span class="kw">=</span> <span class="no">in_files</span>, <span class="kw">dstfile</span> <span class="kw">=</span> <span class="no">nco_nopivot</span>, <span class="kw">pivot</span> <span class="kw">=</span> <span class="fl">FALSE</span>) })
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">in_files</span>, dstfile <span class="op">=</span> <span class="va">nco_nopivot</span>, pivot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;  15.169   4.871  22.087</span>
+<span class="co">#&gt;  18.725   7.333  37.713</span>
 
 <span class="co"># Use RNetCDF</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({ <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span>(<span class="kw">fileList</span> <span class="kw">=</span> <span class="no">in_files</span>, <span class="kw">dstfile</span>  <span class="kw">=</span> <span class="no">r_nopivot</span>, <span class="kw">nco</span> <span class="kw">=</span> <span class="fl">FALSE</span>) })
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">in_files</span>, dstfile  <span class="op">=</span> <span class="va">r_nopivot</span>, nco <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   7.290   0.709   8.124</span></pre></body></html></div>
+<span class="co">#&gt;   8.400   1.050  10.664</span></code></pre></div>
 <p>Lets look at the size of the resulting files?</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># Raw files</span>
-<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="fl">1</span>:<span class="fl">20</span>, <span class="kw">function</span>(<span class="no">x</span>){ <span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.size</a></span>(<span class="no">in_files</span>[<span class="no">x</span>])})) / <span class="fl">1e6</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Raw files</span>
+<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span> <span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.size</a></span><span class="op">(</span><span class="va">in_files</span><span class="op">[</span><span class="va">x</span><span class="op">]</span><span class="op">)</span><span class="op">}</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">1e6</span>
 <span class="co">#&gt; [1] 98.13612</span>
 <span class="co"># Pivoted NCO file</span>
-<span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.size</a></span>(<span class="no">nco_pivot</span>)    / <span class="fl">1e6</span>
+<span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.size</a></span><span class="op">(</span><span class="va">nco_pivot</span><span class="op">)</span>    <span class="op">/</span> <span class="fl">1e6</span>
 <span class="co">#&gt; [1] 20.29175</span>
 <span class="co"># Non Pivoted NCO file</span>
-<span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.size</a></span>(<span class="no">nco_nopivot</span>)  / <span class="fl">1e6</span>
+<span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.size</a></span><span class="op">(</span><span class="va">nco_nopivot</span><span class="op">)</span>  <span class="op">/</span> <span class="fl">1e6</span>
 <span class="co">#&gt; [1] 30.75096</span>
 <span class="co"># R-based file, no pivot</span>
-<span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.size</a></span>(<span class="no">r_nopivot</span>)    / <span class="fl">1e6</span>
-<span class="co">#&gt; [1] 60.76272</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.size</a></span><span class="op">(</span><span class="va">r_nopivot</span><span class="op">)</span>    <span class="op">/</span> <span class="fl">1e6</span>
+<span class="co">#&gt; [1] 60.76272</span></code></pre></div>
 </div>
 <div id="pivoting" class="section level3">
 <h3 class="hasAnchor">
@@ -172,34 +176,36 @@
 <p>So what does it mean to have a pivoted file?</p>
 <p>All NetCDF variables are defined by dimensions. In our case streamflow is a 2D variable defined by the number of time steps (time dimension), and the number of COMIDs (feature_id dimension). Subsets of streamflow can be extracted from this 2D matrix by defining intervals along these dimensions. The order in which the data will be returned is with the last dimension varying fastest. So, if we want to optimize our files for time series access the dimension order should be [feature_id, time], if we want them optimized for space-based query the the dimension order should be [time, feature_id]</p>
 <p>First lets looks at the dimensions in the NetCDF files (they are the same across all three variants.)</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="kw pkg">ncmeta</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/ncmeta/man/nc_dims.html">nc_dims</a></span>(<span class="no">nco_pivot</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ncmeta</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ncmeta/man/nc_dims.html">nc_dims</a></span><span class="op">(</span><span class="va">nco_pivot</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 2 x 4</span>
 <span class="co">#&gt;      id name        length unlim</span>
 <span class="co">#&gt;   &lt;int&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;lgl&gt;</span>
 <span class="co">#&gt; 1     0 feature_id 2729077 TRUE </span>
-<span class="co">#&gt; 2     1 time            20 FALSE</span></pre></body></html></div>
+<span class="co">#&gt; 2     1 time            20 FALSE</span></code></pre></div>
 <p>Note that <code>feature_id</code> is the 0 dimension, and <code>time</code> is the 1 dimension where the value is simply the ID. We also note that we have the ~2.7 million reaches over 20 time slices. To see how or pivoted/non-pivoted files are structured we can look at the grids.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="kw pkg">ncmeta</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/ncmeta/man/nc_grids.html">nc_grids</a></span>(<span class="no">nco_pivot</span>)
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ncmeta</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ncmeta/man/nc_grids.html">nc_grids</a></span><span class="op">(</span><span class="va">nco_pivot</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 3 x 4</span>
 <span class="co">#&gt;   grid  ndims variables        nvars</span>
 <span class="co">#&gt;   &lt;chr&gt; &lt;int&gt; &lt;list&gt;           &lt;int&gt;</span>
 <span class="co">#&gt; 1 D1,D0     2 &lt;tibble [1 × 1]&gt;     1</span>
 <span class="co">#&gt; 2 D0        1 &lt;tibble [1 × 1]&gt;     1</span>
 <span class="co">#&gt; 3 D1        1 &lt;tibble [1 × 1]&gt;     1</span>
-<span class="kw pkg">ncmeta</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/ncmeta/man/nc_grids.html">nc_grids</a></span>(<span class="no">nco_nopivot</span>)
+<span class="fu">ncmeta</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ncmeta/man/nc_grids.html">nc_grids</a></span><span class="op">(</span><span class="va">nco_nopivot</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 3 x 4</span>
 <span class="co">#&gt;   grid  ndims variables        nvars</span>
 <span class="co">#&gt;   &lt;chr&gt; &lt;int&gt; &lt;list&gt;           &lt;int&gt;</span>
 <span class="co">#&gt; 1 D0,D1     2 &lt;tibble [1 × 1]&gt;     1</span>
 <span class="co">#&gt; 2 D0        1 &lt;tibble [1 × 1]&gt;     1</span>
 <span class="co">#&gt; 3 D1        1 &lt;tibble [1 × 1]&gt;     1</span>
-<span class="kw pkg">ncmeta</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/ncmeta/man/nc_grids.html">nc_grids</a></span>(<span class="no">r_nopivot</span>)
+<span class="fu">ncmeta</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ncmeta/man/nc_grids.html">nc_grids</a></span><span class="op">(</span><span class="va">r_nopivot</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 3 x 4</span>
 <span class="co">#&gt;   grid  ndims variables        nvars</span>
 <span class="co">#&gt;   &lt;chr&gt; &lt;int&gt; &lt;list&gt;           &lt;int&gt;</span>
 <span class="co">#&gt; 1 D0,D1     2 &lt;tibble [1 × 1]&gt;     1</span>
 <span class="co">#&gt; 2 D0        1 &lt;tibble [1 × 1]&gt;     1</span>
-<span class="co">#&gt; 3 D1        1 &lt;tibble [1 × 1]&gt;     1</span></pre></body></html></div>
+<span class="co">#&gt; 3 D1        1 &lt;tibble [1 × 1]&gt;     1</span></code></pre></div>
 <p>So, the NCO pivot file is structured [D0,D1] or [feature_id, time], while the non-pivoted files are stored [D1,D0] or [time, feature_id]. So in addition to the decreased file size, the pivoting also sets up the <code>nco_pivot</code> file for faster data extraction.</p>
 </div>
 <div id="extraction" class="section level3">
@@ -207,89 +213,93 @@
 <a href="#extraction" class="anchor"></a>Extraction</h3>
 <p>Now the fun part! Getting data out of these files.</p>
 <p>Since our resulting NetCDF can be formatted differently depending on method used, and subsetting is a repetitive task prone to error, <code>nwmTools</code> offers a <code>extract_nwm</code> function that works from a file and set of COMID(s). For example, lets extract the time series from all three files for COMID-102900.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({ <span class="no">Q1</span> <span class="kw">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span>(<span class="no">nco_pivot</span>, <span class="kw">comids</span>   <span class="kw">=</span> <span class="fl">102900</span>) })
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q1</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nco_pivot</span>, comids   <span class="op">=</span> <span class="fl">102900</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.048   0.011   0.059</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({ <span class="no">Q2</span> <span class="kw">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span>(<span class="no">nco_nopivot</span>, <span class="kw">comids</span> <span class="kw">=</span> <span class="fl">102900</span>) })
+<span class="co">#&gt;   0.056   0.020   0.079</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q2</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nco_nopivot</span>, comids <span class="op">=</span> <span class="fl">102900</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.045   0.019   0.063</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({ <span class="no">Q3</span> <span class="kw">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span>(<span class="no">r_nopivot</span>, <span class="kw">comids</span>   <span class="kw">=</span> <span class="fl">102900</span>) })
+<span class="co">#&gt;   0.053   0.025   0.081</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q3</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">r_nopivot</span>, comids   <span class="op">=</span> <span class="fl">102900</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.060   0.006   0.067</span>
+<span class="co">#&gt;   0.067   0.010   0.081</span>
 
 <span class="co"># Are they all the same?</span>
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(<span class="no">Q1</span>$<span class="no">values</span>, <span class="no">Q2</span>$<span class="no">values</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">Q1</span><span class="op">$</span><span class="va">values</span>, <span class="va">Q2</span><span class="op">$</span><span class="va">values</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(<span class="no">Q1</span>$<span class="no">values</span>, <span class="no">Q3</span>$<span class="no">values</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">Q1</span><span class="op">$</span><span class="va">values</span>, <span class="va">Q3</span><span class="op">$</span><span class="va">values</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">Q1</span>$<span class="no">dateTime</span>, <span class="no">Q1</span>$<span class="no">values</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Flow (cms)"</span>,  <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"DateTime"</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">Q1</span><span class="op">$</span><span class="va">dateTime</span>, <span class="va">Q1</span><span class="op">$</span><span class="va">values</span>, ylab <span class="op">=</span> <span class="st">"Flow (cms)"</span>,  xlab <span class="op">=</span> <span class="st">"DateTime"</span><span class="op">)</span></code></pre></div>
 <p><img src="04-operations_files/figure-html/one-comid-1.png" width="576"></p>
 <p>The same process can be employed for a set of COMIDs</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co"># Get 1000 random COMIDs...</span>
-<span class="no">test</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fu">var.get.nc</span>(<span class="fu">open.nc</span>(<span class="no">nco_pivot</span>), <span class="st">"feature_id"</span>), <span class="fl">1000</span>)
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Get 1000 random COMIDs...</span>
+<span class="va">test</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu">var.get.nc</span><span class="op">(</span><span class="fu">open.nc</span><span class="op">(</span><span class="va">nco_pivot</span><span class="op">)</span>, <span class="st">"feature_id"</span><span class="op">)</span>, <span class="fl">1000</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({ <span class="no">Q4</span> <span class="kw">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span>(<span class="no">nco_pivot</span>, <span class="kw">comids</span> <span class="kw">=</span> <span class="no">test</span>) })
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q4</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nco_pivot</span>, comids <span class="op">=</span> <span class="va">test</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   1.887   0.132   2.034</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({ <span class="no">Q5</span> <span class="kw">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span>(<span class="no">nco_nopivot</span>, <span class="kw">comids</span> <span class="kw">=</span> <span class="no">test</span>) })
+<span class="co">#&gt;   2.238   0.169   2.730</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q5</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nco_nopivot</span>, comids <span class="op">=</span> <span class="va">test</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   2.043   0.107   2.162</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({ <span class="no">Q6</span> <span class="kw">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span>(<span class="no">r_nopivot</span>, <span class="kw">comids</span> <span class="kw">=</span> <span class="no">test</span>) })
+<span class="co">#&gt;   2.510   0.175   2.859</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q6</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">r_nopivot</span>, comids <span class="op">=</span> <span class="va">test</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   2.731   0.130   2.870</span>
+<span class="co">#&gt;   3.203   0.255   3.667</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(<span class="no">Q4</span>$<span class="no">values</span>, <span class="no">Q5</span>$<span class="no">values</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">Q4</span><span class="op">$</span><span class="va">values</span>, <span class="va">Q5</span><span class="op">$</span><span class="va">values</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(<span class="no">Q4</span>$<span class="no">values</span>, <span class="no">Q6</span>$<span class="no">values</span>)
-<span class="co">#&gt; [1] TRUE</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">Q4</span><span class="op">$</span><span class="va">values</span>, <span class="va">Q6</span><span class="op">$</span><span class="va">values</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span></code></pre></div>
 </div>
 <div id="putting-it-all-together" class="section level3">
 <h3 class="hasAnchor">
 <a href="#putting-it-all-together" class="anchor"></a>Putting it all together …</h3>
 <p>Lets put this all together in an example that (1) defines an area, (2) identifies the needed COMIDs, (3) downloads a sets of forecast files, (4) formats them and (5) extracts the needed time series. Here, we use a shortcut in <code>create_nwm_nc</code> in which the definition of files and the download are defined as parameters rather then passed as a set of files.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="co"># Define and area, get NHDflowlines, and isolate the COMID</span>
-<span class="no">AOI</span> <span class="kw">=</span>  <span class="fu">get_nhdplus</span>(<span class="fu">aoi_get</span>(<span class="st">"Colorado Springs"</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu">select</span>(<span class="no">comid</span>)
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Define and area, get NHDflowlines, and isolate the COMID</span>
+<span class="va">AOI</span> <span class="op">=</span>  <span class="fu"><a href="https://usgs-r.github.io/nhdplusTools//reference/get_nhdplus.html">get_nhdplus</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/AOI/man/aoi_get.html">aoi_get</a></span><span class="op">(</span><span class="st">"Colorado Springs"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">comid</span><span class="op">)</span>
 
-<span class="fu">glimpse</span>(<span class="no">AOI</span>)
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">AOI</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 369</span>
 <span class="co">#&gt; Columns: 2</span>
 <span class="co">#&gt; $ comid    &lt;int&gt; 1531427, 1005083, 1531397, 1531399, 1529755, 1529751, 1529615…</span>
 <span class="co">#&gt; $ geometry &lt;LINESTRING [°]&gt; LINESTRING (-104.6871 38.85..., LINESTRING (-104.6…</span>
 
 <span class="co"># Define, download, format, purge, extract!</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>({
-  <span class="no">nwm</span> <span class="kw">=</span> <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span>(<span class="kw">type</span> <span class="kw">=</span> <span class="st">"medium_range"</span>,
-                      <span class="kw">num</span> <span class="kw">=</span> <span class="fl">10</span>,
-                      <span class="kw">ensemble</span> <span class="kw">=</span> <span class="fl">2</span>,
-                      <span class="kw">dstfile</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span>(<span class="kw">fileext</span> <span class="kw">=</span> <span class="st">".nc"</span>),
-                      <span class="kw">quiet</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span>
+  <span class="va">nwm</span> <span class="op">=</span> <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"medium_range"</span>, 
+                      num <span class="op">=</span> <span class="fl">10</span>,  
+                      ensemble <span class="op">=</span> <span class="fl">2</span>,
+                      dstfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".nc"</span><span class="op">)</span>,
+                      quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+  
+  <span class="va">forecast</span> <span class="op">=</span> <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nwm</span>, comids <span class="op">=</span> <span class="va">AOI</span><span class="op">$</span><span class="va">comid</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed </span>
+<span class="co">#&gt;  11.082   5.288  28.041</span>
 
-  <span class="no">forecast</span> <span class="kw">=</span> <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span>(<span class="no">nwm</span>, <span class="kw">comids</span> <span class="kw">=</span> <span class="no">AOI</span>$<span class="no">comid</span>)
-})
-<span class="co">#&gt;     user   system  elapsed </span>
-<span class="co">#&gt;   11.525    5.361 1982.131</span>
-
-<span class="fu">glimpse</span>(<span class="no">forecast</span>)
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">forecast</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 3,690</span>
 <span class="co">#&gt; Columns: 3</span>
 <span class="co">#&gt; $ comid    &lt;int&gt; 1531427, 1531427, 1531427, 1531427, 1531427, 1531427, 1531427…</span>
 <span class="co">#&gt; $ dateTime &lt;dttm&gt; 2021-03-16 03:00:00, 2021-03-16 06:00:00, 2021-03-16 09:00:0…</span>
-<span class="co">#&gt; $ values   &lt;dbl&gt; 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0…</span></pre></body></html></div>
+<span class="co">#&gt; $ values   &lt;dbl&gt; 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0…</span></code></pre></div>
 </div>
 <div id="visualize" class="section level3">
 <h3 class="hasAnchor">
 <a href="#visualize" class="anchor"></a>Visualize!</h3>
 <p>So what do the flows in Boulder look like in the forecasted future?</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu">ggplot</span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">forecast</span>,
-       <span class="fu">aes</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">dateTime</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">values</span>, <span class="kw">color</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span>(<span class="no">comid</span>))) +
-  <span class="fu">geom_line</span>() +
-  <span class="fu">theme_bw</span>() +
-  <span class="fu">labs</span>(<span class="kw">y</span> <span class="kw">=</span> <span class="st">"Flow (cms)"</span>,
-       <span class="kw">title</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span>(<span class="no">forecast</span>$<span class="no">dateTime</span>), <span class="kw">collapse</span> <span class="kw">=</span> <span class="st">" to "</span>),
-       <span class="kw">subtitle</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">forecast</span>$<span class="no">comid</span>)), <span class="st">"COMIDs"</span>)) +
-  <span class="fu">theme</span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"none"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">forecast</span>, 
+       <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">dateTime</span>, y <span class="op">=</span> <span class="va">values</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">comid</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">labs</span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Flow (cms)"</span>, 
+       title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="va">forecast</span><span class="op">$</span><span class="va">dateTime</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">" to "</span><span class="op">)</span>,
+       subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">forecast</span><span class="op">$</span><span class="va">comid</span><span class="op">)</span><span class="op">)</span>, <span class="st">"COMIDs"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></code></pre></div>
 <p><img src="04-operations_files/figure-html/viz-1.png" width="576"></p>
 </div>
   </div>

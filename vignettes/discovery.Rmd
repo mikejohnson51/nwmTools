@@ -1,8 +1,10 @@
 ---
 title: "Feature Discovery"
+author: "mikecp11@gmail.com"
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{pkgdown}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Feature Discovery}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -12,9 +14,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 6,
   fig.height = 4,
-  warning = FALSE,
-  message = FALSE
-)
+  warning = FALSE, message = FALSE
+  )
 ```
 
 NWM channel output is indexed by NHD COMID, or NWIS site ID. Identifying the relevant IDs is not always easy. Tools exist in `dataRetrieval` and `nhdplusTools` to aid in (1) location and (2) area based feature discovery.

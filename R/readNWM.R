@@ -7,7 +7,7 @@
 #' @param siteID a USGS NWIS site identifier (eight digits)
 #' @param startDate a start date (YYYY-MM-DD) or (YYYY-MM-DD HH)
 #' @param endDate an end date (YYYY-MM-DD) or (YYYY-MM-DD HH)
-#' @param tz the desired timezone of the data. Can be found with `OlsonNames()`
+#' @param tz the desired timezone of the data. Can be found with \code{OlsonNames}
 #' @param version the NWM version to extract (current = 1.2 or 2 (default))
 #' @return data.frame
 #' @export

@@ -65,7 +65,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/01-api.html">Historic Simulation Records</a>
+      <a href="../articles/01-api.html">Historic Records</a>
     </li>
     <li>
       <a href="../articles/02-discovery.html">Feature Discovery</a>
@@ -99,10 +99,11 @@
 
       
 
-      </header><script src="03-time_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
+      </header><script src="03-time_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Time Aggregation{s}</h1>
+                        <h4 class="author"><a href="mailto:mikecp11@gmail.com" class="email">mikecp11@gmail.com</a></h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/mikejohnson51/nwmTools/blob/master/vignettes/03-time.Rmd"><code>vignettes/03-time.Rmd</code></a></small>
@@ -117,13 +118,14 @@
 <h2 class="hasAnchor">
 <a href="#split-time" class="anchor"></a>Split-time</h2>
 <p><code>split_time</code> in breaks the hourly <code>dateTime</code> into base temporal units. In addition to the basic year, month, day, and hour, the season, water year, and Day-of-Water Year (DOWY) are added:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="co"># Get 5-years of data and split the time attribute</span>
-<span class="no">st</span> <span class="kw">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span>(<span class="kw">comid</span> <span class="kw">=</span> <span class="fl">101</span>,
-                 <span class="kw">startDate</span> <span class="kw">=</span> <span class="st">"2005-01-01"</span>,
-                 <span class="kw">endDate</span> <span class="kw">=</span> <span class="st">"2009-12-31"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/split_time.html">split_time</a></span>(<span class="st">"dateTime"</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Get 5-years of data and split the time attribute</span>
+<span class="va">st</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">101</span>, 
+                 startDate <span class="op">=</span> <span class="st">"2005-01-01"</span>, 
+                 endDate <span class="op">=</span> <span class="st">"2009-12-31"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/split_time.html">split_time</a></span><span class="op">(</span><span class="st">"dateTime"</span><span class="op">)</span>
 
-<span class="fu">glimpse</span>(<span class="no">st</span>)
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">st</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 43,801</span>
 <span class="co">#&gt; Columns: 13</span>
 <span class="co">#&gt; $ model    &lt;chr&gt; "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2…</span>
@@ -138,15 +140,16 @@
 <span class="co">#&gt; $ season   &lt;chr&gt; "Winter", "Winter", "Winter", "Winter", "Winter", "Winter", "…</span>
 <span class="co">#&gt; $ wy       &lt;dbl&gt; 2005, 2005, 2005, 2005, 2005, 2005, 2005, 2005, 2005, 2005, 2…</span>
 <span class="co">#&gt; $ julian   &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span>
-<span class="co">#&gt; $ DOWY     &lt;dbl&gt; 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 9…</span></pre></body></html></div>
+<span class="co">#&gt; $ DOWY     &lt;dbl&gt; 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 9…</span></code></pre></div>
 <p>Using the split time attributes, we can plot the hourly flow records by julien day, grouped by water-year:</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu">ggplot</span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">st</span>, <span class="fu">aes</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">DOWY</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">flow_cms</span>, <span class="kw">color</span> <span class="kw">=</span> <span class="no">flow_cms</span>)) +
-  <span class="fu">geom_line</span>(<span class="kw">size</span> <span class="kw">=</span> <span class="fl">1</span>) +
-  <span class="fu">facet_grid</span>(<span class="no">wy</span>~<span class="no">.</span>) +
-  <span class="fu">labs</span>(<span class="kw">y</span><span class="kw">=</span> <span class="st">"Daily Flow (cms)"</span>, <span class="kw">x</span><span class="kw">=</span> <span class="st">"Day of Water Year"</span>,
-       <span class="kw">title</span><span class="kw">=</span><span class="st">"Daily Discharge for COMID 101"</span>) +
-  <span class="fu">scale_color_viridis_c</span>() +
-  <span class="fu">theme_minimal</span>()</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">st</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">DOWY</span>, y <span class="op">=</span> <span class="va">flow_cms</span>, color <span class="op">=</span> <span class="va">flow_cms</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">geom_line</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">facet_grid</span><span class="op">(</span><span class="va">wy</span><span class="op">~</span><span class="va">.</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">labs</span><span class="op">(</span>y<span class="op">=</span> <span class="st">"Daily Flow (cms)"</span>, x<span class="op">=</span> <span class="st">"Day of Water Year"</span>, 
+       title<span class="op">=</span><span class="st">"Daily Discharge for COMID 101"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">scale_color_viridis_c</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="03-time_files/figure-html/unnamed-chunk-3-1.png" width="576"></p>
 </div>
 <div id="aggregation" class="section level2">
@@ -263,22 +266,24 @@
 <h3 class="hasAnchor">
 <a href="#examples" class="anchor"></a>Examples</h3>
 <p>First lets grab some data for a COMID near Baton Rouge, LA along the Mississippi.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">flows</span> <span class="kw">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span>(<span class="kw">comid</span> <span class="kw">=</span> <span class="fl">19085515</span>)
-<span class="fu">glimpse</span>(<span class="no">flows</span>)
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">19085515</span><span class="op">)</span>
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 227,881</span>
 <span class="co">#&gt; Columns: 4</span>
 <span class="co">#&gt; $ model    &lt;chr&gt; "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2…</span>
 <span class="co">#&gt; $ comid    &lt;dbl&gt; 19085515, 19085515, 19085515, 19085515, 19085515, 19085515, 1…</span>
 <span class="co">#&gt; $ dateTime &lt;dttm&gt; 1993-01-01 00:00:00, 1993-01-01 01:00:00, 1993-01-01 02:00:0…</span>
-<span class="co">#&gt; $ flow_cms &lt;dbl&gt; 27335.44, 27320.51, 27305.99, 27291.85, 27278.10, 27264.71, 2…</span></pre></body></html></div>
+<span class="co">#&gt; $ flow_cms &lt;dbl&gt; 27335.44, 27320.51, 27305.99, 27291.85, 27278.10, 27264.71, 2…</span></code></pre></div>
 </div>
 <div id="single-function" class="section level3">
 <h3 class="hasAnchor">
 <a href="#single-function" class="anchor"></a>Single function</h3>
 <p>Using the flow data grabbed above, we might be interested in seeing the monthly mean flow rates. We can do this by passing the flow records to <code>aggregate_m</code> (m = month) and using <code>mean</code> as the function:</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># Aggregate hourly flows to monthly averages by year</span>
-<span class="no">monthly</span> <span class="kw">=</span> <span class="fu"><a href="../reference/aggregate_m.html">aggregate_m</a></span>(<span class="no">flows</span>, <span class="kw">fun</span> <span class="kw">=</span> <span class="no">mean</span>)
-<span class="fu">glimpse</span>(<span class="no">monthly</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Aggregate hourly flows to monthly averages by year</span>
+<span class="va">monthly</span> <span class="op">=</span> <span class="fu"><a href="../reference/aggregate_m.html">aggregate_m</a></span><span class="op">(</span><span class="va">flows</span>, fun <span class="op">=</span> <span class="va">mean</span><span class="op">)</span>
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">monthly</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 12</span>
 <span class="co">#&gt; Columns: 5</span>
 <span class="co">#&gt; $ model    &lt;chr&gt; "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2…</span>
@@ -287,16 +292,17 @@
 <span class="co">#&gt; $ flow_cms &lt;dbl&gt; 20275.04, 22214.57, 23452.17, 24805.57, 28678.87, 25531.56, 2…</span>
 <span class="co">#&gt; $ obs      &lt;dbl&gt; 19343, 17616, 19344, 18720, 19344, 18720, 19343, 19344, 18720…</span>
 
-<span class="fu">ggplot</span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">monthly</span>) +
-  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">month</span>), <span class="kw">y</span> <span class="kw">=</span> <span class="no">flow_cms</span>)) +
-  <span class="fu">labs</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="st">"Month"</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="st">"Q (cms)"</span>,
-       <span class="kw">title</span> <span class="kw">=</span> <span class="st">'Monthly Average'</span>) +
-  <span class="fu">theme_bw</span>()</pre></body></html></div>
+<span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">monthly</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">geom_col</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">month</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">flow_cms</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Month"</span>, y <span class="op">=</span> <span class="st">"Q (cms)"</span>, 
+       title <span class="op">=</span> <span class="st">'Monthly Average'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="03-time_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
 <p>Alternatively we might be interested in the monthly variability in each year. We can do this by passing the flow records to <code>aggregate_ym</code> (ym = year,month) and using <code>mean</code> as the summarizing function:</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="co"># Aggregate hourly flows to monthly averages by year</span>
-<span class="no">ym</span> <span class="kw">=</span> <span class="fu"><a href="../reference/aggregate_ym.html">aggregate_ym</a></span>(<span class="no">flows</span>, <span class="kw">fun</span> <span class="kw">=</span> <span class="no">mean</span>)
-<span class="fu">glimpse</span>(<span class="no">ym</span>)
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Aggregate hourly flows to monthly averages by year</span>
+<span class="va">ym</span> <span class="op">=</span> <span class="fu"><a href="../reference/aggregate_ym.html">aggregate_ym</a></span><span class="op">(</span><span class="va">flows</span>, fun <span class="op">=</span> <span class="va">mean</span><span class="op">)</span>
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">ym</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 312</span>
 <span class="co">#&gt; Columns: 7</span>
 <span class="co">#&gt; $ model    &lt;chr&gt; "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2…</span>
@@ -307,20 +313,21 @@
 <span class="co">#&gt; $ obs      &lt;dbl&gt; 744, 672, 744, 720, 744, 720, 744, 744, 720, 744, 720, 744, 7…</span>
 <span class="co">#&gt; $ ym       &lt;date&gt; 1993-01-01, 1993-02-01, 1993-03-01, 1993-04-01, 1993-05-01, …</span>
 
-<span class="fu">ggplot</span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">ym</span>, <span class="fu">aes</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">month</span>), <span class="kw">y</span> <span class="kw">=</span> <span class="no">flow_cms</span>)) +
-  <span class="fu">geom_boxplot</span>(<span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">.5</span>) +
-  <span class="fu">labs</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="st">"Month"</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="st">"Q (cms)"</span>,
-       <span class="kw">title</span> <span class="kw">=</span> <span class="st">'By Month Variability'</span>) +
-  <span class="fu">theme_bw</span>()</pre></body></html></div>
+<span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">ym</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">month</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">flow_cms</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">geom_boxplot</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Month"</span>, y <span class="op">=</span> <span class="st">"Q (cms)"</span>, 
+       title <span class="op">=</span> <span class="st">'By Month Variability'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="03-time_files/figure-html/unnamed-chunk-6-1.png" width="576"></p>
 </div>
 <div id="multiple-functions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#multiple-functions" class="anchor"></a>Multiple functions</h3>
 <p>So far we have only looked at passing <code>mean</code> to <code>aggregate_*</code> but multiple functions can also be passed as a vector. The following returns the seasonal (s) mean and standard deviation.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co"># Aggregate by season</span>
-<span class="no">seasons</span> <span class="kw">=</span> <span class="fu"><a href="../reference/aggregate_s.html">aggregate_s</a></span>(<span class="no">flows</span>, <span class="kw">fun</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'mean'</span>, <span class="st">'sd'</span>))
-<span class="fu">glimpse</span>(<span class="no">seasons</span>)
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Aggregate by season</span>
+<span class="va">seasons</span> <span class="op">=</span> <span class="fu"><a href="../reference/aggregate_s.html">aggregate_s</a></span><span class="op">(</span><span class="va">flows</span>, fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'mean'</span>, <span class="st">'sd'</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">seasons</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 4</span>
 <span class="co">#&gt; Columns: 7</span>
 <span class="co">#&gt; $ model         &lt;chr&gt; "NWM2", "NWM2", "NWM2", "NWM2"</span>
@@ -331,29 +338,30 @@
 <span class="co">#&gt; $ flow_cms_sd   &lt;dbl&gt; 4528.132, 9673.312, 7334.926, 8617.399</span>
 <span class="co">#&gt; $ obs_sd        &lt;dbl&gt; 0, 0, 0, 0</span>
 
-<span class="fu">ggplot</span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">seasons</span>, <span class="fu">aes</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">season</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">flow_cms_mean</span>)) +
-  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="kw">ymin</span><span class="kw">=</span><span class="no">flow_cms_mean</span> - <span class="no">flow_cms_sd</span>, <span class="kw">ymax</span><span class="kw">=</span><span class="no">flow_cms_mean</span> + <span class="no">flow_cms_sd</span>, <span class="kw">width</span> <span class="kw">=</span> <span class="fl">.25</span>)) +
-  <span class="fu">geom_point</span>(<span class="kw">color</span> <span class="kw">=</span> <span class="st">"darkred"</span>, <span class="kw">size</span> <span class="kw">=</span> <span class="fl">2</span>) +
-  <span class="fu">labs</span>(<span class="kw">x</span>  <span class="kw">=</span> <span class="st">"Season"</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="st">"Q(cms)"</span>,
-       <span class="kw">title</span> <span class="kw">=</span> <span class="st">"Seasonal mean +- sd"</span>)</pre></body></html></div>
+<span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">seasons</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">season</span>, y <span class="op">=</span> <span class="va">flow_cms_mean</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_errorbar</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_mean</span> <span class="op">-</span> <span class="va">flow_cms_sd</span>, ymax<span class="op">=</span><span class="va">flow_cms_mean</span> <span class="op">+</span> <span class="va">flow_cms_sd</span>, width <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_point</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"darkred"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">labs</span><span class="op">(</span>x  <span class="op">=</span> <span class="st">"Season"</span>, y <span class="op">=</span> <span class="st">"Q(cms)"</span>, 
+       title <span class="op">=</span> <span class="st">"Seasonal mean +- sd"</span><span class="op">)</span></code></pre></div>
 <p><img src="03-time_files/figure-html/unnamed-chunk-7-1.png" width="576"></p>
 </div>
 <div id="custom-functions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#custom-functions" class="anchor"></a>Custom Functions</h3>
 <p>Equally important, you are not limited to base R functions. Instead you can pass any function to <code>fun</code> that works over a vector of streamflow elements. In the code below we ask for a number of percentiles along with some other summary statistics for every junlien day of the year:</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co"># Aggregate by Julien Day</span>
-<span class="no">jul</span> <span class="kw">=</span> <span class="fu"><a href="../reference/aggregate_j.html">aggregate_j</a></span>(<span class="no">flows</span>, <span class="kw">fun</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(
-                          <span class="kw">n05</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>){<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="no">x</span>,<span class="fl">.05</span>)},
-                          <span class="kw">n25</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>){<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="no">x</span>,<span class="fl">.25</span>)},
-                          <span class="kw">n75</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>){<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="no">x</span>,<span class="fl">.75</span>)},
-                          <span class="kw">n95</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>){<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="no">x</span>,<span class="fl">.95</span>)},
-                          <span class="kw">median</span> <span class="kw">=</span> <span class="no">median</span>,
-                          <span class="kw">mean</span>   <span class="kw">=</span> <span class="no">mean</span>,
-                          <span class="kw">min</span>    <span class="kw">=</span> <span class="no">min</span>,
-                          <span class="kw">max</span>    <span class="kw">=</span> <span class="no">max</span>))
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Aggregate by Julien Day</span>
+<span class="va">jul</span> <span class="op">=</span> <span class="fu"><a href="../reference/aggregate_j.html">aggregate_j</a></span><span class="op">(</span><span class="va">flows</span>, fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+                          n05 <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">.05</span><span class="op">)</span><span class="op">}</span>,
+                          n25 <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">.25</span><span class="op">)</span><span class="op">}</span>,
+                          n75 <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">.75</span><span class="op">)</span><span class="op">}</span>,
+                          n95 <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">.95</span><span class="op">)</span><span class="op">}</span>,
+                          median <span class="op">=</span> <span class="va">median</span>,
+                          mean   <span class="op">=</span> <span class="va">mean</span>,
+                          min    <span class="op">=</span> <span class="va">min</span>,
+                          max    <span class="op">=</span> <span class="va">max</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu">glimpse</span>(<span class="no">jul</span>)
+<span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">jul</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 366</span>
 <span class="co">#&gt; Columns: 20</span>
 <span class="co">#&gt; $ model           &lt;chr&gt; "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2", "NWM2"…</span>
@@ -378,16 +386,16 @@
 <span class="co">#&gt; $ j               &lt;chr&gt; "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11…</span>
 
 
-<span class="fu">ggplot</span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">jul</span>, <span class="fu">aes</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">julian</span>)) +
-  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="kw">ymin</span><span class="kw">=</span><span class="no">flow_cms_min</span>, <span class="kw">ymax</span><span class="kw">=</span><span class="no">flow_cms_max</span>), <span class="kw">fill</span><span class="kw">=</span><span class="st">"#B2DFEE"</span>) +
-  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="kw">ymin</span><span class="kw">=</span><span class="no">flow_cms_n05</span>, <span class="kw">ymax</span><span class="kw">=</span><span class="no">flow_cms_n95</span>), <span class="kw">fill</span><span class="kw">=</span><span class="st">"#9AC0CD"</span>) +
-  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="kw">ymin</span><span class="kw">=</span><span class="no">flow_cms_n25</span>, <span class="kw">ymax</span><span class="kw">=</span><span class="no">flow_cms_n75</span>), <span class="kw">fill</span><span class="kw">=</span><span class="st">"#68838B"</span>) +
-  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">flow_cms_mean</span>), <span class="kw">col</span> <span class="kw">=</span> <span class="st">"#104E8B"</span> ) +
-  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">flow_cms_median</span>), <span class="kw">col</span> <span class="kw">=</span> <span class="st">"#AFEEEE"</span>) +
-  <span class="fu">theme_bw</span>() +
-  <span class="fu">labs</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="st">"Day of Year"</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="st">"Q (cms)"</span>,
-       <span class="kw">title</span> <span class="kw">=</span> <span class="st">"Flows Somewhere on the Mississippi..."</span>,
-       <span class="kw">subtitle</span> <span class="kw">=</span> <span class="st">"26 years of record"</span>)</pre></body></html></div>
+<span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">jul</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_ribbon</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_min</span>, ymax<span class="op">=</span><span class="va">flow_cms_max</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"#B2DFEE"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_ribbon</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_n05</span>, ymax<span class="op">=</span><span class="va">flow_cms_n95</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"#9AC0CD"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_ribbon</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_n25</span>, ymax<span class="op">=</span><span class="va">flow_cms_n75</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"#68838B"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">flow_cms_mean</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"#104E8B"</span> <span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">flow_cms_median</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"#AFEEEE"</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of Year"</span>, y <span class="op">=</span> <span class="st">"Q (cms)"</span>, 
+       title <span class="op">=</span> <span class="st">"Flows Somewhere on the Mississippi..."</span>,
+       subtitle <span class="op">=</span> <span class="st">"26 years of record"</span><span class="op">)</span></code></pre></div>
 <p><img src="03-time_files/figure-html/unnamed-chunk-8-1.png" width="576"></p>
 </div>
 </div>

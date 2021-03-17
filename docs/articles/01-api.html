@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Historic Simulation Records • National Water Model</title>
+<title>Historic Records • National Water Model</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><link href="../mikepkgdown.css" rel="stylesheet">
-<meta property="og:title" content="Historic Simulation Records">
+<meta property="og:title" content="Historic Records">
 <meta property="og:description" content="nwmTools">
 <meta property="og:image" content="https://github.com/mikejohnson51/nwmHistoric/logo.svg">
 <meta name="twitter:card" content="summary">
@@ -65,7 +65,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/01-api.html">Historic Simulation Records</a>
+      <a href="../articles/01-api.html">Historic Records</a>
     </li>
     <li>
       <a href="../articles/02-discovery.html">Feature Discovery</a>
@@ -99,10 +99,11 @@
 
       
 
-      </header><script src="01-api_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
+      </header><script src="01-api_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Historic Simulation Records</h1>
+      <h1 data-toc-skip>Historic Records</h1>
+                        <h4 class="author"><a href="mailto:mikecp11@gmail.com" class="email">mikecp11@gmail.com</a></h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/mikejohnson51/nwmTools/blob/master/vignettes/01-api.Rmd"><code>vignettes/01-api.Rmd</code></a></small>
@@ -121,9 +122,10 @@
 <h3 class="hasAnchor">
 <a href="#nhd-catchment-identifier-comid" class="anchor"></a>NHD Catchment Identifier (COMID)</h3>
 <p>NWM reanalysis data can be extracted by NHD Catchment Identifier(s). The following code pulls the complete reanalysis data archive for COMID 17595383, a NHD reach near Goleta, California.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">nwmTools</span>)
-<span class="no">flows</span> <span class="kw">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span>(<span class="kw">comid</span> <span class="kw">=</span> <span class="fl">17595383</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">flows</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikejohnson51/nwmTools">nwmTools</a></span><span class="op">)</span>
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">17595383</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 6 x 4</span>
 <span class="co">#&gt;   model    comid dateTime            flow_cms</span>
 <span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt; &lt;dttm&gt;                 &lt;dbl&gt;</span>
@@ -133,15 +135,16 @@
 <span class="co">#&gt; 4 NWM2  17595383 1993-01-01 03:00:00    0.210</span>
 <span class="co">#&gt; 5 NWM2  17595383 1993-01-01 04:00:00    0.210</span>
 <span class="co">#&gt; 6 NWM2  17595383 1993-01-01 05:00:00    0.210</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">flows</span>)
-<span class="co">#&gt; [1] 227881      4</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
+<span class="co">#&gt; [1] 227881      4</span></code></pre></div>
 </div>
 <div id="usgs-nwis-site-number" class="section level3">
 <h3 class="hasAnchor">
 <a href="#usgs-nwis-site-number" class="anchor"></a>USGS NWIS Site Number</h3>
 <p>Alternatively, data can be extracted using USGS NWIS site ID(s).</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">flows</span> <span class="kw">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span>(<span class="kw">siteID</span>  <span class="kw">=</span> <span class="fl">11120000</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">flows</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID  <span class="op">=</span> <span class="fl">11120000</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 6 x 5</span>
 <span class="co">#&gt;   model comid    dateTime            flow_cms   siteID</span>
 <span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;    &lt;dttm&gt;                 &lt;dbl&gt;    &lt;dbl&gt;</span>
@@ -151,8 +154,8 @@
 <span class="co">#&gt; 4 NWM2  17595429 1993-01-01 03:00:00    0.410 11120000</span>
 <span class="co">#&gt; 5 NWM2  17595429 1993-01-01 04:00:00    0.420 11120000</span>
 <span class="co">#&gt; 6 NWM2  17595429 1993-01-01 05:00:00    0.420 11120000</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">flows</span>)
-<span class="co">#&gt; [1] 227881      5</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
+<span class="co">#&gt; [1] 227881      5</span></code></pre></div>
 </div>
 </div>
 <div id="query-modification-by" class="section level2">
@@ -163,26 +166,28 @@
 <h3 class="hasAnchor">
 <a href="#date-range" class="anchor"></a>date range</h3>
 <p>By default, the API extracts the complete flow record for each ID. This range can constrained by providing a <code>startDate</code> and/or <code>endDate</code> in the form of (“YYYY-MM-DD”).</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">utc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span>(<span class="kw">comid</span> <span class="kw">=</span> <span class="fl">17595383</span>,
-                   <span class="kw">startDate</span> <span class="kw">=</span> <span class="st">"2010-01-01"</span>,
-                   <span class="kw">endDate</span>   <span class="kw">=</span> <span class="st">"2010-01-31"</span>)
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">utc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">17595383</span>, 
+                   startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
+                   endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span><span class="op">)</span>
 
 <span class="co"># Check time dimensions</span>
-<span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span>(<span class="no">utc</span>$<span class="no">dateTime</span>)
-<span class="co">#&gt; [1] "2010-01-01 UTC" "2010-01-31 UTC"</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="va">utc</span><span class="op">$</span><span class="va">dateTime</span><span class="op">)</span>
+<span class="co">#&gt; [1] "2010-01-01 UTC" "2010-01-31 UTC"</span></code></pre></div>
 </div>
 <div id="time-zone" class="section level3">
 <h3 class="hasAnchor">
 <a href="#time-zone" class="anchor"></a>time-zone</h3>
 <p>NWM output is recorded in UTC. Instead, users can specify a timezone. For our COMID in Goleta, California we can request data in <code>US/Pacific</code> time. Valid times zone can be found with <code><a href="https://rdrr.io/r/base/timezones.html">OlsonNames()</a></code>.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">pst</span> <span class="kw">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span>(<span class="kw">comid</span> <span class="kw">=</span> <span class="fl">17595383</span>,
-                  <span class="kw">startDate</span> <span class="kw">=</span> <span class="st">"2010-01-01"</span>,
-                  <span class="kw">endDate</span> <span class="kw">=</span> <span class="st">"2010-01-31"</span>,
-                  <span class="kw">tz</span> <span class="kw">=</span> <span class="st">"US/Pacific"</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pst</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">17595383</span>, 
+                  startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
+                  endDate <span class="op">=</span> <span class="st">"2010-01-31"</span>, 
+                  tz <span class="op">=</span> <span class="st">"US/Pacific"</span><span class="op">)</span>
 
 <span class="co"># Check time dimensions</span>
-<span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span>(<span class="no">pst</span>$<span class="no">dateTime</span>)
-<span class="co">#&gt; [1] "2010-01-01 PST" "2010-01-31 PST"</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="va">pst</span><span class="op">$</span><span class="va">dateTime</span><span class="op">)</span>
+<span class="co">#&gt; [1] "2010-01-01 PST" "2010-01-31 PST"</span></code></pre></div>
 <p>Finally, we can plot the UTC return against the PST return:</p>
 <p><img src="01-api_files/figure-html/unnamed-chunk-6-1.png" width="576"></p>
 </div>
@@ -190,11 +195,12 @@
 <h3 class="hasAnchor">
 <a href="#model-version" class="anchor"></a>model version</h3>
 <p>The reanalysis product for versions 1.2 and 2.0 of the NWM are available. By default the API extracts data from version 2.0, but data from 1.2 can be requested as well.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">pst_v12</span> <span class="kw">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span>(<span class="kw">comid</span> <span class="kw">=</span> <span class="fl">17595383</span>,
-                      <span class="kw">startDate</span> <span class="kw">=</span> <span class="st">"2010-01-01"</span>,
-                      <span class="kw">endDate</span>   <span class="kw">=</span> <span class="st">"2010-01-31"</span>,
-                      <span class="kw">tz</span>        <span class="kw">=</span> <span class="st">"US/Pacific"</span>,
-                      <span class="kw">version</span> <span class="kw">=</span>  <span class="fl">1.2</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pst_v12</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">17595383</span>, 
+                      startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
+                      endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span>,
+                      tz        <span class="op">=</span> <span class="st">"US/Pacific"</span>,
+                      version <span class="op">=</span>  <span class="fl">1.2</span><span class="op">)</span></code></pre></div>
 <p><img src="01-api_files/figure-html/unnamed-chunk-8-1.png" width="576"></p>
 <p>In section 2, we will look at how we can facilitate COMID and USGS NWIS discovery. In section 3 we will look at some techniques to handle time aggregations and splitting.</p>
 </div>

@@ -22,7 +22,7 @@ readNWMdata(
 
 \item{endDate}{an end date (YYYY-MM-DD) or (YYYY-MM-DD HH)}
 
-\item{tz}{the desired timezone of the data. Can be found with `OlsonNames()`}
+\item{tz}{the desired timezone of the data. Can be found with \code{OlsonNames}}
 
 \item{version}{the NWM version to extract (current = 1.2 or 2 (default))}
 }

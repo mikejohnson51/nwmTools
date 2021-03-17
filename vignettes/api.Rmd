@@ -1,7 +1,9 @@
 ---
-title: "Historic Simulation Records"
+title: "Historic Records"
+author: "mikecp11@gmail.com"
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{pkgdown}
+  %\VignetteIndexEntry{Historic Records}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -10,11 +12,10 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  warning = FALSE,
-  maessage = FALSE,
-  fig.width  = 6,
-  fig.height = 4
-)
+  fig.width = 6,
+  fig.height = 4,
+  warning = FALSE, message = FALSE
+  )
 ```
 
 ```{r setup, echo = FALSE}

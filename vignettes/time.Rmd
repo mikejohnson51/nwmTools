@@ -1,8 +1,10 @@
 ---
 title: "Time Aggregation{s}"
+author: "mikecp11@gmail.com"
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{pkgdown}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Time Aggregation{s}}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -12,8 +14,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 6,
   fig.height = 4,
-  warning = FALSE,
-  message = FALSE
+  warning = FALSE, message = FALSE
 )
 ```
 

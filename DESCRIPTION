@@ -29,6 +29,7 @@ Suggests:
     knitr,
     ggplot2,
     gridExtra,
+    ncmeta,
     nhdplusTools,
     rmarkdown
 VignetteBuilder: knitr
