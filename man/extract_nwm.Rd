@@ -20,3 +20,9 @@ a tibble of comid,dateTime,value
 \description{
 Extract NWM flow series
 }
+\examples{
+\dontrun{
+ outfile = create_nwm_nc(type = "short_range", dstfile = tempfile(ext = ".nc"))
+ flows = extract_nwm(outfile, comids = c(101,1001,102900))
+}
+}

@@ -10,3 +10,6 @@ _pkgdown.yml
 pkgdown
 README.Rmd
 data
+^doc$
+^Meta$
+

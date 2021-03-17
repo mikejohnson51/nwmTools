@@ -3,6 +3,8 @@
 #' It can be downloaded from here: http://nco.sourceforge.net/#Source
 #' @return a boolean condition
 #' @importFrom sys exec_internal
+#' @examples 
+#' check_nco()
 #' @export
 
 check_nco = function(){
@@ -35,8 +37,17 @@ check_nco = function(){
 #' @param nco should NCO be used? Default = TRUE
 #' @param pivot should the concatenated file be pivoted? Default = TRUE
 #' @param purge should the fileList files be deleted? Default = FALSE
+#' @param quiet should messages be silenced? Default = FALSE
 #' @return file path
 #' @export
+#' @examples 
+#' \dontrun{
+#'  create_nwm_nc(type = "short_range", dstfile = tempfile(ext = ".nc"))
+#'  
+#'  urls     <-  get_nomads_filelist(type = "medium_range", num = 20,  ensemble = 4)
+#'  in_files <-  download_nomads(urls, dir = tempdir())
+#'  create_nwm_nc(fileList = in_files, dstfile = tempfile(fileext = ".nc"))
+#' }
 
 create_nwm_nc = function(fileList = NULL,
                          variable = "streamflow",
@@ -46,7 +57,8 @@ create_nwm_nc = function(fileList = NULL,
                          ensemble = NULL,
                          nco = TRUE,
                          pivot = TRUE, 
-                         purge = FALSE) {
+                         purge = FALSE,
+                         quiet = FALSE) {
   
   if(pivot & !check_nco()){ stop("You can only pivot the NetCDF if NCO is installed")}
   if(nco & !check_nco()){ stop("Using NCO requires NCO to be installed. Set `nco` 
@@ -63,7 +75,7 @@ create_nwm_nc = function(fileList = NULL,
   if(nco){
     use_nco(in_files = fileList, variable =  variable, dstfile = dstfile, pivot = pivot)
   } else {
-    use_r(in_files = fileList, variable =  variable, dstfile = dstfile)
+    use_rnetcdf(in_files = fileList, variable =  variable, dstfile = dstfile)
   }
   
   if(purge){ file.remove(fileList) }
@@ -82,7 +94,8 @@ create_nwm_nc = function(fileList = NULL,
 #' @param pivot should the 2D variable array be pivoted? Default = TRUE
 #' @importFrom RNetCDF att.get.nc
 #' @return a file path
-#' @export
+#' @noRd
+#' @keywords internal
 
 use_nco = function(in_files, variable = "streamflow",
                    dstfile = NULL, pivot = TRUE) {
@@ -95,19 +108,28 @@ use_nco = function(in_files, variable = "streamflow",
   new_files <- paste0(tempdir(), "/nco/", basename(in_files))
                      
   for(i in 1:length(in_files)){
-    system(paste0('ncks -h -O -4 -L 1 --cnk_plc=all --cnk_map=dmn -C -v feature_id,time,', variable," ", in_files[i], " ", new_files[i]))
-    system(paste('ncatted -h -O -a "scale_factor,streamflow,d,," -a "add_offset,streamflow,d,,"', new_files[i],  new_files[i])) 
-    system(paste0('ncap2 -h -O -s ', variable, '[time,feature_id]=', variable, " ", new_files[i], " ", new_files[i]))
+    system(paste0('ncks -h -O -4 -L 1 --cnk_plc=all --cnk_map=dmn -C -v feature_id,time,',
+                  variable," ", in_files[i], " ", new_files[i]))
+    system(paste('ncatted -h -O -a "scale_factor,streamflow,d,," -a "add_offset,streamflow,d,,"', 
+                 new_files[i],  new_files[i])) 
+    system(paste0('ncap2 -h -O -s ', variable, '[time,feature_id]=', 
+                  variable, " ", new_files[i], " ", new_files[i]))
     system(paste('ncks  -h -O  --mk_rec_dmn time', new_files[i], new_files[i])) 
   }
   
   system(paste('ncrcat -h -O -6', paste(new_files, collapse = " "), dstfile))
   
-  system(paste0('ncatted -h -O -a "scale_factor,streamflow,o,f,', scale, '" ', dstfile, " ", dstfile))
+  system(paste0('ncatted -h -O -a "scale_factor,streamflow,o,f,', 
+                scale, '" ', dstfile, " ", dstfile))
   
   if(pivot){ system(paste('ncpdq -h -O -a feature_id,time', dstfile, dstfile)) }
   
-  system(paste0('ncatted -h -O -a "scale_factor,streamflow,o,f,', scale, '" ', dstfile, " ", dstfile))
+  system(paste0('ncatted -h -O -a "scale_factor,streamflow,o,f,', 
+                scale, '" ', dstfile, " ", dstfile))
+  
+  system(paste0('ncks -O -4 --cnk_plc=g2d --cnk_dmn feature_id,10000 --cnk_dmn time,', 
+                length(in_files),' --deflate 0 ', dstfile, " ", dstfile)
+  )
   
   system(paste("ncks -4 -L 3 -h -O", dstfile, dstfile))
   
@@ -125,9 +147,10 @@ use_nco = function(in_files, variable = "streamflow",
 #' @param dstfile the location to store the output file
 #' @return a file path
 #' @importFrom RNetCDF att.get.nc att.put.nc close.nc create.nc dim.def.nc var.def.nc var.put.nc
-#' @export
+#' @noRd
+#' @keywords internal
 
-use_r = function(in_files, variable = "streamflow", dstfile = NULL) {
+use_rnetcdf = function(in_files, variable = "streamflow", dstfile = NULL) {
   
   extract_var = function(x, var){ 
     nc   = open.nc(x)
@@ -191,6 +214,11 @@ use_r = function(in_files, variable = "streamflow", dstfile = NULL) {
 #' @importFrom RNetCDF open.nc var.get.nc dim.inq.nc var.inq.nc
 #' @importFrom tibble tibble
 #' @export
+#' @examples
+#' \dontrun{
+#'  outfile = create_nwm_nc(type = "short_range", dstfile = tempfile(ext = ".nc"))
+#'  flows = extract_nwm(outfile, comids = c(101,1001,102900))
+#' }
 
 extract_nwm = function(file, comids, variable = "streamflow"){
   nc = open.nc(file)

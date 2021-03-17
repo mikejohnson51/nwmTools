@@ -4,16 +4,24 @@
 \alias{download_nomads}
 \title{Download NOMADs files}
 \usage{
-download_nomads(urls = NULL, dir = NULL)
+download_nomads(urls = NULL, dir = NULL, quiet = FALSE)
 }
 \arguments{
 \item{urls}{return from \code{get_nomads_filelist}}
 
 \item{dir}{a directory to write data to}
+
+\item{quiet}{should messages be silenced? Default = FALSE}
 }
 \value{
 a list of meta.data information
 }
 \description{
 Download NOMADs files
+}
+\examples{
+\dontrun{
+ urls     <-  get_nomads_filelist(type = "medium_range", num = 20,  ensemble = 4)
+ in_files <-  download_nomads(urls, dir = tempdir())
+}
 }

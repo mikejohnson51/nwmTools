@@ -2,19 +2,21 @@
 #' @param date a data in form (YYY-MM-DD)
 #' @param type a NWM configuration
 #' @return a url path
-#' @export
+#' @noRd
+#' @keywords internal
 
 make_url = function(date, type){
   base =  "http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/prod/nwm."
   paste0(base, gsub("-", "", date), "/", type, "/")
 }
 
-#' @title Error Checking for confirugartion/ensemble pairs
+#' @title Error Checking for configuration/ensemble pairs
 #' @param type a NWM configuration
 #' @param ensemble an ensemble member number
 #' @importFrom dplyr between 
 #' @return a kosher configuration
-#' @export
+#' @noRd
+#' @keywords internal
 
 error_checking = function(type, ensemble){
   
@@ -63,7 +65,8 @@ error_checking = function(type, ensemble){
 #' @param files a file list
 #' @param domain a domain (conus or hawaii)
 #' @return a vector of f values.
-#' @export
+#' @noRd
+#' @keywords internal
 
 find_f = function(type, files, domain){
   if(grepl("analysis_assim", type)){
@@ -81,6 +84,11 @@ find_f = function(type, files, domain){
 #' @return a list of meta.data information
 #' @importFrom dplyr arrange filter mutate slice
 #' @export
+#' @examples
+#' \dontrun{
+#'  urls     <-  get_nomads_filelist(type = "medium_range", num = 20,  ensemble = 4)
+#'  in_files <-  download_nomads(urls, dir = tempdir())
+#' }
 
 get_nomads_filelist = function(type = NULL,
                                ensemble = NULL,
@@ -128,11 +136,17 @@ get_nomads_filelist = function(type = NULL,
 #'
 #' @param urls return from \code{get_nomads_filelist}
 #' @param dir a directory to write data to
+#' @param quiet should messages be silenced? Default = FALSE
 #' @return a list of meta.data information
-#' @importFrom httr GET write_disk progress
+#' @importFrom httr GET write_disk
 #' @export
+#' @examples 
+#' \dontrun{
+#'  urls     <-  get_nomads_filelist(type = "medium_range", num = 20,  ensemble = 4)
+#'  in_files <-  download_nomads(urls, dir = tempdir())
+#' }
 
-download_nomads = function(urls = NULL, dir = NULL){
+download_nomads = function(urls = NULL, dir = NULL, quiet = FALSE){
   
   if (!dir.exists(dir)) { dir.create(dir, recursive = T) }
   
@@ -144,14 +158,13 @@ download_nomads = function(urls = NULL, dir = NULL){
       
       message("Downloading ", basename(urls[i]))
       resp <-  httr::GET(urls[i],
-                         httr::write_disk(local[i], overwrite = TRUE),
-                         httr::progress())
+                         httr::write_disk(local[i], overwrite = TRUE))
       
       if (resp$status_code != 200) {
         stop("Download unsuccessfull :(")
       }
     } else {
-      message(basename(urls[i]), " already exisits")
+      if(!quiet){ message(basename(urls[i]), " already exisits") }
     }
   }
   

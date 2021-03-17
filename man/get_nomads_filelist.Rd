@@ -19,3 +19,9 @@ a list of meta.data information
 \description{
 Build file metadata for most current NWM configuration
 }
+\examples{
+\dontrun{
+ urls     <-  get_nomads_filelist(type = "medium_range", num = 20,  ensemble = 4)
+ in_files <-  download_nomads(urls, dir = tempdir())
+}
+}

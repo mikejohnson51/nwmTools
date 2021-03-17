@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, echo = FALSE, message=FALSE}
+```{r setup, echo = FALSE}
 library(ggplot2)
 library(nwmTools)
 ```
@@ -32,7 +32,7 @@ Reanalysis data can be found with the `readNWMdata` function. The API requires u
 
 NWM reanalysis data can be extracted by NHD Catchment Identifier(s). The following code pulls the complete reanalysis data archive for COMID 17595383, a NHD reach near Goleta, California.
 
-```{r, eval = TRUE}
+```{r}
 library(nwmTools)
 flows = readNWMdata(comid = 17595383)
 head(flows)
@@ -43,7 +43,7 @@ dim(flows)
 
 Alternatively, data can be extracted using USGS NWIS site ID(s).
 
-```{r, eval = TRUE}
+```{r}
 flows = readNWMdata(siteID  = 11120000)
 head(flows)
 dim(flows)
