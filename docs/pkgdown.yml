@@ -2,11 +2,11 @@ pandoc: 2.11.2
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  01-api: 01-api.html
-  02-discovery: 02-discovery.html
-  03-time: 03-time.html
-  04-operations: 04-operations.html
-last_built: 2021-03-17T03:56Z
+  api: api.html
+  discovery: discovery.html
+  operations: operations.html
+  time: time.html
+last_built: 2021-03-17T05:32Z
 urls:
   reference: https://github.com/mikejohnson51/nwmHistoric/reference
   article: https://github.com/mikejohnson51/nwmHistoric/articles
