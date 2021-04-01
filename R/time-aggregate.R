@@ -161,7 +161,7 @@ aggregate_j  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @export
 aggregate_ymd = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "year", "month", "day")
-    nwmHistoric_agg(rawData, cols, fun, na.rm) %>%
+  nwmHistoric_agg(rawData, cols, fun, na.rm) %>%
     mutate(ymd = ymd(paste(year, month, day, sep = "-"))) 
 }
 

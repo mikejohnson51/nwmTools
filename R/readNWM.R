@@ -1,3 +1,29 @@
+.readNWMinside = function(comid, siteID, tz, base){
+  
+  rc  <- retro_call(comid, meta.obj = base)
+  
+  if (!is.null(rc)) {
+    
+    res <-  dplyr::bind_rows(lapply(1:rc$rows,
+                                    FUN  = extract_thredds,  
+                                    urls = rc$call.meta,  
+                                    dap  = rc$open.dap.file))
+    
+    close.nc(rc$open.dap.file)
+    
+    res$dateTime = with_tz(res$dateTime, tz)
+    
+    if (!is.null(siteID)) { res$siteID = siteID }
+    
+    res
+    
+  } else {
+    message("The requested feature ID is not in the NWM v", base$version, " archive.")
+    NULL
+  }
+  
+}
+
 #' @title NWM Reanalysis Extraction
 #' @description Download hourly flow values for an NHD COMID from the National 
 #' Water Model version 1.2 or 2.0. Returned data is available between 
@@ -12,14 +38,14 @@
 #' @return data.frame
 #' @export
 #' @importFrom RNetCDF close.nc
-#' @importFrom dplyr bind_rows
+#' @importFrom dplyr bind_rows full_join
 #' @importFrom lubridate with_tz tz as_datetime
 #' @importFrom dataRetrieval findNLDI
 #' @examples 
 #' \dontrun{
 #' readNWMdata(comid = 101)
 #' readNWMdata(comid = 101, version = 1.2)
-#' readNWM(comid = 101, tz = "US/Pacific")
+#' readNWMdata(comid = 101, tz = "US/Pacific")
 #' }
 
 readNWMdata = function(comid  = NULL,
@@ -32,33 +58,36 @@ readNWMdata = function(comid  = NULL,
   startDate = as.POSIXct(startDate, tz = tz)
   endDate   = as.POSIXct(endDate, tz = tz)
   
-  base = error.checks(startDate, endDate, tz, version)
-  
+
   if (!is.null(siteID)) {
     comid = dataRetrieval::findNLDI(nwis = siteID)$comid
   }
   
-  rc  <- retro_call(comid, meta.obj = base)
+  base = lapply(version, function(x) {error.checks(startDate, endDate, tz, x)})
   
-  if (!is.null(rc)) {
-    
-    res <-  dplyr::bind_rows(lapply(1:rc$rows,
-                                    FUN  = extract_thredds,  
-                                    urls = rc$call.meta,  
-                                    dap  = rc$open.dap.file))
-    
-    
-    close.nc(rc$open.dap.file)
-    
-    res$dateTime = with_tz(res$dateTime, tz)
-    
-    if (!is.null(siteID)) { res$siteID = siteID }
-    
-    res
-    
-  } else {
-    message("The requested feature ID is not in the NWM v", version, " archive.")
-    NULL
+  res = list()
+  
+  for(i in 1:length(base)){
+    res[[i]] = .readNWMinside(comid, siteID, tz, base = base[[i]])
   }
+  
+  if(length(res) == 1){
+    return(res[[1]])
+  } else {
+    
+    out = lapply(1:length(res), function(x){
+      res[[x]][[paste0("flow_cms_v", gsub("NWM", "", res[[x]]$model[1]))]] = res[[x]]$flow_cms
+      res[[x]]$flow_cms = NULL
+      res[[x]]$model = NULL
+      res[[x]]
+    })
+    
+    out = out %>% 
+      Reduce(function(dtf1,dtf2) dplyr::full_join(dtf1,dtf2,by=c('comid', 'dateTime')), .)
+    
+    return(out)
+  }
+ 
 }
+
 

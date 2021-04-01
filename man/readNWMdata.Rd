@@ -39,6 +39,6 @@ subset using a startDate and endDate.
 \dontrun{
 readNWMdata(comid = 101)
 readNWMdata(comid = 101, version = 1.2)
-readNWM(comid = 101, tz = "US/Pacific")
+readNWMdata(comid = 101, tz = "US/Pacific")
 }
 }

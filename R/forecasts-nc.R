@@ -115,12 +115,12 @@ use_nco = function(in_files, variable = "streamflow",
     system(paste0('ncap2 -h -O -s ', variable, '[time,feature_id]=', 
                   variable, " ", new_files[i], " ", new_files[i]))
     system(paste('ncks  -h -O  --mk_rec_dmn time', new_files[i], new_files[i])) 
-  }
+  } 
   
   system(paste('ncrcat -h -O -6', paste(new_files, collapse = " "), dstfile))
   
-  system(paste0('ncatted -h -O -a "scale_factor,streamflow,o,f,', 
-                scale, '" ', dstfile, " ", dstfile))
+  # system(paste0('ncatted -h -O -a "scale_factor,streamflow,o,f,', 
+  #               scale, '" ', dstfile, " ", dstfile))
   
   if(pivot){ system(paste('ncpdq -h -O -a feature_id,time', dstfile, dstfile)) }
   
@@ -162,11 +162,11 @@ use_rnetcdf = function(in_files, variable = "streamflow", dstfile = NULL) {
   v = do.call(cbind, lapply(in_files, extract_var, var = variable))
   t = do.call(cbind, lapply(in_files, extract_var, var = "time"))
   
-  tmp = open.nc(in_files[1])
+  tmp    = open.nc(in_files[1])
 
-  na_val = att.get.nc(tmp, "streamflow", "missing_value")
-  scale =  att.get.nc(tmp, "streamflow", "scale_factor")
-  offset = att.get.nc(tmp, "streamflow", "add_offset")
+  na_val =  att.get.nc(tmp,  "streamflow", "missing_value")
+  scale  =  att.get.nc(tmp,  "streamflow", "scale_factor")
+  offset =  att.get.nc(tmp,  "streamflow", "add_offset")
   
   comids = var.get.nc(tmp, "feature_id")
   close.nc(tmp)

@@ -18,7 +18,9 @@ error.checks = function(startDate, endDate, tz, version){
   } 
   
   ## Top level Folder (OpenDap archive)
-  parent <- 'http://thredds.hydroshare.org/thredds/dodsC/nwm_retrospective/'
+  # CHANGED in March 2021
+  parent <- 'http://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/'
+    #'http://thredds.hydroshare.org/thredds/dodsC/nwm_retrospective/'
   
   ## Reanalysis MetaData (update this with each new release!!)  
   reanalysis.meta = data.frame(version = 1.2, 
@@ -49,7 +51,7 @@ error.checks = function(startDate, endDate, tz, version){
   df$usr.utc = with_tz(df$usr.tz, tzone = "UTC")
   
   ## Check startDate
-  if(df$usr.utc[1] < this.version$minDate){
+  if(any(df$usr.utc[1] < this.version$minDate)){
     message("First forecast for version ", version, ' is\n',
             this.version$minDate, " 00:00 UTC \n",
             "changing requested startDate to:\n",
@@ -57,7 +59,7 @@ error.checks = function(startDate, endDate, tz, version){
     df$usr.tz[1] = with_tz(this.version$minDate, tzone = tz)
   }
   ## Check endDate
-  if(df$usr.utc[2] > this.version$maxDate){
+  if(any(df$usr.utc[2] > this.version$maxDate)){
     message("Last forecast for version ", version, 
             ' is\n', this.version$maxDate,  " UTC \n",
             "changing requested endDate to:\n",

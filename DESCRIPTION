@@ -10,14 +10,13 @@ Depends:
 Imports:
     dataRetrieval,
     dplyr,
-    fst,
     httr,
     lubridate,
     magrittr,
     RNetCDF,
-    tibble,
     utils,
-    sys
+    sys,
+    tibble
 Description: Collection of tools for using historic and operational 
     data from the National Water Model. Currently, streamflow is supported.
 License: CC0
