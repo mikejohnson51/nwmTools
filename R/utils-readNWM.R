@@ -95,7 +95,7 @@ retro_call = function(comid, meta.obj){
   
   if(length(comid) > 0){
   
-  ids_file = open.nc(system.file("extdata", "retro_feature_ids.nc", package = "nwmHistoric"))
+  ids_file = open.nc(system.file("extdata", "retro_feature_ids.nc", package = "nwmTools"))
   call = ifelse(meta.obj$version == 2, "feature_ids_v_two", "feature_ids_v_one")
   id  = match(comid, var.get.nc(ids_file, call))
   close.nc(ids_file)
