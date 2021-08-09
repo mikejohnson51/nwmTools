@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
 
 ```{r setup, echo = FALSE}
 library(ggplot2)
-library(nwmTools)
 ```
 
 As part of a collaborative research effort, the multi-decadal hitoric simulation products from the [NOAA National Water Model](https://water.noaa.gov/about/nwm) (versions 1.2 and 2.0) have been reformatted and exposed through [CUAHSI](https://www.cuahsi.org/) at the [RENCI computing facility](https://renci.org/research/hydroshare/). This document outlines how someone can interact with the interface.

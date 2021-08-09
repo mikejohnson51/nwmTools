@@ -9,7 +9,8 @@ _pkgdown.yml
 .Renviron
 pkgdown
 README.Rmd
-data
+^data$
 ^doc$
 ^Meta$
-
+^_pkgdown\.yaml$
+^LICENSE\.md$

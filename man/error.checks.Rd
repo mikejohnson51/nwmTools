@@ -22,4 +22,5 @@ a list containing the model version, NCML path, and time requests
 this function ensures that the all input objects are correct.
 User input is cohersed to the desired TZ, model versions are checked, and the NCML file path returned
 }
+\keyword{http://thredds.hydroshare.org/thredds/dodsC/nwm_retrospective/'}
 \keyword{internal}
