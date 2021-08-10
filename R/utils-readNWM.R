@@ -1,47 +1,65 @@
+#' Get HydroShare TDS path
+#' @return character
+#' @export
+#' 
+get_tds = function(){
+  ## Top level Folder (OpenDap archive)
+  #'http://thredds.hydroshare.org/thredds/dodsC/nwm_retrospective/'
+  #'# CHANGED in March 2021
+  'http://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/'
+}
+
+#' NWM metadata
+#' @return tibble
+#' @export
+#' @importFrom dplyr add_row filter
+#' @importFrom lubridate ymd_hm
+#' 
+get_nwm_meta = function(version = NULL){
+  
+  df = data.frame(version = c(1.2, 2.0), 
+             minDate = c(ymd_hm("1993-01-01 00:00"), ymd_hm("1993-01-01 00:00")), 
+             maxDate = c(ymd_hm("2017-12-31 23:00"), ymd_hm("2018-12-31 00:00")),
+             ncml = c('nwm_retro_full.ncml', 'nwm_v2_retro_full.ncml'))
+  
+  out = filter(df, version %in% !!version)
+  
+  if (nrow(out) == 0) {
+    stop(paste('NWM version must be one of:', paste(df$version, collapse = ", " )) , call. = F)
+  }
+  
+  out 
+}
+
+
 #' @title Meta Object Creation with Error Checks
 #' @description this function ensures that the all input objects are correct.
-#' User input is cohersed to the desired TZ, model versions are checked, and the NCML file path returned
+#' User input is modified to the desired TZ, model versions are checked, and the NCML file path returned
 #' @param startDate a user defined startDate ("YYYY-MM-DD") 
 #' @param endDate a user defined end Date ("YYYY-MM-DD") 
 #' @param tz a user defined timezone  
 #' @param version a user defined model version
-#' @importFrom lubridate ymd_hm with_tz
-#' @importFrom dplyr filter add_row
+#' @importFrom lubridate with_tz
 #' @return a list containing the model version, NCML path, and time requests
 #' @keywords internal
 
 error.checks = function(startDate, endDate, tz, version){
   
   ## Make sure requested Timezone is valid
-  if(!tz %in% OlsonNames()){ 
-    stop(paste(tz, "not recognized timezone"), call. = F)
-  } 
+  if(!tz %in% OlsonNames()){ stop(paste(tz, "not recognized timezone"), call. = F) } 
   
-  ## Top level Folder (OpenDap archive)
-  # CHANGED in March 2021
-  parent <- 'http://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/'
-    #'http://thredds.hydroshare.org/thredds/dodsC/nwm_retrospective/'
-  
-  ## Reanalysis MetaData (update this with each new release!!)  
-  reanalysis.meta = data.frame(version = 1.2, 
-                               minDate = ymd_hm("1993-01-01 00:00"), 
-                               maxDate = ymd_hm("2017-12-31 23:00"),
-                               ncml = 'nwm_retro_full.ncml') %>% 
-    # Version 2.0
-    dplyr::add_row(data.frame(version = 2.0, 
-                              minDate = ymd_hm("1993-01-01 00:00"), 
-                              maxDate = ymd_hm("2018-12-31 23:00"),
-                              ncml = 'nwm_v2_retro_full.ncml'))
-  
-  ## Make sure version is available
-  if (!version %in% reanalysis.meta$version) {
-    stop(paste('NWM version must be either',
-               paste(reanalysis.meta$version, collapse = ", ")), 
-         call. = F)
-  }
+  startDate = if(!is.null(startDate)) {as.POSIXct(startDate, tz = tz) }
+  endDate   = if(!is.null(endDate)) { as.POSIXct(endDate, tz = tz) }
   
   ## Isolate version of interest
-  this.version = filter(reanalysis.meta, version == !!version)
+  this.version = get_nwm_meta(version)
+
+  # If no startDate is given, default to start date + 23 hours
+  if(is.null(startDate)){
+    stop(
+    paste("startDate must be provided. Version", this.version$version, "starts on", this.version$minDate, "."), 
+    .call = FALSE)
+  }  
   
   # If no endDate is given, default to start date + 23 hours
   if(is.null(endDate)){endDate = startDate + 82800}
@@ -49,34 +67,20 @@ error.checks = function(startDate, endDate, tz, version){
   ## Change Start and EndDate to User Timezones:
   df = data.frame(usr.tz  = with_tz(c(startDate, endDate), tz))
   df$usr.utc = with_tz(df$usr.tz, tzone = "UTC")
+  df$version = this.version$version
+  df$url = paste0(get_tds(), this.version$ncml)
   
   ## Check startDate
   if(any(df$usr.utc[1] < this.version$minDate)){
-    message("First forecast for version ", version, ' is\n',
-            this.version$minDate, " 00:00 UTC \n",
-            "changing requested startDate to:\n",
-            with_tz(this.version$minDate, tz), " ", tz)
-    df$usr.tz[1] = with_tz(this.version$minDate, tzone = tz)
+    stop("First values for version ", version, ' is ', this.version$minDate, " 00:00:00 UTC \n")
   }
   ## Check endDate
   if(any(df$usr.utc[2] > this.version$maxDate)){
-    message("Last forecast for version ", version, 
-            ' is\n', this.version$maxDate,  " UTC \n",
-            "changing requested endDate to:\n",
-            with_tz(this.version$maxDate, tzone = tz), " ", tz)
-    
-    df$usr.tz[2] = with_tz(this.version$maxDate, tzone = tz)
+    stop("Last values for version ", version, ' is ', this.version$maxDate,  " UTC.")
   }
-  
-  df$usr.utc = with_tz(df$usr.tz, tzone = "UTC")
-  df$model.utc = c(this.version$minDate, this.version$maxDate)
-  
+
   # If everything is good-to-go return baseURL
-  return(
-    list(
-      version = version,
-      baseURL = paste0(parent, this.version$ncml),
-      time.requests = df))
+  return(df)
 }
 
 #' @title Retro Call Meta Data
@@ -101,14 +105,11 @@ retro_call = function(comid, meta.obj){
   close.nc(ids_file)
 
   if(length(id) > 0){
-  ## Model
-    all = hour_seq(min(meta.obj$time.requests$model.utc), 
-                   max(meta.obj$time.requests$model.utc), "UTC")
-  ## User
-    s  = min(meta.obj$time.requests$usr.utc)
-    e  = max(meta.obj$time.requests$usr.utc)
-    s1 = which(s == all)
-    e1 = which(e == all)
+    s  = min(meta.obj$usr.utc)
+    e  = max(meta.obj$usr.utc)
+    model = hour_seq(s, e, "UTC")
+    s1 = which(s == model)
+    e1 = which(e == model)
 
     call.meta = data.frame(
               COMID = comid,
@@ -117,16 +118,18 @@ retro_call = function(comid, meta.obj){
               endDate    = e,
               startIndex = s1, 
               endIndex   = e1,
-              count = (e1-s1)  + 1,
+              count = (e1-s1) + 1,
               version = meta.obj$version,
+              url = meta.obj$url,
               stringsAsFactors = FALSE) %>% 
-      filter(!is.na(index))
+      filter(!is.na(index)) %>% 
+      filter(!duplicated(.))
 
    
     if(nrow(call.meta) > 0 ){
       return(list(rows = nrow(call.meta),
                   call.meta = call.meta, 
-                  open.dap.file = open.nc(meta.obj$baseURL)))
+                  open.dap.file = open.nc(call.meta$url[1])))
     } else { 
       return(NULL) 
     }

@@ -7,8 +7,8 @@
 readNWMdata(
   comid = NULL,
   siteID = NULL,
-  startDate = "1993-01-01",
-  endDate = "2018-12-31",
+  startDate = NULL,
+  endDate = NULL,
   tz = "UTC",
   version = 2
 )

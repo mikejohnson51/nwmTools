@@ -50,20 +50,16 @@
 
 readNWMdata = function(comid  = NULL,
                        siteID = NULL,
-                       startDate = "1993-01-01",
-                       endDate   = "2018-12-31",
+                       startDate = NULL,
+                       endDate   = NULL,
                        tz = "UTC",
                        version = 2) {
+ 
+  base = lapply(version, function(x) {error.checks(startDate, endDate, tz, version)})
   
-  startDate = as.POSIXct(startDate, tz = tz)
-  endDate   = as.POSIXct(endDate, tz = tz)
-  
-
   if (!is.null(siteID)) {
     comid = dataRetrieval::findNLDI(nwis = siteID)$comid
   }
-  
-  base = lapply(version, function(x) {error.checks(startDate, endDate, tz, x)})
   
   res = list()
   
@@ -83,7 +79,9 @@ readNWMdata = function(comid  = NULL,
     })
     
     out = out %>% 
-      Reduce(function(dtf1,dtf2) dplyr::full_join(dtf1,dtf2,by=c('comid', 'dateTime')), .)
+      Reduce(function(dtf1,dtf2) dplyr::full_join(dtf1,
+                                                  dtf2,
+                                                  by=c('comid', 'dateTime')), .)
     
     return(out)
   }
