@@ -140,17 +140,17 @@
 <span class="co"># Use NCO and pivot (default)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">in_files</span>, dstfile <span class="op">=</span> <span class="va">nco_pivot</span>, purge <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;  13.255   6.950  23.253</span>
+<span class="co">#&gt;  11.735   5.346  18.697</span>
 
 <span class="co"># Use NCO but do not pivot</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">in_files</span>, dstfile <span class="op">=</span> <span class="va">nco_nopivot</span>, pivot <span class="op">=</span> <span class="cn">FALSE</span>, purge <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;  12.362   5.544  19.239</span>
+<span class="co">#&gt;  11.441   4.557  17.059</span>
 
 <span class="co"># Use RNetCDF</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="../reference/create_nwm_nc.html">create_nwm_nc</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">in_files</span>, dstfile  <span class="op">=</span> <span class="va">r_nopivot</span>, nco <span class="op">=</span> <span class="cn">FALSE</span>, purge <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   6.811   0.760   7.775</span></code></pre></div>
+<span class="co">#&gt;   6.366   0.627   7.059</span></code></pre></div>
 <p>Lets look at the size of the resulting files?</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Raw files</span>
@@ -224,13 +224,13 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q1</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nco_pivot</span>, comids   <span class="op">=</span> <span class="fl">102900</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.044   0.018   0.064</span>
+<span class="co">#&gt;   0.039   0.015   0.054</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q2</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nco_nopivot</span>, comids <span class="op">=</span> <span class="fl">102900</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.044   0.027   0.073</span>
+<span class="co">#&gt;   0.037   0.017   0.055</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q3</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">r_nopivot</span>, comids   <span class="op">=</span> <span class="fl">102900</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.058   0.007   0.066</span>
+<span class="co">#&gt;   0.053   0.006   0.059</span>
 
 <span class="co"># Are they all the same?</span>
 <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">Q1</span><span class="op">$</span><span class="va">values</span>, <span class="va">Q2</span><span class="op">$</span><span class="va">values</span><span class="op">)</span>
@@ -247,13 +247,13 @@
 
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q4</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nco_pivot</span>, comids <span class="op">=</span> <span class="va">test</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   1.595   0.117   1.759</span>
+<span class="co">#&gt;   1.298   0.088   1.399</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q5</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nco_nopivot</span>, comids <span class="op">=</span> <span class="va">test</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   1.759   0.115   1.901</span>
+<span class="co">#&gt;   1.699   0.094   1.806</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="va">Q6</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">r_nopivot</span>, comids <span class="op">=</span> <span class="va">test</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   2.934   0.157   3.160</span>
+<span class="co">#&gt;   2.575   0.112   2.703</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">Q4</span><span class="op">$</span><span class="va">values</span>, <span class="va">Q5</span><span class="op">$</span><span class="va">values</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span>
@@ -280,7 +280,7 @@
   <span class="va">forecast</span> <span class="op">=</span> <span class="fu"><a href="../reference/extract_nwm.html">extract_nwm</a></span><span class="op">(</span><span class="va">nwm</span>, comids <span class="op">=</span> <span class="va">AOI</span><span class="op">)</span>
 <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   7.588   5.438  31.701</span></code></pre></div>
+<span class="co">#&gt;   7.362   5.584  34.047</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualize">Visualize!<a class="anchor" aria-label="anchor" href="#visualize"></a>

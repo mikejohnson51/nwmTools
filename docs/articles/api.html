@@ -206,7 +206,7 @@
 <div class="section level3">
 <h3 id="model-versioning">Model versioning<a class="anchor" aria-label="anchor" href="#model-versioning"></a>
 </h3>
-<p>The reanalysis product for versions 1.2 and 2.0 of the NWM are available. By default the API extracts data from version 2.0, but data from 1.2 can be requested as well.</p>
+<p>The reanalysis product for versions 1.2, 2.0, and 2.1 of the NWM are available. By default the API extracts data from version 2.1, but all versions can be requested.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pst_vs</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">101</span>, 
                      startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
@@ -218,13 +218,17 @@
 <div class="section level3">
 <h3 id="model-version-vs-obs">model version vs obs<a class="anchor" aria-label="anchor" href="#model-version-vs-obs"></a>
 </h3>
-<p>The reanalysis product for versions 1.2 and 2.0 of the NWM are available. By default the API extracts data from version 2.0, but data from 1.2 can be requested as well.</p>
+<p>In addition to extracting records from mulitple model runs, data can be appended from observation in the case a USGS gage ID is supplied:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pst_obs</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID  <span class="op">=</span> <span class="fl">11120000</span>, 
-                      startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
-                      endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span>,
-                      version   <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">2.0</span>, <span class="fl">2.1</span><span class="op">)</span>,
-                      addObs    <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
+  <span class="va">pst_obs</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID  <span class="op">=</span> <span class="fl">11120000</span>, 
+                        startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
+                        endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span>,
+                        version   <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">2.0</span>, <span class="fl">2.1</span><span class="op">)</span>,
+                        addObs    <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed </span>
+<span class="co">#&gt;   5.944   0.316  16.463</span></code></pre></div>
 <p><img src="api_files/figure-html/unnamed-chunk-10-1.png" width="576"></p>
 <p>In section 2, we will look at how we can facilitate COMID and USGS NWIS discovery. In section 3 we will look at some techniques to handle operational data, and in section 4, we will look at time aggregations and splitting.</p>
 </div>

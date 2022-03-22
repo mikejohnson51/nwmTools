@@ -26,7 +26,6 @@ Suggests:
     AOI,
     dataRetrieval,
     ggplot2,
-    gridExtra,
     knitr,
     ncmeta,
     nhdplusTools,
