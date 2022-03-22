@@ -35,7 +35,7 @@ Raw historic data comes in hourly time intervals. For many analyses, different t
 # Get 5-years of data and split the time attribute
 st = readNWMdata(comid = 101, 
                  startDate = "2005-01-01", 
-                 endDate = "2009-12-31") %>%
+                 endDate = "2009-12-31") |> 
   split_time("dateTime")
 
 glimpse(st)
@@ -43,7 +43,7 @@ glimpse(st)
 Using the split time attributes, we can plot the hourly flow records by julien day, grouped by water-year:
 
 ```{r}
-ggplot(data = st, aes(x = DOWY, y = flow_cms, color = flow_cms)) + 
+ggplot(data = st, aes(x = DOWY, y = flow_cms_v2.1, color = flow_cms_v2.1)) + 
   geom_line(size = 1) +
   facet_grid(wy~.) +
   labs(y= "Daily Flow (cms)", x= "Day of Water Year", 
@@ -94,7 +94,7 @@ These symbols can be combined to provide useful, common aggregation patterns, `r
 First lets grab some data for a COMID near Baton Rouge, LA along the Mississippi.
 
 ```{r}
-flows = readNWMdata(comid = 19085515)
+flows = readNWMdata(comid = 101)
 glimpse(flows)
 ```
 
@@ -108,7 +108,7 @@ monthly = aggregate_m(flows, fun = mean)
 glimpse(monthly)
 
 ggplot(data = monthly) + 
-  geom_col(aes(x = factor(month), y = flow_cms)) +
+  geom_col(aes(x = factor(month), y = flow_cms_v2.1)) +
   labs(x = "Month", y = "Q (cms)", 
        title = 'Monthly Average') + 
   theme_bw()
@@ -121,8 +121,8 @@ Alternatively we might be interested in the monthly variability in each year. We
 ym = aggregate_ym(flows, fun = mean)
 glimpse(ym)
 
-ggplot(data = ym, aes(x = factor(month), y = flow_cms)) + 
-  geom_boxplot(alpha = .5) +
+ggplot(data = ym, aes(x = factor(month), y = flow_cms_v2.1)) + 
+  geom_boxplot(alpha = .5, outlier.shape = NA) +
   labs(x = "Month", y = "Q (cms)", 
        title = 'By Month Variability') + 
   theme_bw()
@@ -137,8 +137,8 @@ So far we have only looked at passing `mean` to `aggregate_*` but multiple funct
 seasons = aggregate_s(flows, fun = c('mean', 'sd'))
 glimpse(seasons)
 
-ggplot(data = seasons, aes(x = season, y = flow_cms_mean)) +
-  geom_errorbar(aes(ymin=flow_cms_mean - flow_cms_sd, ymax=flow_cms_mean + flow_cms_sd, width = .25)) +
+ggplot(data = seasons, aes(x = season, y = flow_cms_v2.1_mean)) +
+  geom_errorbar(aes(ymin=flow_cms_v2.1_mean - flow_cms_v2.1_sd, ymax=flow_cms_v2.1_mean + flow_cms_v2.1_sd, width = .25)) +
   geom_point(color = "darkred", size = 2) +
   labs(x  = "Season", y = "Q(cms)", 
        title = "Seasonal mean +- sd")
@@ -165,14 +165,14 @@ glimpse(jul)
 
 
 ggplot(data = jul, aes(x = julian)) +
-  geom_ribbon(aes(ymin=flow_cms_min, ymax=flow_cms_max), fill="#B2DFEE") +
-  geom_ribbon(aes(ymin=flow_cms_n05, ymax=flow_cms_n95), fill="#9AC0CD") +
-  geom_ribbon(aes(ymin=flow_cms_n25, ymax=flow_cms_n75), fill="#68838B") +
-  geom_line(aes(y = flow_cms_mean), col = "#104E8B" ) +
-  geom_line(aes(y = flow_cms_median), col = "#AFEEEE") + 
+  geom_ribbon(aes(ymin=flow_cms_v2.1_min, ymax=flow_cms_v2.1_max), fill="#B2DFEE") +
+  geom_ribbon(aes(ymin=flow_cms_v2.1_n05, ymax=flow_cms_v2.1_n95), fill="#9AC0CD") +
+  geom_ribbon(aes(ymin=flow_cms_v2.1_n25, ymax=flow_cms_v2.1_n75), fill="#68838B") +
+  geom_line(aes(y = flow_cms_v2.1_mean), col = "#104E8B" ) +
+  geom_line(aes(y = flow_cms_v2.1_median), col = "#AFEEEE") + 
   theme_bw() +
   labs(x = "Day of Year", y = "Q (cms)", 
-       title = "Flows Somewhere on the Mississippi...",
+       title = "Flows @ COMDI 101...",
        subtitle = "26 years of record")
 ```
 

@@ -2,13 +2,13 @@
 % Please edit documentation in R/utils-readNWM.R
 \name{get_tds}
 \alias{get_tds}
-\title{Get HydroShare TDS path}
+\title{Get TDS path}
 \usage{
-get_tds()
+get_tds(type = "hydroshare")
 }
 \value{
 character
 }
 \description{
-Get HydroShare TDS path
+Get TDS path
 }

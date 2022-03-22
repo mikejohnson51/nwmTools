@@ -42,9 +42,7 @@ glimpse(findNLDI(location = c(-119.8276, 34.43583)))
 #### Define Area...
 ```{r}
 # Goleta footprint
-AOI = AOI::aoi_get("Santa Barbara")
-glimpse(AOI)
-AOI::aoi_map(AOI, returnMap = TRUE)
+(AOI = AOI::aoi_get("Fort Collins"))
 ```
 
 ### Pull COMIDS for the AOI.
@@ -119,12 +117,12 @@ g1 = ggplot() +
 
 
 # Plots the flows
-g2 = ggplot(data = nldi_flows, aes(x = dateTime, y = flow_cms, color = comid)) +
+g2 = ggplot(data = nldi_flows, aes(x = dateTime, y = flow_cms_v2.1, color = comid)) +
   geom_line(size = .25) + 
   scale_color_viridis_d() +
   labs(y = "Qsim (cms)",
        x = paste0("DateTime (", base::format(nldi_flows$dateTime[1], format="%Z"), ")"), 
-       title = paste(nldi_flows$model[1],"Flow Records")) +
+       title = paste("Flow Records")) +
   theme(legend.position = 'NA')
 
 gridExtra::grid.arrange(g1,g2, nrow = 1)

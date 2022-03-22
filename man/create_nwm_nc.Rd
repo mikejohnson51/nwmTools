@@ -13,7 +13,7 @@ create_nwm_nc(
   ensemble = NULL,
   nco = TRUE,
   pivot = TRUE,
-  purge = FALSE,
+  purge = TRUE,
   quiet = FALSE
 )
 }
@@ -51,7 +51,7 @@ it is highly recommended to install the NCO binaries (http://nco.sourceforge.net
 \dontrun{
  create_nwm_nc(type = "short_range", dstfile = tempfile(ext = ".nc"))
  
- urls     <-  get_nomads_filelist(type = "medium_range", num = 20,  ensemble = 4)
+ urls     <-  get_nomads_filelist(type = "medium_range", num = 4,  ensemble = 4)
  in_files <-  download_nomads(urls, dir = tempdir())
  create_nwm_nc(fileList = in_files, dstfile = tempfile(fileext = ".nc"))
 }

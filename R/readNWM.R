@@ -3,11 +3,8 @@
   rc  <- retro_call(comid, meta.obj = base)
   
   if (!is.null(rc)) {
-    
-    res <-  dplyr::bind_rows(lapply(1:rc$rows,
-                                    FUN  = extract_thredds,  
-                                    urls = rc$call.meta,  
-                                    dap  = rc$open.dap.file))
+
+    res = do.call('rbind', lapply(1:rc$rows, FUN  = extract_thredds,  urls = rc$call.meta,  dap  = rc$open.dap.file))
     
     close.nc(rc$open.dap.file)
     
@@ -38,9 +35,9 @@
 #' @return data.frame
 #' @export
 #' @importFrom RNetCDF close.nc
-#' @importFrom dplyr bind_rows full_join
 #' @importFrom lubridate with_tz tz as_datetime
-#' @importFrom dataRetrieval findNLDI
+#' @importFrom httr content RETRY
+#' @importFrom jsonlite fromJSON
 #' @examples 
 #' \dontrun{
 #' readNWMdata(comid = 101)
@@ -53,38 +50,64 @@ readNWMdata = function(comid  = NULL,
                        startDate = NULL,
                        endDate   = NULL,
                        tz = "UTC",
-                       version = 2) {
+                       version = 2.1,
+                       addObs = FALSE) {
+  
+  if(is.null(siteID) & addObs){
+    stop("addObs is only avaliable when siteID is not NULL")
+  }
  
-  base = lapply(version, function(x) {error.checks(startDate, endDate, tz, version)})
+  base = do.call('rbind', lapply(1:length(version), function(x) {
+    error.checks(startDate, endDate, tz, version[x])
+    })
+  )
   
-  if (!is.null(siteID)) {
-    comid = dataRetrieval::findNLDI(nwis = siteID)$comid
+  if (!is.null(siteID)) { 
+    comid = unique(c(comid, dataRetrieval::findNLDI(nwis = siteID)$comid))
+    cols = c('comid', 'dateTime', "siteID")
+  } else {
+    cols = c('comid', 'dateTime')
   }
-  
-  res = list()
-  
-  for(i in 1:length(base)){
-    res[[i]] = .readNWMinside(comid, siteID, tz, base = base[[i]])
-  }
+
+  res = lapply(1:nrow(base), function(x) { 
+    .readNWMinside(comid, siteID, tz, base = base[x,]) 
+  })
   
   if(length(res) == 1){
-    return(res[[1]])
+    res = res[[1]]
+    res[[paste0("flow_cms_v", gsub("NWM", "", res$model[1]))]] = res$flow_cms
+    res$flow_cms = NULL
+    res$model = NULL
   } else {
-    
     out = lapply(1:length(res), function(x){
       res[[x]][[paste0("flow_cms_v", gsub("NWM", "", res[[x]]$model[1]))]] = res[[x]]$flow_cms
       res[[x]]$flow_cms = NULL
       res[[x]]$model = NULL
       res[[x]]
     })
+
     
-    out = out %>% 
-      Reduce(function(dtf1,dtf2) dplyr::full_join(dtf1,
-                                                  dtf2,
-                                                  by=c('comid', 'dateTime')), .)
-    
-    return(out)
+    res = Reduce(function(dtf1,dtf2) merge(dtf1, dtf2, by = cols), out )
   }
+  
+  if(addObs){
+    nwis = dataRetrieval::readNWISdv(siteNumbers = unique(res$siteID), parameterCd = "00060")
+    
+    if(nrow(nwis) > 0){ 
+      nwis = dataRetrieval::renameNWISColumns(nwis)
+      nwis = nwis[, c("site_no",'Flow', "Date")]
+      nwis$Flow = nwis$Flow * 0.028316847
+      names(nwis) = c('siteID', "flow_cms_nwis", "Date")
+      
+      res$Date = as.Date(with_tz(res$dateTime, tzone = "UTC"))
+      
+      res = merge(res, nwis, all.x = TRUE, by = c('siteID', "Date"))
+      
+      res$Date = NULL
+    }
+  } 
+  
+  res
  
 }
 

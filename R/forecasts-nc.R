@@ -11,7 +11,7 @@ check_nco = function(){
   m = "Check your NCO install, or download: http://nco.sourceforge.net/#Source. \n\nYou can also use `create_nomads_nc`, which does not require NCO, but will give you a NetCDF file not optimized for timeseries extraction. For the operational products there is generally neglibable performance gains this can achieve so do as you must :)."
   
   tryCatch({
-    x = sys::exec_internal("ncks", "--version")
+    x = exec_internal("ncks", "--version")
     grepl("version", rawToChar(x$stderr))
   }, error = function(e){
     message(m)
@@ -44,7 +44,7 @@ check_nco = function(){
 #' \dontrun{
 #'  create_nwm_nc(type = "short_range", dstfile = tempfile(ext = ".nc"))
 #'  
-#'  urls     <-  get_nomads_filelist(type = "medium_range", num = 20,  ensemble = 4)
+#'  urls     <-  get_nomads_filelist(type = "medium_range", num = 4,  ensemble = 4)
 #'  in_files <-  download_nomads(urls, dir = tempdir())
 #'  create_nwm_nc(fileList = in_files, dstfile = tempfile(fileext = ".nc"))
 #' }
@@ -57,10 +57,11 @@ create_nwm_nc = function(fileList = NULL,
                          ensemble = NULL,
                          nco = TRUE,
                          pivot = TRUE, 
-                         purge = FALSE,
+                         purge = TRUE,
                          quiet = FALSE) {
   
   if(pivot & !check_nco()){ stop("You can only pivot the NetCDF if NCO is installed")}
+  
   if(nco & !check_nco()){ stop("Using NCO requires NCO to be installed. Set `nco` 
                                to FALSE or install NCO")}
   
@@ -105,6 +106,7 @@ use_nco = function(in_files, variable = "streamflow",
   offset <- att.get.nc(tmp, "streamflow", "add_offset")
 
   dir.create(paste0(tempdir(), "/nco/"))
+  
   new_files <- paste0(tempdir(), "/nco/", basename(in_files))
                      
   for(i in 1:length(in_files)){
@@ -118,10 +120,7 @@ use_nco = function(in_files, variable = "streamflow",
   } 
   
   system(paste('ncrcat -h -O -6', paste(new_files, collapse = " "), dstfile))
-  
-  # system(paste0('ncatted -h -O -a "scale_factor,streamflow,o,f,', 
-  #               scale, '" ', dstfile, " ", dstfile))
-  
+
   if(pivot){ system(paste('ncpdq -h -O -a feature_id,time', dstfile, dstfile)) }
   
   system(paste0('ncatted -h -O -a "scale_factor,streamflow,o,f,', 
@@ -244,9 +243,9 @@ extract_nwm = function(file, comids, variable = "streamflow"){
     ar[[i]] = var.get.nc(nc, variable, start = start, count = count, unpack = TRUE)
   }
   
-  tibble::tibble(comid = rep(comids, each = time_length),
-  dateTime = rep(as.POSIXct(var.get.nc(nc, "time")*60, origin = "1970-01-01", tz = 'UTC'), times = length(comids)),
-  values = c(unlist(ar)))
+  data.frame(comid = rep(comids, each = time_length),
+             dateTime = rep(as.POSIXct(var.get.nc(nc, "time")*60, origin = "1970-01-01", tz = 'UTC'), times = length(comids)),
+             values = c(unlist(ar)))
 }
 
 

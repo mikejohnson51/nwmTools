@@ -60,13 +60,13 @@ nco_nopivot   <-  tempfile(fileext = ".nc")
 r_nopivot     <-  tempfile(fileext = ".nc")
 
 # Use NCO and pivot (default)
-system.time({ create_nwm_nc(fileList = in_files, dstfile = nco_pivot) })
+system.time({ create_nwm_nc(fileList = in_files, dstfile = nco_pivot, purge = FALSE) })
 
 # Use NCO but do not pivot
-system.time({ create_nwm_nc(fileList = in_files, dstfile = nco_nopivot, pivot = FALSE) })
+system.time({ create_nwm_nc(fileList = in_files, dstfile = nco_nopivot, pivot = FALSE, purge = FALSE) })
 
 # Use RNetCDF
-system.time({ create_nwm_nc(fileList = in_files, dstfile  = r_nopivot, nco = FALSE) })
+system.time({ create_nwm_nc(fileList = in_files, dstfile  = r_nopivot, nco = FALSE, purge = FALSE) })
 ```
 
 Lets look at the size of the resulting files?
@@ -92,6 +92,8 @@ First lets looks at the dimensions in the NetCDF files (they are the same across
 
 ```{r dims}
 ncmeta::nc_dims(nco_pivot)
+ncmeta::nc_dims(nco_nopivot)
+ncmeta::nc_dims(r_nopivot)
 ```
 
 Note that `feature_id` is the 0 dimension, and `time` is the 1 dimension where the value is simply the ID. We also note that we have the \~2.7 million reaches over 20 time slices. To see how or pivoted/non-pivoted files are structured we can look at the grids.
@@ -142,10 +144,7 @@ Lets put this all together in an example that (1) defines an area, (2) identifie
 
 ```{r aoi}
 # Define and area, get NHDflowlines, and isolate the COMID
-AOI =  get_nhdplus(aoi_get("Colorado Springs")) %>% 
-  select(comid)
-
-glimpse(AOI)
+AOI =  get_nhdplus(aoi_get("Fort Collins"))$comid
 
 # Define, download, format, purge, extract!
 system.time({
@@ -153,17 +152,16 @@ system.time({
                       num = 10,  
                       ensemble = 2,
                       dstfile = tempfile(fileext = ".nc"),
+                      purge = TRUE,
                       quiet = TRUE)
   
-  forecast = extract_nwm(nwm, comids = AOI$comid)
+  forecast = extract_nwm(nwm, comids = AOI)
 })
-
-glimpse(forecast)
 ```
 
 ### Visualize!
 
-So what do the flows in Boulder look like in the forecasted future?
+So what do the flows in Boulder look like in the forcasted future?
 
 ```{r viz}
 ggplot(data = forecast, 

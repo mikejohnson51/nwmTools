@@ -33,12 +33,11 @@ knitr::opts_chunk$set(
 
 # Features
 
- * Query operational NWM channel output and format for timeseries access
- * Access historic NWM Reanalysis v1.2 or 2.0 data by feature 
+ * Build and query operational NWM channel output by feature
+ * Access historic NWM Reanalysis v1.2, 2.0, or 2.1 data by feature 
  * Data requests can be constrained temporally, and adjusted for timezone
- * Functions for finding appropriate NHD and NWIS Identifiers
- * Family of aggregate functions to group and summarize data to new time periods
- * On-call shiny app for data exploration (in development)
+ * Plays nicely with functionality within `nhdplusTools` and `dataRetrieval`
+ * Family of aggregate functions to summarize data along time-based aggregates
  
 ## Installation
 
@@ -47,9 +46,6 @@ remotes::install_github('mikejohnson51/nwmTools')
 ```
 
 
-# Collaborators:
-
-[Mike Johnson](https://mikejohnson51.github.io/) 
 # Data Documentation:
 
 [HydroShare](https://www.hydroshare.org/resource/89b0952512dd4b378dc5be8d2093310f/)

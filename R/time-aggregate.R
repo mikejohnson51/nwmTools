@@ -18,7 +18,6 @@
 #' @param fun 	function to be applied to the flows column default  = 'mean'
 #' @param na.rm a logical value indicating whether NA values should be stripped before the computation proceeds.
 #' @importFrom lubridate year month day
-#' @importFrom dplyr group_by summarize_at mutate ungroup select
 #' @family aggregate functions
 #' @examples 
 #' \dontrun{
@@ -48,7 +47,6 @@ aggregate_record   = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record details
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
-#' @importFrom dplyr rename
 #' @family aggregate functions
 #' @export
 
@@ -62,7 +60,6 @@ aggregate_y   = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record details
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
-#' @importFrom dplyr rename
 #' @family aggregate functions
 #' @export
 aggregate_m   = function(rawData, fun = "mean", na.rm = TRUE){
@@ -75,7 +72,6 @@ aggregate_m   = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record details
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
-#' @importFrom dplyr mutate n
 #' @family aggregate functions
 #' @export
 aggregate_j   = function(rawData, fun = "mean", na.rm = TRUE){
@@ -114,12 +110,12 @@ aggregate_wy  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inheritParams aggregate_record
 #' @family aggregate functions
 #' @importFrom lubridate ymd
-#' @importFrom dplyr mutate
 #' @export
 aggregate_ym  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "year", "month")
-    nwmHistoric_agg(rawData, cols, fun, na.rm) %>% 
-    mutate(ym = ymd(paste(year, month, sep = "-"), truncated = 1)) 
+  out = nwmHistoric_agg(rawData, cols, fun, na.rm)
+  out$ym = ymd(paste(out$year, out$month, sep = "-"), truncated = 1)
+  out
 }
 
 #' @title Aggregate by Year-Julien Day
@@ -128,12 +124,12 @@ aggregate_ym  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
 #' @family aggregate functions
-#' @importFrom dplyr mutate
 #' @export
 aggregate_yj  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "year", "julian")
-  nwmHistoric_agg(rawData, cols, fun, na.rm) %>% 
-    mutate(yj = paste(year, julian, sep = "-")) 
+  out = nwmHistoric_agg(rawData, cols, fun, na.rm)
+  out$yj = paste(out$year, out$julian, sep = "-")
+  out
 }
 
 #' @title Aggregate by Julien Day
@@ -142,12 +138,12 @@ aggregate_yj  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
 #' @family aggregate functions
-#' @importFrom dplyr mutate
 #' @export
 aggregate_j  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "julian")
-  nwmHistoric_agg(rawData, cols, fun, na.rm) %>% 
-    mutate(j = paste(julian, sep = "-")) 
+  out = nwmHistoric_agg(rawData, cols, fun, na.rm)
+  out$j = paste(out$julian, sep = "-")
+  out
 }
 
 #' @title Aggregate by Year-Month-Day
@@ -157,12 +153,12 @@ aggregate_j  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inheritParams aggregate_record
 #' @family aggregate functions
 #' @importFrom lubridate ymd
-#' @importFrom dplyr mutate
 #' @export
 aggregate_ymd = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "year", "month", "day")
-  nwmHistoric_agg(rawData, cols, fun, na.rm) %>%
-    mutate(ymd = ymd(paste(year, month, day, sep = "-"))) 
+  out = nwmHistoric_agg(rawData, cols, fun, na.rm)
+  out$ymd = ymd(paste(out$year, out$month, out$day, sep = "-"))
+  out
 }
 
 #' @title Aggregate by Year-Season
@@ -171,12 +167,12 @@ aggregate_ymd = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
 #' @family aggregate functions
-#' @importFrom dplyr mutate
 #' @export
 aggregate_ys  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', 'year', 'season')
-  nwmHistoric_agg(rawData, cols, fun, na.rm) %>%
-    mutate(ys = paste0(season, "-", year))
+  out = nwmHistoric_agg(rawData, cols, fun, na.rm)
+  out$ys = paste0(out$season, "-", out$year)
+  out
 }
 
 #' @title Aggregate by Water Year - Month
@@ -186,12 +182,12 @@ aggregate_ys  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inheritParams aggregate_record
 #' @family aggregate functions
 #' @importFrom lubridate ymd
-#' @importFrom dplyr mutate
 #' @export
 aggregate_wym  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "wy", "month")
-  nwmHistoric_agg(rawData, cols, fun, na.rm) %>% 
-    mutate(wym = ymd(paste(wy, month, '01', sep = "-"))) 
+  out = nwmHistoric_agg(rawData, cols, fun, na.rm)
+  out$wym = ymd(paste(out$wy, out$month, '01', sep = "-"))
+  out
 }
 
 #' @title Aggregate by Water Year - Month - Day
@@ -201,12 +197,13 @@ aggregate_wym  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inheritParams aggregate_record
 #' @family aggregate functions
 #' @importFrom lubridate ymd
-#' @importFrom dplyr mutate
 #' @export
 aggregate_wymd = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "wy", "month", "day")
-  nwmHistoric_agg(rawData, cols, fun, na.rm) %>%
-    mutate(wymd = ymd(paste(wy, month, day, sep = "-"))) 
+  
+  out = nwmHistoric_agg(rawData, cols, fun, na.rm)
+  out$wymd = ymd(paste(out$wy, out$month, out$day, sep = "-"))
+  out
 }
 
 #' @title Aggregate by Water Year - Season
@@ -215,12 +212,13 @@ aggregate_wymd = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
 #' @family aggregate functions
-#' @importFrom dplyr mutate
 #' @export
 aggregate_wys  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', 'wy', 'season')
-  nwmHistoric_agg(rawData, cols, fun, na.rm) %>%
-    mutate(wys = paste0(season, "-", wy))  
+  
+  out = nwmHistoric_agg(rawData, cols, fun, na.rm)
+  out$wys = paste0(out$season, "-", out$wy)
+  out
 }
 
 #' @title Aggregate by DOWY
@@ -229,12 +227,13 @@ aggregate_wys  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
 #' @family aggregate functions
-#' @importFrom dplyr mutate
 #' @export
 aggregate_dowy  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', 'DOWY')
-  nwmHistoric_agg(rawData, cols, fun, na.rm) %>% 
-    mutate(wy = add_waterYear(rawData$time))
+  
+  out = nwmHistoric_agg(rawData, cols, fun, na.rm)
+  out$wy = add_waterYear(rawData$time)
+  out
 }
 
 

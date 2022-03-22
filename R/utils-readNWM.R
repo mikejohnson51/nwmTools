@@ -1,12 +1,18 @@
-#' Get HydroShare TDS path
+#' Get TDS path
 #' @return character
 #' @export
 #' 
-get_tds = function(){
+get_tds = function(type = "hydroshare"){
+  
+  if(type == "hydroshare"){
   ## Top level Folder (OpenDap archive)
   #'http://thredds.hydroshare.org/thredds/dodsC/nwm_retrospective/'
   #'# CHANGED in March 2021
-  'http://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/'
+    return('http://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/')
+  } else {
+    return('https://cida.usgs.gov/thredds/dodsC/demo/morethredds/nwm/')
+  }
+  
 }
 
 #' NWM metadata
@@ -17,18 +23,26 @@ get_tds = function(){
 #' 
 get_nwm_meta = function(version = NULL){
   
-  df = data.frame(version = c(1.2, 2.0), 
-             minDate = c(ymd_hm("1993-01-01 00:00"), ymd_hm("1993-01-01 00:00")), 
-             maxDate = c(ymd_hm("2017-12-31 23:00"), ymd_hm("2018-12-31 00:00")),
-             ncml = c('nwm_retro_full.ncml', 'nwm_v2_retro_full.ncml'))
+  df = data.frame(
+             version = c(1.2, 2.0, 2.1), 
+             type = c("hydroshare", "hydroshare", "USGS"),
+             minDate = c(ymd_hm("1993-01-01 00:00"), 
+                         ymd_hm("1993-01-01 00:00"),
+                         ymd_hm("1979-02-02 18:00")),
+             maxDate = c(ymd_hm("2017-12-31 23:00"), 
+                         ymd_hm("2018-12-31 00:00"),
+                         ymd_hm("2020-12-31 00:00")),
+             ncml = c('nwm_retro_full.ncml', 
+                      'nwm_v2_retro_full.ncml',
+                      'nwm_v21_retro_full.ncml'))
   
-  out = filter(df, version %in% !!version)
-  
-  if (nrow(out) == 0) {
+  df = df[df$version %in% version,]
+
+  if (nrow(df) == 0) {
     stop(paste('NWM version must be one of:', paste(df$version, collapse = ", " )) , call. = F)
   }
   
-  out 
+  df 
 }
 
 
@@ -46,39 +60,44 @@ get_nwm_meta = function(version = NULL){
 error.checks = function(startDate, endDate, tz, version){
   
   ## Make sure requested Timezone is valid
-  if(!tz %in% OlsonNames()){ stop(paste(tz, "not recognized timezone"), call. = F) } 
+  if(!tz %in% OlsonNames()){ 
+    stop(paste(tz, "not recognized timezone"), call. = FALSE) 
+    } 
   
   startDate = if(!is.null(startDate)) {as.POSIXct(startDate, tz = tz) }
   endDate   = if(!is.null(endDate)) { as.POSIXct(endDate, tz = tz) }
-  
+
   ## Isolate version of interest
   this.version = get_nwm_meta(version)
 
-  # If no startDate is given, default to start date + 23 hours
   if(is.null(startDate)){
-    stop(
-    paste("startDate must be provided. Version", this.version$version, "starts on", this.version$minDate, "."), 
-    .call = FALSE)
-  }  
+    startDate = this.version$minDate
+    endDate   = this.version$maxDate
+  }
   
   # If no endDate is given, default to start date + 23 hours
   if(is.null(endDate)){endDate = startDate + 82800}
   
   ## Change Start and EndDate to User Timezones:
-  df = data.frame(usr.tz  = with_tz(c(startDate, endDate), tz))
-  df$usr.utc = with_tz(df$usr.tz, tzone = "UTC")
+  df = data.frame(usr.tz.start  = with_tz(startDate, tz),
+                  usr.tz.end    = with_tz(endDate, tz))
+  df$usr.utc.start = with_tz(df$usr.tz.start, tzone = "UTC")
+  df$usr.utc.end = with_tz(df$usr.tz.end, tzone = "UTC")
   df$version = this.version$version
-  df$url = paste0(get_tds(), this.version$ncml)
+  df$url = paste0(get_tds(this.version$type), this.version$ncml)
+  df$minDate = this.version$minDate
+  df$maxDate = this.version$maxDate
   
   ## Check startDate
-  if(any(df$usr.utc[1] < this.version$minDate)){
+  if(any(df$usr.utc.start < this.version$minDate)){
     stop("First values for version ", version, ' is ', this.version$minDate, " 00:00:00 UTC \n")
   }
   ## Check endDate
-  if(any(df$usr.utc[2] > this.version$maxDate)){
+  if(any(df$usr.utc.end > this.version$maxDate)){
     stop("Last values for version ", version, ' is ', this.version$maxDate,  " UTC.")
   }
 
+  
   # If everything is good-to-go return baseURL
   return(df)
 }
@@ -100,17 +119,18 @@ retro_call = function(comid, meta.obj){
   if(length(comid) > 0){
   
   ids_file = open.nc(system.file("extdata", "retro_feature_ids.nc", package = "nwmTools"))
-  call = ifelse(meta.obj$version == 2, "feature_ids_v_two", "feature_ids_v_one")
+  call = unique(ifelse(meta.obj$version == 1, "feature_ids_v_one", "feature_ids_v_two"))
   id  = match(comid, var.get.nc(ids_file, call))
   close.nc(ids_file)
 
   if(length(id) > 0){
-    s  = min(meta.obj$usr.utc)
-    e  = max(meta.obj$usr.utc)
-    model = hour_seq(s, e, "UTC")
+    s  = meta.obj$usr.utc.start
+    e  = meta.obj$usr.utc.end
+    model = hour_seq(meta.obj$minDate, meta.obj$maxDate, "UTC")
     s1 = which(s == model)
     e1 = which(e == model)
-
+    rm(model)
+    
     call.meta = data.frame(
               COMID = comid,
               index = id,
@@ -121,10 +141,9 @@ retro_call = function(comid, meta.obj){
               count = (e1-s1) + 1,
               version = meta.obj$version,
               url = meta.obj$url,
-              stringsAsFactors = FALSE) %>% 
-      filter(!is.na(index)) %>% 
-      filter(!duplicated(.))
-
+              stringsAsFactors = FALSE) 
+    
+    call.meta = call.meta[!is.na(call.meta$index),]
    
     if(nrow(call.meta) > 0 ){
       return(list(rows = nrow(call.meta),
@@ -162,6 +181,19 @@ extract_thredds = function(i, urls, dap) {
                            unpack = TRUE)
   )
 }
+
+
+# library(RNetCDF)
+# time_steps <- utcal.nc(
+#   unitstring = att.get.nc(dap, 'time', "units"),
+#   value = var.get.nc(dap, 'time'),
+#   type = "c"
+# )
+# 
+# table(time_steps) |> names() |> min()
+# max(names(table(time_steps))) - length()
+# 
+# lubridate::ymd_hms(max(names(table(time_steps)))) - lubridate::hours(length(time_steps))
 
 #' @title Time Sequence Generator
 #' @description Construct time series from start and end data

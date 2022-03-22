@@ -82,7 +82,6 @@ find_f = function(type, files, domain){
 #' @param ensemble an ensemble member number
 #' @param num a number of files to download, default = all
 #' @return a list of meta.data information
-#' @importFrom dplyr arrange filter mutate slice
 #' @export
 #' @examples
 #' \dontrun{

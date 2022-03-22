@@ -7,8 +7,7 @@ test_that("query errors", {
   expect_error(readNWMdata(comid = 101,
                            startDate = "1993-01-01", endDate = NULL, 
                            tz = "XXX", version = 2))
-  # StartDate not given
-  expect_error(error.checks(startDate = NULL, endDate = NULL, tz = "UTC", version = 2))
+
   # StartDate to early
   expect_error(error.checks(startDate = "1980-01-01", endDate = NULL, tz = "UTC", version = 2))
   # EndDate to late
@@ -28,4 +27,5 @@ test_that("query success", {
   expect_true(min(q$dateTime) == as.POSIXlt("1993-01-01 00:00:00", tz = "UTC"))
   expect_true(max(q$dateTime) == as.POSIXlt("1993-01-01 23:00:00", tz = "UTC"))
 })
+
 

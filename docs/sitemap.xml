@@ -1,7 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/404.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/01-api.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/02-discovery.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/03-time.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/04-operations.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/api.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/discovery.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/operations.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/time.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/authors.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/mikejohnson51/nwmHistoric/index.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/news/index.html</loc>
   </url>
   <url>
     <loc>https://github.com/mikejohnson51/nwmHistoric/reference/add_season.html</loc>
@@ -64,13 +106,31 @@
     <loc>https://github.com/mikejohnson51/nwmHistoric/reference/error.checks.html</loc>
   </url>
   <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/reference/error_checking.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/mikejohnson51/nwmHistoric/reference/extract_nwm.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/reference/find_f.html</loc>
   </url>
   <url>
     <loc>https://github.com/mikejohnson51/nwmHistoric/reference/get_nomads_filelist.html</loc>
   </url>
   <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/reference/get_nwm_meta.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/reference/get_tds.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/mikejohnson51/nwmHistoric/reference/hour_seq.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/reference/make_url.html</loc>
   </url>
   <url>
     <loc>https://github.com/mikejohnson51/nwmHistoric/reference/nwmHistoric_agg.html</loc>
@@ -88,15 +148,12 @@
     <loc>https://github.com/mikejohnson51/nwmHistoric/reference/split_time.html</loc>
   </url>
   <url>
-    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/api.html</loc>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/reference/use_nco.html</loc>
   </url>
   <url>
-    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/discovery.html</loc>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/reference/use_r.html</loc>
   </url>
   <url>
-    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/operations.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/mikejohnson51/nwmHistoric/articles/time.html</loc>
+    <loc>https://github.com/mikejohnson51/nwmHistoric/reference/use_rnetcdf.html</loc>
   </url>
 </urlset>

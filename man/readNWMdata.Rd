@@ -10,7 +10,8 @@ readNWMdata(
   startDate = NULL,
   endDate = NULL,
   tz = "UTC",
-  version = 2
+  version = 2.1,
+  addObs = FALSE
 )
 }
 \arguments{
