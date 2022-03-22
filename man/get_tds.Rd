@@ -6,9 +6,13 @@
 \usage{
 get_tds(type = "hydroshare")
 }
+\arguments{
+\item{type}{what TDS to use?}
+}
 \value{
-character
+a URL path
 }
 \description{
 Get TDS path
 }
+\keyword{internal}

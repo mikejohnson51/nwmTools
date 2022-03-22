@@ -6,8 +6,11 @@
 \usage{
 get_nwm_meta(version = NULL)
 }
+\arguments{
+\item{version}{Which version of NWM should be returned? (1.2, 2.0, 2.1)}
+}
 \value{
-tibble
+data.frame
 }
 \description{
 NWM metadata

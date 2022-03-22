@@ -63,6 +63,7 @@ utc <- readNWMdata(comid = 101,
                    endDate   = "2010-01-31")
 
 # Check time dimensions
+dim(utc)
 range(utc$dateTime)
 head(utc)
 ```
@@ -78,6 +79,7 @@ pst = readNWMdata(comid = 101,
                   tz = "US/Pacific")
 
 # Check time dimensions
+dim(pst)
 range(pst$dateTime)
 head(pst)
 ```
@@ -93,10 +95,11 @@ ggplot() +
                             y = flow_cms_v2.1, 
                             color = "PST")) +
   theme_bw() +
-  labs(y = 'Flows', x = "DateTime", title = "Time Zone Comparison", color = "Timezone") + theme(legend.position = "bottom")
+  labs(y = 'Flows', x = "DateTime", title = "Time Zone Comparison", color = "Timezone") + 
+  theme(legend.position = "bottom")
 ```
 
-### model version
+### Model versioning
 
 The reanalysis product for versions 1.2 and 2.0 of the NWM are available. By default the API extracts data from version 2.0, but data from 1.2 can be requested as well.
 
@@ -111,7 +114,7 @@ pst_vs = readNWMdata(comid = 101,
 ```{r, echo = FALSE}
 ggplot(data = pst_vs) + 
   geom_line(aes(x = dateTime, y = flow_cms_v1.2, color = "v1.2")) + 
-  geom_line(aes(x = dateTime, y = flow_cms_v2, color = "v2")) +
+  geom_line(aes(x = dateTime, y = flow_cms_v2,   color = "v2.0")) +
   geom_line(aes(x = dateTime, y = flow_cms_v2.1, color = "v2.1")) +
   labs(y = 'Flows', x = "DateTime", title = "Model Comparison", 
        color = "Model") + 
@@ -124,24 +127,24 @@ ggplot(data = pst_vs) +
 The reanalysis product for versions 1.2 and 2.0 of the NWM are available. By default the API extracts data from version 2.0, but data from 1.2 can be requested as well.
 
 ```{r}
-pst_obs = readNWMdata(siteID = 11120000, 
-                    startDate = "2010-01-01", 
-                    endDate   = "2010-01-31",
-                    version =  c(1.2, 2.0, 2.1),
-                    addObs = TRUE)
+pst_obs = readNWMdata(siteID  = 11120000, 
+                      startDate = "2010-01-01", 
+                      endDate   = "2010-01-31",
+                      version   =  c(1.2, 2.0, 2.1),
+                      addObs    = TRUE)
 ```
 
 ```{r, echo = FALSE}
 ggplot(data = pst_obs) + 
   geom_line(aes(x = dateTime, y = flow_cms_v1.2, color = "v1.2")) + 
-  geom_line(aes(x = dateTime, y = flow_cms_v2, color = "v2")) +
+  geom_line(aes(x = dateTime, y = flow_cms_v2,   color = "v2.0")) +
   geom_line(aes(x = dateTime, y = flow_cms_v2.1, color = "v2.1")) +
-    geom_line(aes(x = dateTime, y = flow_cms_nwis, color = "nwis")) +
-  labs(y = 'Flows', x = "DateTime", title = "Model Comparison vs Obs", 
+  geom_line(aes(x = dateTime, y = flow_cms_nwis, color = "nwis")) +
+  labs(y = 'Flows', x = "DateTime", title = "Model Comparison vs Observation", 
        color = "Model") + 
   theme_bw() +
   theme(legend.position = "bottom")
 ```
 
-In section 2, we will look at how we can facilitate COMID and USGS NWIS discovery. In section 3 we will look at some techniques to handle time aggregations and splitting.
+In section 2, we will look at how we can facilitate COMID and USGS NWIS discovery. In section 3 we will look at some techniques to handle operational data, and in section 4, we will look at time aggregations and splitting.
 

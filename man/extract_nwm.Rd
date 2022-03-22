@@ -11,11 +11,11 @@ extract_nwm(file, comids, variable = "streamflow")
 
 \item{comids}{a vector of NHD comids to extract}
 
-\item{variable}{a channel file variable to extract 
+\item{variable}{a channel file variable to extract
 (should be same as the one used to create the file)}
 }
 \value{
-a tibble of comid,dateTime,value
+a data.frame of comid,dateTime,value
 }
 \description{
 Extract NWM flow series

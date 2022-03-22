@@ -1,26 +1,8 @@
-#' Get TDS path
-#' @return character
-#' @export
-#' 
-get_tds = function(type = "hydroshare"){
-  
-  if(type == "hydroshare"){
-  ## Top level Folder (OpenDap archive)
-  #'http://thredds.hydroshare.org/thredds/dodsC/nwm_retrospective/'
-  #'# CHANGED in March 2021
-    return('http://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/')
-  } else {
-    return('https://cida.usgs.gov/thredds/dodsC/demo/morethredds/nwm/')
-  }
-  
-}
-
 #' NWM metadata
-#' @return tibble
+#' @param version Which version of NWM should be returned? (1.2, 2.0, 2.1)
+#' @return data.frame
 #' @export
-#' @importFrom dplyr add_row filter
-#' @importFrom lubridate ymd_hm
-#' 
+ 
 get_nwm_meta = function(version = NULL){
   
   df = data.frame(
@@ -36,15 +18,33 @@ get_nwm_meta = function(version = NULL){
                       'nwm_v2_retro_full.ncml',
                       'nwm_v21_retro_full.ncml'))
   
-  df = df[df$version %in% version,]
+  df2 = df[df$version %in% version,]
 
-  if (nrow(df) == 0) {
+  if (nrow(df2) == 0) {
     stop(paste('NWM version must be one of:', paste(df$version, collapse = ", " )) , call. = F)
   }
   
-  df 
+  df2
 }
 
+#' @title Get TDS path
+#' @param type what TDS to use?
+#' @return a URL path
+#' @keywords internal
+#' @noRd
+
+get_tds = function(type = "hydroshare"){
+  
+  if(type == "hydroshare"){
+    ## Top level Folder (OpenDap archive)
+    #'http://thredds.hydroshare.org/thredds/dodsC/nwm_retrospective/'
+    #'# CHANGED in March 2021
+    return('http://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/')
+  } else {
+    return('https://cida.usgs.gov/thredds/dodsC/demo/morethredds/nwm/')
+  }
+  
+}
 
 #' @title Meta Object Creation with Error Checks
 #' @description this function ensures that the all input objects are correct.
@@ -53,31 +53,48 @@ get_nwm_meta = function(version = NULL){
 #' @param endDate a user defined end Date ("YYYY-MM-DD") 
 #' @param tz a user defined timezone  
 #' @param version a user defined model version
-#' @importFrom lubridate with_tz
+#' @importFrom lubridate with_tz hours
 #' @return a list containing the model version, NCML path, and time requests
 #' @keywords internal
+#' @noRd
 
 error.checks = function(startDate, endDate, tz, version){
   
+  this.version = get_nwm_meta(version)
+  
+  if(!is.null(startDate)){
+    if(nchar(startDate) == 10) { startDate = paste(startDate, "00:00:00") }
+  }
+  
+  if(!is.null(endDate)){
+    if(nchar(endDate)   == 10) { endDate   = paste(endDate,   "23:00:00") }
+  }
+
   ## Make sure requested Timezone is valid
   if(!tz %in% OlsonNames()){ 
     stop(paste(tz, "not recognized timezone"), call. = FALSE) 
-    } 
+  } 
   
-  startDate = if(!is.null(startDate)) {as.POSIXct(startDate, tz = tz) }
-  endDate   = if(!is.null(endDate)) { as.POSIXct(endDate, tz = tz) }
-
-  ## Isolate version of interest
-  this.version = get_nwm_meta(version)
-
-  if(is.null(startDate)){
-    startDate = this.version$minDate
-    endDate   = this.version$maxDate
+  if(!is.null(startDate)) {startDate = as.POSIXct(startDate, tz = tz)}
+  if(!is.null(endDate))   {endDate   = as.POSIXct(endDate, tz = tz)  }
+  
+  if(is.null(startDate) & is.null(endDate)){
+    startDate = with_tz(this.version$minDate, "UTC")
+    endDate   = with_tz(this.version$maxDate, "UTC")
   }
   
-  # If no endDate is given, default to start date + 23 hours
-  if(is.null(endDate)){endDate = startDate + 82800}
+  if(is.null(startDate)){
+    startDate = with_tz(this.version$minDate, "UTC")
+  }
   
+  if(is.null(endDate)){
+    endDate = with_tz(startDate, "UTC") + hours(23)
+  }
+  
+  if(endDate < startDate){
+    stop("endDate must come after startDate")
+  }
+
   ## Change Start and EndDate to User Timezones:
   df = data.frame(usr.tz.start  = with_tz(startDate, tz),
                   usr.tz.end    = with_tz(endDate, tz))
@@ -106,11 +123,11 @@ error.checks = function(startDate, endDate, tz, version){
 #' @description build out THREDDs call and meta information
 #' @param comid an NHD COMID(s)
 #' @param meta.obj a metadata object generated with `error.check`
-#' @importFrom dplyr filter
 #' @importFrom lubridate ymd_hm with_tz
 #' @importFrom RNetCDF open.nc var.get.nc
 #' @return a data.frame and opend DAP object
 #' @keywords internal
+#' @noRd
 
 retro_call = function(comid, meta.obj){
 
@@ -163,13 +180,12 @@ retro_call = function(comid, meta.obj){
 #' @param urls meta.calls data.frame
 #' @param dap open DAP connection
 #' @importFrom RNetCDF var.get.nc
-#' @importFrom tibble tibble
 #' @return
 #' @keywords internal
 #' @noRd
 
 extract_thredds = function(i, urls, dap) {
-  tibble::tibble(
+  data.frame(
     model     = paste0('NWM', urls$version[i]),
     comid     = urls$COMID[i],
     dateTime  = hour_seq(urls$startDate[i], 
@@ -202,6 +218,7 @@ extract_thredds = function(i, urls, dap) {
 #' @importFrom lubridate with_tz
 #' @return vector of dates
 #' @keywords internal
+#' @noRd
 
 hour_seq  = function(startDate, endDate, tz){
   seq(
@@ -210,19 +227,6 @@ hour_seq  = function(startDate, endDate, tz){
     by   = "hour"
   )
 }
-
-#' Pipe operator
-#'
-#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
-#'
-#' @name %>%
-#' @rdname pipe
-#' @keywords internal
-#' @export
-#' @importFrom magrittr %>%
-#' @usage lhs \%>\% rhs
-
-NULL
 
 
 

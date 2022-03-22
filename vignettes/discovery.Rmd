@@ -28,11 +28,11 @@ NHD COMIDs can be determined from point locations as the NHD catchment containin
 library(nwmTools)
 library(AOI)
 library(dataRetrieval)
-library(dplyr)
 library(nhdplusTools)
+library(ggplot2)
 
 # Find COMID
-glimpse(findNLDI(location = c(-119.8276, 34.43583)))
+(findNLDI(location = c(-119.8276, 34.43583)))
 ```
 
 ### Area Search
@@ -40,15 +40,18 @@ glimpse(findNLDI(location = c(-119.8276, 34.43583)))
 `nhdplusTools::get_nhdplus(...)` can accept polygon features as a search domain and will return all NHD flowlines intersecting the input area. From theses, COMIDs can be extracted.
 
 #### Define Area...
+
 ```{r}
-# Goleta footprint
-(AOI = AOI::aoi_get("Fort Collins"))
+# Fort Collins footprint
+(AOI = aoi_get("Fort Collins"))
 ```
 
-### Pull COMIDS for the AOI.
+#### Pull COMIDS for the AOI.
 ```{r}
 # Find COMIDS
-glimpse(get_nhdplus(AOI)$comid)
+ids = get_nhdplus(AOI)$comid
+head(ids)
+length(ids)
 ```
 
 ### Finding NWIS gages and pull siteIDs...
@@ -56,7 +59,9 @@ glimpse(get_nhdplus(AOI)$comid)
 Analogous functionality for finding USGS NWIS site IDs is provided with `nhdplusTools::get_nwis`. This function only returns NWIS sites that record streamflow (USGS parameter code '00060') and are collocated with an NHD catchment represented in the NWM.
 
 ```{r}
-glimpse(get_nwis(AOI)$site_no)
+ids = get_nwis(AOI)$site_no
+head(ids)
+length(ids)
 ```
 
 ## Geometric Discovery
@@ -65,22 +70,19 @@ The NHDPlusV2 data model loosely conforms to the HY_Features Conceptual Model wi
 
 ```{r}
 # Return catchments
-catch = nhdplusTools::get_nhdplus(AOI, realization = "catchment")
-# Return flowlines
-fl    = nhdplusTools::get_nhdplus(AOI, realization = "flowline")
-# Return outlets
-out   = nhdplusTools::get_nhdplus(AOI, realization = "outlet")
+fc = get_nhdplus(AOI, realization = "all")
+str(fc, max.level = 1)
 ```
 
 ```{r, echo = FALSE}
-library(ggplot2)
 ggplot() +
-  geom_sf(data = catch, aes(fill = "Catchment"), color = "black") +
-  geom_sf(data = fl,  aes(color = 'Flowline'), show.legend  = "line") +
-  geom_sf(data = out, aes(color = 'Outlet'), show.legend  = "point") + 
+  geom_sf(data = fc$catchment, aes(fill = "Catchment"), color = "black") +
+  geom_sf(data = fc$flowline,  aes(color = 'Flowline'), show.legend  = "line") +
+  geom_sf(data = fc$outlet, aes(color = 'Outlet'), show.legend  = "point") + 
   scale_fill_manual(values = c("Catchment" = "gray99"), 
                     guide = guide_legend(override.aes = list(linetype = 1, border = "solid", shape = NA))) +
-  scale_colour_manual(values = c("Flowline" = "blue","Outlet" = "red"), guide = guide_legend(override.aes = list(linetype = c("solid", "blank"), shape = c(NA,16)))) + 
+  scale_colour_manual(values = c("Flowline" = "blue","Outlet" = "red"), 
+                      guide = guide_legend(override.aes = list(linetype = c("solid", "blank"), shape = c(NA,16)))) + 
   theme_minimal() +
   labs(fill = "", color = "") + 
   theme_void() +
@@ -102,12 +104,12 @@ nldi_flows <- readNWMdata(comid = loc$UM_flowlines$nhdplus_comid,
                           endDate   = "2015-12-31")
 ```
 
-```{r, echo = FALSE, fig.width=7.5, fig.height=4}
-um_outlets = nhdplusTools::get_node(loc$UM_flowlines)
+```{r, echo = FALSE, fig.show="hold", fig.width=7.5, fig.height=4}
+um_outlets = get_node(loc$UM_flowlines)
 um_outlets$order = factor(nrow(um_outlets):1)
 
 # Make a map
-g1 = ggplot() +
+ggplot() +
   geom_sf(data = loc$basin, col = 'gray90') +
   geom_sf(data = loc$UT_flowlines, col = 'lightblue') + 
   geom_sf(data = loc$UM_flowlines, col = 'blue', size = .5) + 
@@ -117,13 +119,11 @@ g1 = ggplot() +
 
 
 # Plots the flows
-g2 = ggplot(data = nldi_flows, aes(x = dateTime, y = flow_cms_v2.1, color = comid)) +
+ggplot(data = nldi_flows, aes(x = dateTime, y = flow_cms_v2.1, color = comid)) +
   geom_line(size = .25) + 
   scale_color_viridis_d() +
   labs(y = "Qsim (cms)",
        x = paste0("DateTime (", base::format(nldi_flows$dateTime[1], format="%Z"), ")"), 
        title = paste("Flow Records")) +
   theme(legend.position = 'NA')
-
-gridExtra::grid.arrange(g1,g2, nrow = 1)
 ```

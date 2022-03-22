@@ -209,9 +209,8 @@ use_rnetcdf = function(in_files, variable = "streamflow", dstfile = NULL) {
 #' @param comids a vector of NHD comids to extract
 #' @param variable a channel file variable to extract 
 #' (should be same as the one used to create the file)
-#' @return a tibble of comid,dateTime,value
+#' @return a data.frame of comid,dateTime,value
 #' @importFrom RNetCDF open.nc var.get.nc dim.inq.nc var.inq.nc
-#' @importFrom tibble tibble
 #' @export
 #' @examples
 #' \dontrun{

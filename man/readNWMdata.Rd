@@ -26,14 +26,16 @@ readNWMdata(
 \item{tz}{the desired timezone of the data. Can be found with \code{OlsonNames}}
 
 \item{version}{the NWM version to extract (current = 1.2 or 2 (default))}
+
+\item{addObs}{should observation data be added? Only available when !is.null(siteID)}
 }
 \value{
 data.frame
 }
 \description{
-Download hourly flow values for an NHD COMID from the National 
-Water Model version 1.2 or 2.0. Returned data is available between 
-"1993-01-01 00" and "2017-12-31 23" but can be 
+Download hourly flow values for an NHD COMID from the National
+Water Model version 1.2 or 2.0. Returned data is available between
+"1993-01-01 00" and "2017-12-31 23" but can be
 subset using a startDate and endDate.
 }
 \examples{

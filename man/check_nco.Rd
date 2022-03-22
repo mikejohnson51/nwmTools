@@ -10,7 +10,7 @@ check_nco()
 a boolean condition
 }
 \description{
-NCO is a fantastic open source tool for working with NetCDF files. 
+NCO is a fantastic open source tool for working with NetCDF files.
 It can be downloaded from here: http://nco.sourceforge.net/#Source
 }
 \examples{

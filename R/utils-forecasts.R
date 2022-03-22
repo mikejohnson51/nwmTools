@@ -13,7 +13,6 @@ make_url = function(date, type){
 #' @title Error Checking for configuration/ensemble pairs
 #' @param type a NWM configuration
 #' @param ensemble an ensemble member number
-#' @importFrom dplyr between 
 #' @return a kosher configuration
 #' @noRd
 #' @keywords internal
@@ -40,14 +39,14 @@ error_checking = function(type, ensemble){
     }
     
     if(type == "medium_range"){
-      check = dplyr::between(ensemble, 1,4)
+      check = ensemble %in% c(1:4)
       if(!check){
         stop('Only 4 medium range ensembles available', call. = FALSE)
       }
     }
     
     if(type == "long_range"){
-      check = dplyr::between(ensemble, 1,4)
+      check = ensemble %in% c(1:4)
       if(!check){
         stop('Only 4 long range ensembles available', call. = FALSE)
       }

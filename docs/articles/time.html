@@ -44,7 +44,7 @@
                     <a class="navbar-brand" href="../index.html">nwmTools</a>
                       <div class="info">
                         <span class="partof">National Water Model</span>
-                          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
+                          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
                             </div>
                               </div>
                               </div>
@@ -121,8 +121,8 @@
                  endDate <span class="op">=</span> <span class="st">"2009-12-31"</span><span class="op">)</span> |&gt; 
   <span class="fu"><a href="../reference/split_time.html">split_time</a></span><span class="op">(</span><span class="st">"dateTime"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">st</span><span class="op">)</span>
-<span class="co">#&gt; Rows: 43,801</span>
+<span class="fu">glimpse</span><span class="op">(</span><span class="va">st</span><span class="op">)</span>
+<span class="co">#&gt; Rows: 43,824</span>
 <span class="co">#&gt; Columns: 11</span>
 <span class="co">#&gt; $ comid         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 1…</span>
 <span class="co">#&gt; $ dateTime      <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span> 2005-01-01 00:00:00, 2005-01-01 01:00:00, 2005-01-01 02…</span>
@@ -137,13 +137,13 @@
 <span class="co">#&gt; $ DOWY          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, …</span></code></pre></div>
 <p>Using the split time attributes, we can plot the hourly flow records by julien day, grouped by water-year:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">st</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">DOWY</span>, y <span class="op">=</span> <span class="va">flow_cms_v2.1</span>, color <span class="op">=</span> <span class="va">flow_cms_v2.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">geom_line</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">facet_grid</span><span class="op">(</span><span class="va">wy</span><span class="op">~</span><span class="va">.</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">labs</span><span class="op">(</span>y<span class="op">=</span> <span class="st">"Daily Flow (cms)"</span>, x<span class="op">=</span> <span class="st">"Day of Water Year"</span>, 
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">st</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">DOWY</span>, y <span class="op">=</span> <span class="va">flow_cms_v2.1</span>, color <span class="op">=</span> <span class="va">flow_cms_v2.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="va">wy</span><span class="op">~</span><span class="va">.</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y<span class="op">=</span> <span class="st">"Daily Flow (cms)"</span>, x<span class="op">=</span> <span class="st">"Day of Water Year"</span>, 
        title<span class="op">=</span><span class="st">"Daily Discharge for COMID 101"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_color_viridis_c</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_c</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="time_files/figure-html/unnamed-chunk-3-1.png" width="576"></p>
 </div>
 <div class="section level2">
@@ -262,7 +262,7 @@
 <p>First lets grab some data for a COMID near Baton Rouge, LA along the Mississippi.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">101</span><span class="op">)</span>
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
+<span class="fu">glimpse</span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 367,375</span>
 <span class="co">#&gt; Columns: 3</span>
 <span class="co">#&gt; $ comid         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 1…</span>
@@ -276,7 +276,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Aggregate hourly flows to monthly averages by year</span>
 <span class="va">monthly</span> <span class="op">=</span> <span class="fu"><a href="../reference/aggregate_m.html">aggregate_m</a></span><span class="op">(</span><span class="va">flows</span>, fun <span class="op">=</span> <span class="va">mean</span><span class="op">)</span>
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">monthly</span><span class="op">)</span>
+<span class="fu">glimpse</span><span class="op">(</span><span class="va">monthly</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 12</span>
 <span class="co">#&gt; Columns: 4</span>
 <span class="co">#&gt; $ comid         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 1…</span>
@@ -284,17 +284,17 @@
 <span class="co">#&gt; $ flow_cms_v2.1 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 3.2080422, 3.0293795, 2.2485403, 1.3277797, 1.4821377, 1…</span>
 <span class="co">#&gt; $ obs           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 30504, 28446, 31248, 30240, 31248, 30240, 31248, 31248, …</span>
 
-<span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">monthly</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">geom_col</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">flow_cms_v2.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Month"</span>, y <span class="op">=</span> <span class="st">"Q (cms)"</span>, 
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">monthly</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">flow_cms_v2.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Month"</span>, y <span class="op">=</span> <span class="st">"Q (cms)"</span>, 
        title <span class="op">=</span> <span class="st">'Monthly Average'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="time_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
 <p>Alternatively we might be interested in the monthly variability in each year. We can do this by passing the flow records to <code>aggregate_ym</code> (ym = year,month) and using <code>mean</code> as the summarizing function:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Aggregate hourly flows to monthly averages by year</span>
 <span class="va">ym</span> <span class="op">=</span> <span class="fu"><a href="../reference/aggregate_ym.html">aggregate_ym</a></span><span class="op">(</span><span class="va">flows</span>, fun <span class="op">=</span> <span class="va">mean</span><span class="op">)</span>
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">ym</span><span class="op">)</span>
+<span class="fu">glimpse</span><span class="op">(</span><span class="va">ym</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 503</span>
 <span class="co">#&gt; Columns: 6</span>
 <span class="co">#&gt; $ comid         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 1…</span>
@@ -304,11 +304,11 @@
 <span class="co">#&gt; $ obs           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 630, 744, 720, 744, 720, 744, 744, 720, 744, 720, 744, 7…</span>
 <span class="co">#&gt; $ ym            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1979-02-01, 1979-03-01, 1979-04-01, 1979-05-01, 1979-06…</span>
 
-<span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">ym</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">flow_cms_v2.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">geom_boxplot</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.5</span>, outlier.shape <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Month"</span>, y <span class="op">=</span> <span class="st">"Q (cms)"</span>, 
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">ym</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">flow_cms_v2.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.5</span>, outlier.shape <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Month"</span>, y <span class="op">=</span> <span class="st">"Q (cms)"</span>, 
        title <span class="op">=</span> <span class="st">'By Month Variability'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="time_files/figure-html/unnamed-chunk-6-1.png" width="576"></p>
 </div>
 <div class="section level3">
@@ -318,7 +318,7 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Aggregate by season</span>
 <span class="va">seasons</span> <span class="op">=</span> <span class="fu"><a href="../reference/aggregate_s.html">aggregate_s</a></span><span class="op">(</span><span class="va">flows</span>, fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'mean'</span>, <span class="st">'sd'</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">seasons</span><span class="op">)</span>
+<span class="fu">glimpse</span><span class="op">(</span><span class="va">seasons</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 4</span>
 <span class="co">#&gt; Columns: 6</span>
 <span class="co">#&gt; $ comid              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 101, 101, 101, 101</span>
@@ -328,10 +328,10 @@
 <span class="co">#&gt; $ flow_cms_v2.1_sd   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4.854523, 4.302834, 5.062546, 5.388558</span>
 <span class="co">#&gt; $ obs_sd             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0</span>
 
-<span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">seasons</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">season</span>, y <span class="op">=</span> <span class="va">flow_cms_v2.1_mean</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_errorbar</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_v2.1_mean</span> <span class="op">-</span> <span class="va">flow_cms_v2.1_sd</span>, ymax<span class="op">=</span><span class="va">flow_cms_v2.1_mean</span> <span class="op">+</span> <span class="va">flow_cms_v2.1_sd</span>, width <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_point</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"darkred"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">labs</span><span class="op">(</span>x  <span class="op">=</span> <span class="st">"Season"</span>, y <span class="op">=</span> <span class="st">"Q(cms)"</span>, 
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">seasons</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">season</span>, y <span class="op">=</span> <span class="va">flow_cms_v2.1_mean</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_errorbar</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_v2.1_mean</span> <span class="op">-</span> <span class="va">flow_cms_v2.1_sd</span>, ymax<span class="op">=</span><span class="va">flow_cms_v2.1_mean</span> <span class="op">+</span> <span class="va">flow_cms_v2.1_sd</span>, width <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"darkred"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x  <span class="op">=</span> <span class="st">"Season"</span>, y <span class="op">=</span> <span class="st">"Q(cms)"</span>, 
        title <span class="op">=</span> <span class="st">"Seasonal mean +- sd"</span><span class="op">)</span></code></pre></div>
 <p><img src="time_files/figure-html/unnamed-chunk-7-1.png" width="576"></p>
 </div>
@@ -351,7 +351,7 @@
                           min    <span class="op">=</span> <span class="va">min</span>,
                           max    <span class="op">=</span> <span class="va">max</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">jul</span><span class="op">)</span>
+<span class="fu">glimpse</span><span class="op">(</span><span class="va">jul</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 366</span>
 <span class="co">#&gt; Columns: 19</span>
 <span class="co">#&gt; $ comid                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 101, 101, 101, 101, 101, 101, 101, 101, 101, 101,…</span>
@@ -375,14 +375,14 @@
 <span class="co">#&gt; $ j                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"…</span>
 
 
-<span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">jul</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_ribbon</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_v2.1_min</span>, ymax<span class="op">=</span><span class="va">flow_cms_v2.1_max</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"#B2DFEE"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_ribbon</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_v2.1_n05</span>, ymax<span class="op">=</span><span class="va">flow_cms_v2.1_n95</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"#9AC0CD"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_ribbon</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_v2.1_n25</span>, ymax<span class="op">=</span><span class="va">flow_cms_v2.1_n75</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"#68838B"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">flow_cms_v2.1_mean</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"#104E8B"</span> <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">flow_cms_v2.1_median</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"#AFEEEE"</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of Year"</span>, y <span class="op">=</span> <span class="st">"Q (cms)"</span>, 
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">jul</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_v2.1_min</span>, ymax<span class="op">=</span><span class="va">flow_cms_v2.1_max</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"#B2DFEE"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_v2.1_n05</span>, ymax<span class="op">=</span><span class="va">flow_cms_v2.1_n95</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"#9AC0CD"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin<span class="op">=</span><span class="va">flow_cms_v2.1_n25</span>, ymax<span class="op">=</span><span class="va">flow_cms_v2.1_n75</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"#68838B"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">flow_cms_v2.1_mean</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"#104E8B"</span> <span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">flow_cms_v2.1_median</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"#AFEEEE"</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of Year"</span>, y <span class="op">=</span> <span class="st">"Q (cms)"</span>, 
        title <span class="op">=</span> <span class="st">"Flows @ COMDI 101..."</span>,
        subtitle <span class="op">=</span> <span class="st">"26 years of record"</span><span class="op">)</span></code></pre></div>
 <p><img src="time_files/figure-html/unnamed-chunk-8-1.png" width="576"></p>

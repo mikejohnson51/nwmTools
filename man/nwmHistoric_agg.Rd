@@ -13,11 +13,7 @@ nwmHistoric_agg(rawData, cols, fun, na.rm = TRUE)
 
 \item{fun}{a function of list of functions to apply to group data}
 
-\item{na.rm}{logical. Should NA values be removed before appling fun}
-
-\item{season}{logical. Should season be added}
-
-\item{waterYear}{logical. Should water year be added?}
+\item{na.rm}{logical. Should NA values be removed before applying fun}
 }
 \value{
 an aggregated data.frame

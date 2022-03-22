@@ -20,7 +20,7 @@ test_that("query errors", {
 
 test_that("query success", {
   q = readNWMdata(comid = 101, startDate = "1993-01-01", endDate = NULL, version = 2)
-  expect_true(ncol(q) == 4)
+  expect_true(ncol(q) == 3)
   expect_true(nrow(q) == 24)
   #https://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/nwm_v2_retro_full.ncml.ascii?streamflow%5B0:1:0%5D%5B0:1:0%5D
   expect_true(round(q$flow_cms[1],2) == 2.90)

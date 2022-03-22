@@ -44,7 +44,7 @@
                     <a class="navbar-brand" href="../index.html">nwmTools</a>
                       <div class="info">
                         <span class="partof">National Water Model</span>
-                          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
+                          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
                             </div>
                               </div>
                               </div>
@@ -119,18 +119,16 @@
 </h3>
 <p>NWM reanalysis data can be extracted by NHD Catchment Identifier(s). The following code pulls the complete reanalysis data archive for COMID 17595383, a NHD reach near Goleta, California.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikejohnson51/nwmTools" class="external-link">nwmTools</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">nwmTools</span><span class="op">)</span>
 <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">17595383</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span>
-<span class="co">#&gt;      comid dateTime            flow_cms_v2.1</span>
-<span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 17<span style="text-decoration: underline;">595</span>383 1979-02-02 <span style="color: #949494;">18:00:00</span>             0</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 17<span style="text-decoration: underline;">595</span>383 1979-02-02 <span style="color: #949494;">19:00:00</span>             0</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 17<span style="text-decoration: underline;">595</span>383 1979-02-02 <span style="color: #949494;">20:00:00</span>             0</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 17<span style="text-decoration: underline;">595</span>383 1979-02-02 <span style="color: #949494;">21:00:00</span>             0</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 17<span style="text-decoration: underline;">595</span>383 1979-02-02 <span style="color: #949494;">22:00:00</span>             0</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 17<span style="text-decoration: underline;">595</span>383 1979-02-02 <span style="color: #949494;">23:00:00</span>             0</span>
+<span class="co">#&gt;      comid            dateTime flow_cms_v2.1</span>
+<span class="co">#&gt; 1 17595383 1979-02-02 18:00:00             0</span>
+<span class="co">#&gt; 2 17595383 1979-02-02 19:00:00             0</span>
+<span class="co">#&gt; 3 17595383 1979-02-02 20:00:00             0</span>
+<span class="co">#&gt; 4 17595383 1979-02-02 21:00:00             0</span>
+<span class="co">#&gt; 5 17595383 1979-02-02 22:00:00             0</span>
+<span class="co">#&gt; 6 17595383 1979-02-02 23:00:00             0</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt; [1] 367375      3</span></code></pre></div>
 </div>
@@ -141,15 +139,13 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID  <span class="op">=</span> <span class="fl">11120000</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span>
-<span class="co">#&gt;   comid    dateTime              siteID flow_cms_v2.1</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 17595429 1979-02-02 <span style="color: #949494;">18:00:00</span> 11<span style="text-decoration: underline;">120</span>000         0.350</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 17595429 1979-02-02 <span style="color: #949494;">19:00:00</span> 11<span style="text-decoration: underline;">120</span>000         0.350</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 17595429 1979-02-02 <span style="color: #949494;">20:00:00</span> 11<span style="text-decoration: underline;">120</span>000         0.350</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 17595429 1979-02-02 <span style="color: #949494;">21:00:00</span> 11<span style="text-decoration: underline;">120</span>000         0.350</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 17595429 1979-02-02 <span style="color: #949494;">22:00:00</span> 11<span style="text-decoration: underline;">120</span>000         0.350</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 17595429 1979-02-02 <span style="color: #949494;">23:00:00</span> 11<span style="text-decoration: underline;">120</span>000         0.350</span>
+<span class="co">#&gt;      comid            dateTime   siteID flow_cms_v2.1</span>
+<span class="co">#&gt; 1 17595429 1979-02-02 18:00:00 11120000          0.35</span>
+<span class="co">#&gt; 2 17595429 1979-02-02 19:00:00 11120000          0.35</span>
+<span class="co">#&gt; 3 17595429 1979-02-02 20:00:00 11120000          0.35</span>
+<span class="co">#&gt; 4 17595429 1979-02-02 21:00:00 11120000          0.35</span>
+<span class="co">#&gt; 5 17595429 1979-02-02 22:00:00 11120000          0.35</span>
+<span class="co">#&gt; 6 17595429 1979-02-02 23:00:00 11120000          0.35</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt; [1] 367375      4</span></code></pre></div>
 </div>
@@ -168,18 +164,18 @@
                    endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span><span class="op">)</span>
 
 <span class="co"># Check time dimensions</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">utc</span><span class="op">)</span>
+<span class="co">#&gt; [1] 744   3</span>
 <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">utc</span><span class="op">$</span><span class="va">dateTime</span><span class="op">)</span>
-<span class="co">#&gt; [1] "2010-01-01 UTC" "2010-01-31 UTC"</span>
+<span class="co">#&gt; [1] "2010-01-01 00:00:00 UTC" "2010-01-31 23:00:00 UTC"</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">utc</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span>
-<span class="co">#&gt;   comid dateTime            flow_cms_v2.1</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>   101 2010-01-01 <span style="color: #949494;">00:00:00</span>          9.65</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>   101 2010-01-01 <span style="color: #949494;">01:00:00</span>          9.62</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>   101 2010-01-01 <span style="color: #949494;">02:00:00</span>          9.60</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>   101 2010-01-01 <span style="color: #949494;">03:00:00</span>          9.60</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>   101 2010-01-01 <span style="color: #949494;">04:00:00</span>          9.61</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">6</span>   101 2010-01-01 <span style="color: #949494;">05:00:00</span>          9.60</span></code></pre></div>
+<span class="co">#&gt;   comid            dateTime flow_cms_v2.1</span>
+<span class="co">#&gt; 1   101 2010-01-01 00:00:00      9.650000</span>
+<span class="co">#&gt; 2   101 2010-01-01 01:00:00      9.620000</span>
+<span class="co">#&gt; 3   101 2010-01-01 02:00:00      9.599999</span>
+<span class="co">#&gt; 4   101 2010-01-01 03:00:00      9.599999</span>
+<span class="co">#&gt; 5   101 2010-01-01 04:00:00      9.610000</span>
+<span class="co">#&gt; 6   101 2010-01-01 05:00:00      9.599999</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="time-zone">time-zone<a class="anchor" aria-label="anchor" href="#time-zone"></a>
@@ -192,23 +188,23 @@
                   tz <span class="op">=</span> <span class="st">"US/Pacific"</span><span class="op">)</span>
 
 <span class="co"># Check time dimensions</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">pst</span><span class="op">)</span>
+<span class="co">#&gt; [1] 744   3</span>
 <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">pst</span><span class="op">$</span><span class="va">dateTime</span><span class="op">)</span>
-<span class="co">#&gt; [1] "2010-01-01 PST" "2010-01-31 PST"</span>
+<span class="co">#&gt; [1] "2010-01-01 00:00:00 PST" "2010-01-31 23:00:00 PST"</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pst</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span>
-<span class="co">#&gt;   comid dateTime            flow_cms_v2.1</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span>   101 2010-01-01 <span style="color: #949494;">00:00:00</span>          9.42</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span>   101 2010-01-01 <span style="color: #949494;">01:00:00</span>          9.32</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span>   101 2010-01-01 <span style="color: #949494;">02:00:00</span>          9.22</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span>   101 2010-01-01 <span style="color: #949494;">03:00:00</span>          9.15</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span>   101 2010-01-01 <span style="color: #949494;">04:00:00</span>          9.12</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">6</span>   101 2010-01-01 <span style="color: #949494;">05:00:00</span>          9.13</span></code></pre></div>
+<span class="co">#&gt;   comid            dateTime flow_cms_v2.1</span>
+<span class="co">#&gt; 1   101 2010-01-01 00:00:00          9.42</span>
+<span class="co">#&gt; 2   101 2010-01-01 01:00:00          9.32</span>
+<span class="co">#&gt; 3   101 2010-01-01 02:00:00          9.22</span>
+<span class="co">#&gt; 4   101 2010-01-01 03:00:00          9.15</span>
+<span class="co">#&gt; 5   101 2010-01-01 04:00:00          9.12</span>
+<span class="co">#&gt; 6   101 2010-01-01 05:00:00          9.13</span></code></pre></div>
 <p>Finally, we can plot the UTC return against the PST return:</p>
 <p><img src="api_files/figure-html/unnamed-chunk-6-1.png" width="576"></p>
 </div>
 <div class="section level3">
-<h3 id="model-version">model version<a class="anchor" aria-label="anchor" href="#model-version"></a>
+<h3 id="model-versioning">Model versioning<a class="anchor" aria-label="anchor" href="#model-versioning"></a>
 </h3>
 <p>The reanalysis product for versions 1.2 and 2.0 of the NWM are available. By default the API extracts data from version 2.0, but data from 1.2 can be requested as well.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -224,13 +220,13 @@
 </h3>
 <p>The reanalysis product for versions 1.2 and 2.0 of the NWM are available. By default the API extracts data from version 2.0, but data from 1.2 can be requested as well.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pst_obs</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID <span class="op">=</span> <span class="fl">11120000</span>, 
-                    startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
-                    endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span>,
-                    version <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">2.0</span>, <span class="fl">2.1</span><span class="op">)</span>,
-                    addObs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">pst_obs</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID  <span class="op">=</span> <span class="fl">11120000</span>, 
+                      startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
+                      endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span>,
+                      version   <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">2.0</span>, <span class="fl">2.1</span><span class="op">)</span>,
+                      addObs    <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="api_files/figure-html/unnamed-chunk-10-1.png" width="576"></p>
-<p>In section 2, we will look at how we can facilitate COMID and USGS NWIS discovery. In section 3 we will look at some techniques to handle time aggregations and splitting.</p>
+<p>In section 2, we will look at how we can facilitate COMID and USGS NWIS discovery. In section 3 we will look at some techniques to handle operational data, and in section 4, we will look at time aggregations and splitting.</p>
 </div>
 </div>
   </div>

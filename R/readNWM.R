@@ -1,3 +1,24 @@
+#' Check for a package
+#' @param pkg package name
+#' @noRd
+
+check_pkg <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE))
+    stop("Package '",
+         pkg,
+         "' is required for this functionality, but is not installed. \nTry `install.packages('",
+         pkg,
+         "')`", call. = FALSE)
+}
+
+
+#' Internal NWM read 
+#' @param comid a NHD common identifier
+#' @param siteID a USGS NWIS site identifier (eight digits)
+#' @param tz the desired timezone of the data. Can be found with \code{OlsonNames}
+#' @param base NWM query metadata
+#' @noRd
+
 .readNWMinside = function(comid, siteID, tz, base){
   
   rc  <- retro_call(comid, meta.obj = base)
@@ -32,12 +53,12 @@
 #' @param endDate an end date (YYYY-MM-DD) or (YYYY-MM-DD HH)
 #' @param tz the desired timezone of the data. Can be found with \code{OlsonNames}
 #' @param version the NWM version to extract (current = 1.2 or 2 (default))
+#' @param addObs should observation data be added? Only available when !is.null(siteID)
 #' @return data.frame
 #' @export
 #' @importFrom RNetCDF close.nc
 #' @importFrom lubridate with_tz tz as_datetime
 #' @importFrom httr content RETRY
-#' @importFrom jsonlite fromJSON
 #' @examples 
 #' \dontrun{
 #' readNWMdata(comid = 101)
@@ -63,6 +84,7 @@ readNWMdata = function(comid  = NULL,
   )
   
   if (!is.null(siteID)) { 
+    check_pkg('dataRetrieval')
     comid = unique(c(comid, dataRetrieval::findNLDI(nwis = siteID)$comid))
     cols = c('comid', 'dateTime', "siteID")
   } else {
@@ -91,6 +113,7 @@ readNWMdata = function(comid  = NULL,
   }
   
   if(addObs){
+    check_pkg('dataRetrieval')
     nwis = dataRetrieval::readNWISdv(siteNumbers = unique(res$siteID), parameterCd = "00060")
     
     if(nrow(nwis) > 0){ 
