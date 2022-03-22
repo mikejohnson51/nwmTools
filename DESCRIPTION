@@ -2,11 +2,14 @@ Package: nwmTools
 Title: Tools for working with National Water Model Streamflow
 Version: 0.0.1
 Authors@R: 
-    person(given = "Mike", 
+    c(person(given = "Mike", 
     family = "Johnson", 
     role = c("aut", "cre"), 
     email = "mikecp11@gmail.com", 
-    comment = c(ORCID = "0000-0002-5288-8350"))
+    comment = c(ORCID = "0000-0002-5288-8350")),
+    person(given = "David", 
+    family = "Blodgett", 
+    role = "ctb"))
 BugReports: https://github.com/mikejohnson51/nwmTools/issues
 Description: Collection of tools for using historic and operational streamflow data from the National Water Model.
 Depends: R(>= 3.5.0)

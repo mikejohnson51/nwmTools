@@ -22,7 +22,11 @@ knitr::opts_chunk$set(
 library(ggplot2)
 ```
 
-As part of a collaborative research effort, the multi-decadal hitoric simulation products from the [NOAA National Water Model](https://water.noaa.gov/about/nwm) (versions 1.2 and 2.0) have been reformatted and exposed through [CUAHSI](https://www.cuahsi.org/) at the [RENCI computing facility](https://renci.org/research/hydroshare/). This document outlines how someone can interact with the interface.
+As part of a collaborative research effort, the multi-decadal historic simulation products from the [NOAA National Water Model](https://water.noaa.gov/about/nwm) (versions 1.2, 2.0, and 2.1) have been reformatted and exposed through [CUAHSI](https://www.cuahsi.org/) at the [RENCI computing facility](https://renci.org/research/hydroshare/). This document outlines how to interact with this interface.
+
+```{r}
+knitr::kable(get_nwm_meta(c(1.2, 2.0, 2.1)))
+```
 
 ## Data Extraction by ...
 
@@ -34,7 +38,11 @@ NWM reanalysis data can be extracted by NHD Catchment Identifier(s). The followi
 
 ```{r}
 library(nwmTools)
-flows = readNWMdata(comid = 17595383)
+
+system.time({
+  flows = readNWMdata(comid = 17595383)
+})
+
 head(flows)
 dim(flows)
 ```
@@ -44,7 +52,10 @@ dim(flows)
 Alternatively, data can be extracted using USGS NWIS site ID(s).
 
 ```{r}
-flows = readNWMdata(siteID  = 11120000)
+system.time({
+  flows = readNWMdata(siteID  = 11120000)
+})
+
 head(flows)
 dim(flows)
 ```
@@ -56,11 +67,12 @@ The default behavior is to extract the complete, hourly timeseries in UTC, for t
 ### date range
 
 By default, the API extracts the complete flow record for each ID. This range can constrained by providing a `startDate` and/or `endDate` in the form of ("YYYY-MM-DD"). 
-
 ```{r}
-utc <- readNWMdata(comid = 101, 
-                   startDate = "2010-01-01", 
-                   endDate   = "2010-01-31")
+system.time({
+  utc <- readNWMdata(comid = 101, 
+                     startDate = "2010-01-01", 
+                     endDate   = "2010-01-31")
+})
 
 # Check time dimensions
 dim(utc)

@@ -35,14 +35,16 @@ get_nwm_meta = function(version = NULL){
 
 get_tds = function(type = "hydroshare"){
   
-  if(type == "hydroshare"){
+  nwm = unlist(lapply(1:length(type), function(x){
+    if(type[x] == "hydroshare"){
     ## Top level Folder (OpenDap archive)
     #'http://thredds.hydroshare.org/thredds/dodsC/nwm_retrospective/'
     #'# CHANGED in March 2021
-    return('http://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/')
+    'http://thredds.hydroshare.org/thredds/dodsC/nwm/retrospective/'
   } else {
-    return('https://cida.usgs.gov/thredds/dodsC/demo/morethredds/nwm/')
+    'https://cida.usgs.gov/thredds/dodsC/demo/morethredds/nwm/'
   }
+  }))
   
 }
 
