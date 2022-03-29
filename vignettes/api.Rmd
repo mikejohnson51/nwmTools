@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, echo = FALSE}
+library(nwmTools)
 library(ggplot2)
 ```
 
@@ -62,11 +63,12 @@ dim(flows)
 
 ## Query modification by ...
 
-The default behavior is to extract the complete, hourly timeseries in UTC, for the most current model version. Parameters allow data to be modified by data range, timezone and model version as follows: 
+The default behavior is to extract the complete, hourly time series in UTC, for the most current model version. Parameters allow data to be modified by data range, timezone and model version as follows: 
 
 ### date range
 
 By default, the API extracts the complete flow record for each ID. This range can constrained by providing a `startDate` and/or `endDate` in the form of ("YYYY-MM-DD"). 
+
 ```{r}
 system.time({
   utc <- readNWMdata(comid = 101, 
@@ -140,16 +142,16 @@ In addition to extracting records from mulitple model runs, data can be appended
 
 ```{r}
 system.time({
-  pst_obs = readNWMdata(siteID  = 11120000, 
-                        startDate = "2010-01-01", 
-                        endDate   = "2010-01-31",
-                        version   =  c(1.2, 2.0, 2.1),
-                        addObs    = TRUE)
+ data = readNWMdata(siteID = '01017000', 
+            startDate = "2015-01-01",
+            endDate = "2016-01-01",
+            version = c(1.2, 2.0, 2.1),
+            addObs = TRUE)
 })
 ```
 
 ```{r, echo = FALSE}
-ggplot(data = pst_obs) + 
+ggplot(data = data) + 
   geom_line(aes(x = dateTime, y = flow_cms_v1.2, color = "v1.2")) + 
   geom_line(aes(x = dateTime, y = flow_cms_v2,   color = "v2.0")) +
   geom_line(aes(x = dateTime, y = flow_cms_v2.1, color = "v2.1")) +

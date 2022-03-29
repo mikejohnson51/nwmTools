@@ -109,7 +109,53 @@
 
     
     
-<p>As part of a collaborative research effort, the multi-decadal hitoric simulation products from the <a href="https://water.noaa.gov/about/nwm" class="external-link">NOAA National Water Model</a> (versions 1.2 and 2.0) have been reformatted and exposed through <a href="https://www.cuahsi.org/" class="external-link">CUAHSI</a> at the <a href="https://renci.org/research/hydroshare/" class="external-link">RENCI computing facility</a>. This document outlines how someone can interact with the interface.</p>
+<p>As part of a collaborative research effort, the multi-decadal historic simulation products from the <a href="https://water.noaa.gov/about/nwm" class="external-link">NOAA National Water Model</a> (versions 1.2, 2.0, and 2.1) have been reformatted and exposed through <a href="https://www.cuahsi.org/" class="external-link">CUAHSI</a> at the <a href="https://renci.org/research/hydroshare/" class="external-link">RENCI computing facility</a>. This document outlines how to interact with this interface.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_nwm_meta.html">get_nwm_meta</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">2.0</span>, <span class="fl">2.1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="8%">
+<col width="11%">
+<col width="20%">
+<col width="20%">
+<col width="24%">
+<col width="16%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">version</th>
+<th align="left">type</th>
+<th align="left">minDate</th>
+<th align="left">maxDate</th>
+<th align="left">ncml</th>
+<th align="left">varname</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">1.2</td>
+<td align="left">hydroshare</td>
+<td align="left">1993-01-01 00:00:00</td>
+<td align="left">2017-12-31 23:00:00</td>
+<td align="left">nwm_retro_full.ncml</td>
+<td align="left">feature_ids_v12</td>
+</tr>
+<tr class="even">
+<td align="right">2.0</td>
+<td align="left">hydroshare</td>
+<td align="left">1993-01-01 00:00:00</td>
+<td align="left">2018-12-31 00:00:00</td>
+<td align="left">nwm_v2_retro_full.ncml</td>
+<td align="left">feature_ids_v20</td>
+</tr>
+<tr class="odd">
+<td align="right">2.1</td>
+<td align="left">USGS</td>
+<td align="left">1979-02-02 18:00:00</td>
+<td align="left">2020-12-31 00:00:00</td>
+<td align="left">nwm_v21_retro_full.ncml</td>
+<td align="left">feature_ids_v21</td>
+</tr>
+</tbody>
+</table>
 <div class="section level2">
 <h2 id="data-extraction-by">Data Extraction by …<a class="anchor" aria-label="anchor" href="#data-extraction-by"></a>
 </h2>
@@ -118,17 +164,23 @@
 <h3 id="nhd-catchment-identifier-comid">NHD Catchment Identifier (COMID)<a class="anchor" aria-label="anchor" href="#nhd-catchment-identifier-comid"></a>
 </h3>
 <p>NWM reanalysis data can be extracted by NHD Catchment Identifier(s). The following code pulls the complete reanalysis data archive for COMID 17595383, a NHD reach near Goleta, California.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">nwmTools</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">17595383</span><span class="op">)</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikejohnson51/nwmTools" class="external-link">nwmTools</a></span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
+  <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">17595383</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed </span>
+<span class="co">#&gt;   0.133   0.063   1.108</span>
+
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt;      comid            dateTime flow_cms_v2.1</span>
-<span class="co">#&gt; 1 17595383 1979-02-02 18:00:00             0</span>
-<span class="co">#&gt; 2 17595383 1979-02-02 19:00:00             0</span>
-<span class="co">#&gt; 3 17595383 1979-02-02 20:00:00             0</span>
-<span class="co">#&gt; 4 17595383 1979-02-02 21:00:00             0</span>
-<span class="co">#&gt; 5 17595383 1979-02-02 22:00:00             0</span>
-<span class="co">#&gt; 6 17595383 1979-02-02 23:00:00             0</span>
+<span class="co">#&gt; 1 17595383 1979-02-02 18:00:00          0.26</span>
+<span class="co">#&gt; 2 17595383 1979-02-02 19:00:00          0.27</span>
+<span class="co">#&gt; 3 17595383 1979-02-02 20:00:00          0.29</span>
+<span class="co">#&gt; 4 17595383 1979-02-02 21:00:00          0.30</span>
+<span class="co">#&gt; 5 17595383 1979-02-02 22:00:00          0.31</span>
+<span class="co">#&gt; 6 17595383 1979-02-02 23:00:00          0.31</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt; [1] 367375      3</span></code></pre></div>
 </div>
@@ -136,16 +188,21 @@
 <h3 id="usgs-nwis-site-number">USGS NWIS Site Number<a class="anchor" aria-label="anchor" href="#usgs-nwis-site-number"></a>
 </h3>
 <p>Alternatively, data can be extracted using USGS NWIS site ID(s).</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID  <span class="op">=</span> <span class="fl">11120000</span><span class="op">)</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
+  <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID  <span class="op">=</span> <span class="fl">11120000</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed </span>
+<span class="co">#&gt;   2.846   0.194   4.028</span>
+
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt;      comid            dateTime   siteID flow_cms_v2.1</span>
-<span class="co">#&gt; 1 17595429 1979-02-02 18:00:00 11120000          0.35</span>
-<span class="co">#&gt; 2 17595429 1979-02-02 19:00:00 11120000          0.35</span>
-<span class="co">#&gt; 3 17595429 1979-02-02 20:00:00 11120000          0.35</span>
-<span class="co">#&gt; 4 17595429 1979-02-02 21:00:00 11120000          0.35</span>
-<span class="co">#&gt; 5 17595429 1979-02-02 22:00:00 11120000          0.35</span>
-<span class="co">#&gt; 6 17595429 1979-02-02 23:00:00 11120000          0.35</span>
+<span class="co">#&gt; 1 17595429 1979-02-02 18:00:00 11120000          0.52</span>
+<span class="co">#&gt; 2 17595429 1979-02-02 19:00:00 11120000          0.52</span>
+<span class="co">#&gt; 3 17595429 1979-02-02 20:00:00 11120000          0.53</span>
+<span class="co">#&gt; 4 17595429 1979-02-02 21:00:00 11120000          0.55</span>
+<span class="co">#&gt; 5 17595429 1979-02-02 22:00:00 11120000          0.55</span>
+<span class="co">#&gt; 6 17595429 1979-02-02 23:00:00 11120000          0.55</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">flows</span><span class="op">)</span>
 <span class="co">#&gt; [1] 367375      4</span></code></pre></div>
 </div>
@@ -153,15 +210,19 @@
 <div class="section level2">
 <h2 id="query-modification-by">Query modification by …<a class="anchor" aria-label="anchor" href="#query-modification-by"></a>
 </h2>
-<p>The default behavior is to extract the complete, hourly timeseries in UTC, for the most current model version. Parameters allow data to be modified by data range, timezone and model version as follows:</p>
+<p>The default behavior is to extract the complete, hourly time series in UTC, for the most current model version. Parameters allow data to be modified by data range, timezone and model version as follows:</p>
 <div class="section level3">
 <h3 id="date-range">date range<a class="anchor" aria-label="anchor" href="#date-range"></a>
 </h3>
 <p>By default, the API extracts the complete flow record for each ID. This range can constrained by providing a <code>startDate</code> and/or <code>endDate</code> in the form of (“YYYY-MM-DD”).</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">utc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">101</span>, 
-                   startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
-                   endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span><span class="op">)</span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
+  <span class="va">utc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">101</span>, 
+                     startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
+                     endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed </span>
+<span class="co">#&gt;   0.090   0.047   0.459</span>
 
 <span class="co"># Check time dimensions</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">utc</span><span class="op">)</span>
@@ -181,7 +242,7 @@
 <h3 id="time-zone">time-zone<a class="anchor" aria-label="anchor" href="#time-zone"></a>
 </h3>
 <p>NWM output is recorded in UTC. Instead, users can specify a timezone. For our COMID in Goleta, California we can request data in <code>US/Pacific</code> time. Valid times zone can be found with <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pst</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">101</span>, 
                   startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
                   endDate <span class="op">=</span> <span class="st">"2010-01-31"</span>, 
@@ -201,35 +262,35 @@
 <span class="co">#&gt; 5   101 2010-01-01 04:00:00          9.12</span>
 <span class="co">#&gt; 6   101 2010-01-01 05:00:00          9.13</span></code></pre></div>
 <p>Finally, we can plot the UTC return against the PST return:</p>
-<p><img src="api_files/figure-html/unnamed-chunk-6-1.png" width="576"></p>
+<p><img src="api_files/figure-html/unnamed-chunk-7-1.png" width="576"></p>
 </div>
 <div class="section level3">
 <h3 id="model-versioning">Model versioning<a class="anchor" aria-label="anchor" href="#model-versioning"></a>
 </h3>
 <p>The reanalysis product for versions 1.2, 2.0, and 2.1 of the NWM are available. By default the API extracts data from version 2.1, but all versions can be requested.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pst_vs</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="fl">101</span>, 
                      startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
                      endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span>,
                      tz        <span class="op">=</span> <span class="st">"US/Pacific"</span>,
                      version <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">2.0</span>, <span class="fl">2.1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="api_files/figure-html/unnamed-chunk-8-1.png" width="576"></p>
+<p><img src="api_files/figure-html/unnamed-chunk-9-1.png" width="576"></p>
 </div>
 <div class="section level3">
 <h3 id="model-version-vs-obs">model version vs obs<a class="anchor" aria-label="anchor" href="#model-version-vs-obs"></a>
 </h3>
 <p>In addition to extracting records from mulitple model runs, data can be appended from observation in the case a USGS gage ID is supplied:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
-  <span class="va">pst_obs</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID  <span class="op">=</span> <span class="fl">11120000</span>, 
-                        startDate <span class="op">=</span> <span class="st">"2010-01-01"</span>, 
-                        endDate   <span class="op">=</span> <span class="st">"2010-01-31"</span>,
-                        version   <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">2.0</span>, <span class="fl">2.1</span><span class="op">)</span>,
-                        addObs    <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+ <span class="va">data</span> <span class="op">=</span> <span class="fu"><a href="../reference/readNWMdata.html">readNWMdata</a></span><span class="op">(</span>siteID <span class="op">=</span> <span class="st">'01017000'</span>, 
+            startDate <span class="op">=</span> <span class="st">"2015-01-01"</span>,
+            endDate <span class="op">=</span> <span class="st">"2016-01-01"</span>,
+            version <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">2.0</span>, <span class="fl">2.1</span><span class="op">)</span>,
+            addObs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   5.944   0.316  16.463</span></code></pre></div>
-<p><img src="api_files/figure-html/unnamed-chunk-10-1.png" width="576"></p>
+<span class="co">#&gt;   6.775   0.416  17.347</span></code></pre></div>
+<p><img src="api_files/figure-html/unnamed-chunk-11-1.png" width="576"></p>
 <p>In section 2, we will look at how we can facilitate COMID and USGS NWIS discovery. In section 3 we will look at some techniques to handle operational data, and in section 4, we will look at time aggregations and splitting.</p>
 </div>
 </div>

@@ -10,8 +10,10 @@ Authors@R:
     person(given = "David", 
     family = "Blodgett", 
     role = "ctb"))
-BugReports: https://github.com/mikejohnson51/nwmTools/issues
 Description: Collection of tools for using historic and operational streamflow data from the National Water Model.
+License: MIT + file LICENSE
+URL: https://github.com/mikejohnson51/nwmTools
+BugReports: https://github.com/mikejohnson51/nwmTools/issues
 Depends: R(>= 3.5.0)
 Imports: 
     dplyr,
@@ -19,7 +21,6 @@ Imports:
     lubridate,
     RNetCDF,
     sys
-License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -34,6 +35,7 @@ Suggests:
     nhdplusTools,
     rmarkdown,
     testthat (>= 3.0.0)
+Config/testthat/edition: 3
 Remotes: 
     mikejohnson51/AOI
 

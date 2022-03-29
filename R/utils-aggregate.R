@@ -3,7 +3,7 @@
 #' @param cols a vector of colum names to group by
 #' @param fun a function of list of functions to apply to group data 
 #' @param na.rm logical. Should NA values be removed before applying fun
-#' @importFrom dplyr group_by_at add_tally summarize_at vars ungroup 
+#' @importFrom dplyr group_by_at add_tally summarize_at vars ungroup `%>%` 
 #' @return an aggregated data.frame
 #' @keywords internal
 
@@ -17,12 +17,13 @@ nwmHistoric_agg = function(rawData, cols, fun, na.rm = TRUE ){
   }
   
   df = split_time(rawData, time_col = time_col)
+  
   if(na.rm){ df = df[!is.na(flow_col),]}
   cols = cols[cols %in% names(df)]
 
-  group_by_at(df, cols)  |>  
-    add_tally(name = 'obs') |> 
-    summarize_at(vars(flow_col, 'obs'), fun)  |> 
+  group_by_at(df, cols)  %>%  
+    add_tally(name = 'obs') %>%  
+    summarize_at(vars(flow_col, 'obs'), fun)  %>%  
     ungroup()
 }
 

@@ -16,22 +16,27 @@ get_nwm_meta = function(version = NULL){
                          ymd_hm("2020-12-31 00:00")),
              ncml = c('nwm_retro_full.ncml', 
                       'nwm_v2_retro_full.ncml',
-                      'nwm_v21_retro_full.ncml'))
+                      'nwm_v21_retro_full.ncml'),
+             varname = c('feature_ids_v12', 
+                          'feature_ids_v20',
+                          'feature_ids_v21'))
   
-  df2 = df[df$version %in% version,]
-
-  if (nrow(df2) == 0) {
-    stop(paste('NWM version must be one of:', paste(df$version, collapse = ", " )) , call. = F)
+  if(is.null(version)){
+    return(df)
+  } else {
+    df2 = df[df$version %in% version,]
+    
+    if (nrow(df2) == 0) {
+      stop(paste('NWM version must be one of:', paste(df$version, collapse = ", " )) , call. = F)
+    }
+    df2
   }
-  
-  df2
 }
 
 #' @title Get TDS path
 #' @param type what TDS to use?
 #' @return a URL path
 #' @keywords internal
-#' @noRd
 
 get_tds = function(type = "hydroshare"){
   
@@ -106,6 +111,7 @@ error.checks = function(startDate, endDate, tz, version){
   df$url = paste0(get_tds(this.version$type), this.version$ncml)
   df$minDate = this.version$minDate
   df$maxDate = this.version$maxDate
+  df$varname = this.version$varname
   
   ## Check startDate
   if(any(df$usr.utc.start < this.version$minDate)){
@@ -138,8 +144,7 @@ retro_call = function(comid, meta.obj){
   if(length(comid) > 0){
   
   ids_file = open.nc(system.file("extdata", "retro_feature_ids.nc", package = "nwmTools"))
-  call = unique(ifelse(meta.obj$version == 1, "feature_ids_v_one", "feature_ids_v_two"))
-  id  = match(comid, var.get.nc(ids_file, call))
+  id  = match(comid, var.get.nc(ids_file, meta.obj$varname))
   close.nc(ids_file)
 
   if(length(id) > 0){
