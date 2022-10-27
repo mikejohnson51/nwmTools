@@ -65,7 +65,7 @@ create_nwm_nc = function(fileList = NULL,
   if(nco & !check_nco()){ stop("Using NCO requires NCO to be installed. Set `nco` 
                                to FALSE or install NCO")}
   
-  if(file.exists(dstfile)){file.remove(dstfile)}
+  if(file.exists(dstfile)){ unlink(dstfile) }
 
   if(is.null(fileList)) {
     fileList = get_nomads_filelist(type = type, num  = num, ensemble = ensemble)
@@ -167,7 +167,7 @@ use_rnetcdf = function(in_files, variable = "streamflow", dstfile = NULL) {
   scale  =  att.get.nc(tmp,  "streamflow", "scale_factor")
   offset =  att.get.nc(tmp,  "streamflow", "add_offset")
   
-  comids = var.get.nc(tmp, "feature_id")
+  comids = var.get.nc(tmp, "feature_id", unpack = TRUE)
   close.nc(tmp)
 
   file1 <- dstfile
@@ -199,7 +199,11 @@ use_rnetcdf = function(in_files, variable = "streamflow", dstfile = NULL) {
   var.put.nc(nc, "streamflow", v)
   close.nc(nc)
   
-  dstfile
+ nc =  RNetCDF::open.nc(dstfile)
+  
+ v = var.get.nc(nc, "streamflow")
+ dim(v)
+
 }
 
 

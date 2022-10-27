@@ -7,9 +7,9 @@ Authors@R:
     role = c("aut", "cre"), 
     email = "mikecp11@gmail.com", 
     comment = c(ORCID = "0000-0002-5288-8350")),
-    person(given = "David", 
-    family = "Blodgett", 
-    role = "ctb"))
+    person(given = "Lilit", 
+    family = "Yeghiazarian", 
+    role = "fnd"))
 Description: Collection of tools for using historic and operational streamflow data from the National Water Model.
 License: MIT + file LICENSE
 URL: https://github.com/mikejohnson51/nwmTools
@@ -18,13 +18,16 @@ Depends: R(>= 3.5.0)
 Imports: 
     dplyr,
     httr,
+    glue,
+    rvest,
+    xml2,
     lubridate,
     RNetCDF,
     sys
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 Suggests: 
     AOI,
@@ -38,4 +41,3 @@ Suggests:
 Config/testthat/edition: 3
 Remotes: 
     mikejohnson51/AOI
-
