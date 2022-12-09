@@ -143,7 +143,7 @@ i =  b %>%
 nwm_data = bind_rows(a,b,c,d,e,f,g,h,i)
 
 
-usethis::use_data(nwm_data, overwrite = TRUE)
+usethis::use_data(nwm_data, overwrite = TRUE, internal = TRUE)
 
 
 

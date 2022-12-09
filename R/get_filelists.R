@@ -2,15 +2,15 @@ nwm_filter = function(source, version = NULL, config = NULL, ensemble = NULL,
                       output= NULL, domain = NULL, date = NULL){
   
   
-  validate = function(complete, feild, value){
+  validate = function(complete, field, value){
     
-    if(feild %in% names(complete) & !is.null(value)){
-      opts = unique(complete[[feild]])
+    if(field %in% names(complete) & !is.null(value)){
+      opts = unique(complete[[field]])
       
       if(any(grepl(value, opts))){
-        return(filter(complete, grepl(!!value, get(feild))))
+        return(filter(complete, grepl(!!value, get(field))))
       } else {
-        stop(glue("{value} not a valid {feild}. Choose from: {paste(opts, collapse = ', ')}"))
+        stop(glue("{value} not a valid {field}. Choose from: {paste(opts, collapse = ', ')}"))
       }
     } else {
       return(complete)
