@@ -11,7 +11,7 @@ get_gcp_urls(
   hour = "00",
   minute = "00",
   num,
-  ensemble = NULL,
+  ensemble = NA,
   output = "channel_rt"
 )
 }

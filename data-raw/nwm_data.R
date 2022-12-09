@@ -1,8 +1,4 @@
 pacman::p_load(dplyr, glue, tidyr, readr, xml2, rvest)
-date = '20220104'
-year = 2015
-outfile = 'data/gcp_scrape.csv'
-unlink(outfile)
 
 # AWS Scrapping Function ------------------------------
 
@@ -40,7 +36,8 @@ scrape_aws = function(version, bucket, config, year, startDate, endDate){
            prefix = "",
            version = !!version,
            startDate = startDate, endDate = endDate) %>% 
-    ungroup()
+    ungroup() %>% 
+    distinct()
 
   unlink('data/aws_scrape.csv')
   
@@ -48,52 +45,11 @@ return(yy)
 
 }
 
-# NOMADS Scrapping Function ------------------------------
-
-scrape_nomads = function(version, startDate, endDate){
-  
-  tmp     = glue('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/{version}')
-  dates   = html_attr(html_nodes(read_html(tmp), "a"), "href")
-  options = html_attr(html_nodes(read_html(paste0(tmp, "/", dates[3])), "a"), "href")
-  http_pattern = paste0(tmp, '/nwm.{YYYYDDMM}/{config}/nwm.t{HH}z.{config}.{output}.{prefix}{foward}.{domain}.nc')
-  
-  base = file.path(tmp, dates[3], options)[2:length(options)]
-  
-  nomads = lapply(1:length(base), function(x) { 
-    data.frame(
-      url = base[x],
-      path = html_attr(html_nodes(read_html(base[x]), "a"), "href")
-    )
-  }) %>% 
-    bind_rows()
- 
- nomads %>% 
-    filter(!grepl("pub", path)) %>% 
-    filter(!grepl("usgsTimeSlice", path)) %>% 
-    separate(path, sep = "\\.", c("model", "time", "config", 
-                                  "output", "hour", "domain", 
-                                  "ext")) %>% 
-    mutate(bucket = basename(url), url = NULL,
-      model = NULL, ext = NULL, time = NULL) %>% 
-    group_by(config, output, domain) %>% 
-    mutate(http_pattern = http_pattern,
-           horizion = length(unique(hour)),
-           prefix = gsub('[[:digit:]]+', '', hour),
-           forward = parse_number(hour),
-           timestep = median(forward - lag(forward), na.rm  = TRUE)) %>% 
-    select(-hour, -forward) %>% 
-    ungroup() %>% 
-    distinct() %>% 
-    mutate(source  = "nomads", 
-           version = version,
-           startDate = startDate, endDate = endDate)
-}
-
 # GCP Scrapping Function ------------------------------
 
 ## data changes on nwm.20190619 --> v1.0 > v2.0
 
-scrape_gcp = function(version = "v1.2", token = "nwm.20190620", startDate, endDate){
+scrape_gcp = function(version, token = "nwm.20190620", startDate, endDate){
   
   outfile = 'data/gcp_scrape.csv'
   unlink(outfile)
@@ -123,51 +79,52 @@ scrape_gcp = function(version = "v1.2", token = "nwm.20190620", startDate, endDa
            timestep = median(forward - lag(forward), na.rm  = TRUE)) %>% 
     select(-hour, -forward) %>% 
     ungroup() %>% 
-    distinct() %>% 
+    mutate(ensemble = suppressWarnings({ as.numeric(gsub(".*?([0-9]+).*", "\\1", output)) }),
+           output = gsub('_[[:digit:]]+', '', output),
+    ) %>% 
     mutate(source  = "gcp", 
-           version = "prod", 
+           version = version, 
            startDate = startDate, 
-           endDate = endDate,
+           endDate   = endDate,
            http_pattern = paste0("https://storage.googleapis.com/national-water-model/nwm.{YYYYDDMM}/", 
-                                 bucket, '/nwm.t{HH}z.', config,'.', output,'.', prefix, '{forward}.', domain, '.nc'))
- 
- unlink(outfile)
+                                 bucket, '/nwm.t{HH}z.', config,'.', output, '{ifelse(!is.na(ensemble), paste0("_", ensemble), "")}','.', prefix, '{forward}.', domain, '.nc'))  %>% 
+    distinct()
+
+  unlink(outfile)
  return(a)
 }
 
 ## DATA CHANGES ON nwm.20190619 ###
 
+a = scrape_gcp(version = "2.1", token = "nwm.20181029", startDate = "2018-09-17", endDate = "2019-06-18")
 
-a = scrape_gcp(version = "v1.2", token = "nwm.20181029", 
-               startDate = "2018-09-17", endDate = "2019-06-18")
+b = scrape_gcp(version = "2.2", token = "nwm.20221029", startDate = "2019-06-19", endDate = "..")
 
-b = scrape_gcp(version = "v2.0", token = "nwm.20211029", 
-               startDate = "2019-06-19", endDate = "..")
-
-
-c = scrape_aws(version = "2.1", bucket = "s3://noaa-nwm-retrospective-2-1-pds",  
-               config = "model_output",  year = year,
+c = scrape_aws(version = "2.1", 
+               bucket = "s3://noaa-nwm-retrospective-2-1-pds",  
+               config = "model_output",  year = 2015,
                startDate = as.character(get_nwm_meta(version = "2.1")$minDate), 
                endDate   = as.character(get_nwm_meta(version = "2.1")$maxDate))
 
+table(c$output)
 
 d = scrape_aws(version = "2.1", bucket = "s3://noaa-nwm-retrospective-2-1-pds",  
-               config = "forcing", year = year,
+               config = "forcing", year = 2015,
                startDate =  as.character(get_nwm_meta(version = "2.1")$minDate), 
                endDate   =  as.character(get_nwm_meta(version = "2.1")$maxDate))
 
 e = scrape_aws(version = "2.0", bucket = "s3://noaa-nwm-retro-v2.0-pds",  
-               config = "full_physics", year = year,
+               config = "full_physics", year = 2015,
                startDate =  as.character(get_nwm_meta(version = "2")$minDate), 
                endDate   =  as.character(get_nwm_meta(version = "2")$maxDate))
 
 f = scrape_aws(version = "2.0", bucket = "s3://noaa-nwm-retro-v2.0-pds",
-               config = "long_range", year = year,
+               config = "long_range", year = 2015,
                startDate =  as.character(get_nwm_meta(version = "2")$minDate), 
                endDate   =  as.character(get_nwm_meta(version = "2")$maxDate))
 
 g = scrape_aws(version = "1.2", bucket = "s3://nwm-archive", 
-               config = NA, year = year,
+               config = NA, year = 2015,
                startDate = as.character(get_nwm_meta(version = "1.2")$minDate), 
                endDate   =  as.character(get_nwm_meta(version = "1.2")$maxDate))
 
@@ -183,12 +140,7 @@ i =  b %>%
                                '/nwm.{YYYYDDMM}/', config, '/nwm.t{HH}z.', config, '.',
                                output, '.', prefix, '{foward}.',domain,'.nc'))
 
-#h = scrape_nomads(version = 'v2.2', startDate = "..", endDate = "..")
-
-#i = scrape_nomads(version = 'prod', startDate = "..", endDate = "..")
-
-nwm_data = bind_rows(a,b,c,d,e,f,g,h,i) %>% 
-  filter(!duplicated(.))
+nwm_data = bind_rows(a,b,c,d,e,f,g,h,i)
 
 
 usethis::use_data(nwm_data, overwrite = TRUE)

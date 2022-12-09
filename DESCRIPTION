@@ -1,5 +1,5 @@
 Package: nwmTools
-Title: Tools for working with National Water Model Streamflow
+Title: Tools for working with National Water Model Output
 Version: 0.0.1
 Authors@R: 
     c(person(given = "Mike", 
@@ -10,7 +10,7 @@ Authors@R:
     person(given = "Lilit", 
     family = "Yeghiazarian", 
     role = "fnd"))
-Description: Collection of tools for using historic and operational streamflow data from the National Water Model.
+Description: Collection of tools for using historic and operational data from the National Water Model.
 License: MIT + file LICENSE
 URL: https://github.com/mikejohnson51/nwmTools
 BugReports: https://github.com/mikejohnson51/nwmTools/issues
@@ -23,6 +23,7 @@ Imports:
     xml2,
     lubridate,
     RNetCDF,
+    terra,
     sys
 Encoding: UTF-8
 LazyData: true

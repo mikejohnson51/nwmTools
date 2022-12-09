@@ -1,28 +1,3 @@
-#' @title Check to See if NCO is on the system
-#' @description NCO is a fantastic open source tool for working with NetCDF files. 
-#' It can be downloaded from here: http://nco.sourceforge.net/#Source
-#' @return a boolean condition
-#' @importFrom sys exec_internal
-#' @examples 
-#' check_nco()
-#' @export
-
-check_nco = function(){
-  m = "Check your NCO install, or download: http://nco.sourceforge.net/#Source. \n\nYou can also use `create_nomads_nc`, which does not require NCO, but will give you a NetCDF file not optimized for timeseries extraction. For the operational products there is generally neglibable performance gains this can achieve so do as you must :)."
-  
-  tryCatch({
-    x = exec_internal("ncks", "--version")
-    grepl("version", rawToChar(x$stderr))
-  }, error = function(e){
-    message(m)
-    FALSE
-  }, warning = function(w){
-    message(m)
-    FALSE
-  }) 
-}
-
-
 #' @title Create a Single NetCDF for list of NWM files
 #' @description This function will take a set of NWM files and concatenate them
 #' along the time access. If NCO is installed, this file will be pivoted and 
@@ -70,7 +45,7 @@ create_nwm_nc = function(fileList = NULL,
   if(is.null(fileList)) {
     fileList = get_nomads_filelist(type = type, num  = num, ensemble = ensemble)
     dir      = paste0(dirname(dstfile), "/")
-    fileList = download_nomads(fileList, dir = dir)
+    fileList = download_nomads(fileList$urls, dir = dir)
   }
   
   if(nco){

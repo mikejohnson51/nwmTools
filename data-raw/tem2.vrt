@@ -1,0 +1,32 @@
+<VRTDataset rasterXSize="4608" rasterYSize="3840">
+  <SRS dataAxisToSRSAxisMapping="1,2">PROJCS["Lambert_Conformal_Conic",GEOGCS["Unknown datum based upon the Authalic Sphere",DATUM["Not_specified_based_on_Authalic_Sphere",SPHEROID["Sphere",6370000,0],AUTHORITY["EPSG","6035"]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["false_easting",0],PARAMETER["false_northing",0],PARAMETER["central_meridian",-97],PARAMETER["standard_parallel_1",30],PARAMETER["standard_parallel_2",60],PARAMETER["latitude_of_origin",40],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]</SRS>
+  <GeoTransform> -2.3039992500000000e+06,  1.0000000000000000e+03,  0.0000000000000000e+00,  1.9199996250000000e+06,  0.0000000000000000e+00, -1.0000000000000000e+03</GeoTransform>
+  <VRTRasterBand dataType="Int32" band="1">
+    <NoDataValue>-99900000</NoDataValue>
+    <Scale>9.999999747378752e-06</Scale>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">HDF5:"/vsicurl/https://noaa-nwm-retrospective-2-1-pds.s3.amazonaws.com/forcing/1994/199401010000.LDASIN_DOMAIN1":\\EDIR</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="4608" RasterYSize="3840" DataType="Int32" BlockXSize="922" BlockYSize="768" />
+      <SrcRect xOff="0" yOff="0" xSize="4608" ySize="3840" />
+      <DstRect xOff="0" yOff="0" xSize="4608" ySize="3840" />
+      <NODATA>-99900000</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">HDF5:"/vsicurl/https://noaa-nwm-retrospective-2-1-pds.s3.amazonaws.com/forcing/1994/199401010000.LDASIN_DOMAIN1":\\QSNOW</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="4608" RasterYSize="3840" DataType="Int32" BlockXSize="922" BlockYSize="768" />
+      <SrcRect xOff="0" yOff="0" xSize="4608" ySize="3840" />
+      <DstRect xOff="0" yOff="0" xSize="4608" ySize="3840" />
+      <NODATA>-99900000</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">HDF5:"/vsicurl/https://noaa-nwm-retrospective-2-1-pds.s3.amazonaws.com/forcing/1994/199401010000.LDASIN_DOMAIN1":\\QRAIN</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="4608" RasterYSize="3840" DataType="Int32" BlockXSize="922" BlockYSize="768" />
+      <SrcRect xOff="0" yOff="0" xSize="4608" ySize="3840" />
+      <DstRect xOff="0" yOff="0" xSize="4608" ySize="3840" />
+      <NODATA>-99900000</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>

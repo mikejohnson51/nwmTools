@@ -188,7 +188,7 @@ retro_call = function(comid, meta.obj){
 #' @param urls meta.calls data.frame
 #' @param dap open DAP connection
 #' @importFrom RNetCDF var.get.nc
-#' @return
+#' @return data.frame
 #' @keywords internal
 #' @noRd
 

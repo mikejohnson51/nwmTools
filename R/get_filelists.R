@@ -1,52 +1,44 @@
-
 nwm_filter = function(source, version = NULL, config = NULL, ensemble = NULL, 
                       output= NULL, domain = NULL, date = NULL){
   
-  meta = filter(nwm_data, source == !!source)
-  if(nrow(meta) == 0){ stop(source, " is not valid source") }
   
-  if(!is.null(domain)){
-    meta = filter(meta, domain %in% !!domain)
-    if(nrow(meta) == 0){ stop(Domain, " is not valid domain") }
-  }
-  
-  if(!is.null(version)){
-    meta = filter(meta, version == !!version)
-    if(nrow(meta) == 0){ stop("Version ", version, " not found on ", source)}
-  }
-
-  if(!is.null(config)){
-    meta = filter(meta, config %in% !!config)
-    if(nrow(meta) == 0){ stop("Configuration ", config, " not found on ", source)}
-  }
-  
-  if(!is.null(ensemble)){
-    tmp = filter(meta, grepl(ensemble, bucket))
-    if(nrow(tmp) == 0){
-      tmp = filter(meta, grepl(ensemble, output))
-    }
+  validate = function(complete, feild, value){
     
-    if(nrow(tmp) == 0){ stop("Ensemble ", ensemble, " not found for ", config)} else {meta = tmp}
+    if(feild %in% names(complete) & !is.null(value)){
+      opts = unique(complete[[feild]])
+      
+      if(any(grepl(value, opts))){
+        return(filter(complete, grepl(!!value, get(feild))))
+      } else {
+        stop(glue("{value} not a valid {feild}. Choose from: {paste(opts, collapse = ', ')}"))
+      }
+    } else {
+      return(complete)
+    }
   }
   
-  if(!is.null(output)){
-    meta = filter(meta, grepl(!!output, meta$output))
-    if(nrow(meta) == 0){ stop(output, " output not found for ", config) }
-  }
+  # Source ------------------------------------------------------------------
   
-  
+  meta = validate(nwm_data, "source", source) %>% 
+         validate("domain", domain) %>% 
+         validate("version", version) %>% 
+         validate("output", output) %>% 
+         validate("config", config) %>% 
+         validate("ensemble", ensemble) 
+
+  # Date ------------------------------------------------------------------ 
   if(!is.null(date)){
     
     meta = meta %>% 
       mutate(stateDate = ifelse(startDate == "..", 
                                 "1900-01-01",
                                 startDate),
-             endDate = ifelse(endDate == "..",  "2100-01-01", endDate)
-             ) %>% 
-      filter(as.POSIXct(date, tz = "UTC") >= as.POSIXct(startDate, tz = "UTC"),
-             as.POSIXct(date, tz = "UTC") <= as.POSIXct(endDate, tz = "UTC"))
+             endDate = ifelse(endDate == "..",  as.character(Sys.Date()), endDate))
     
-    if(nrow(meta) == 0){ stop("date not within allowed range") }
+    tmp = filter(meta, as.POSIXct(date, tz = "UTC") >= as.POSIXct(startDate, tz = "UTC"),
+                 as.POSIXct(date, tz = "UTC") <= as.POSIXct(endDate, tz = "UTC"))
+    
+    if(nrow(tmp) == 0){ stop("date not within allowed range: ", meta$startDate, "--", meta$endDate) } else { meta = tmp }
   }
   
   
@@ -166,9 +158,8 @@ get_gcp_urls = function(config = "short_range",
                         hour = "00",
                         minute = "00",
                         num, 
-                        ensemble = NULL, 
+                        ensemble = NA, 
                         output = "channel_rt"){
-  
   
   meta = nwm_filter(source = "gcp",
                     version = NULL, 
@@ -186,18 +177,27 @@ get_gcp_urls = function(config = "short_range",
   YYYYDDMM = format(dates, "%Y%m%d")[2:length(dates)]
   forward = sprintf("%03s", format(dates, "%H"))[2:length(dates)]
   
-  glue(meta$http_pattern,
+  urls = glue(meta$http_pattern,
        YYYYDDMM = YYYYDDMM,
        config = meta$config[1],
        HH = hour,
        foward = forward,
        output = meta$output[1],
        domain = meta$domain,
+       ensemble = meta$ensemble[1], 
        prefix = meta$prefix[1])
+  
+  dates  = lubridate::ymd_hm(paste0(date[1], hour, "00")) + lubridate::hours(0:(num-1))
+
+  data.frame(dateTime = dates, 
+             urls      = urls,
+             output    = output)
 }
 
 get_aws_filelist = function(version = 2.1, 
                             output  = "CHRTOUT", 
+                            config  = NULL,
+                            ensemble  = NULL,
                             date    = "2010-10-29", 
                             hour    = "00", 
                             minute  = "00",
@@ -205,7 +205,7 @@ get_aws_filelist = function(version = 2.1,
   
   meta = nwm_filter(source = "aws", 
                     version = version, 
-                    config = NULL, 
+                    config = config, 
                     output = output,
                     ensemble = NULL, 
                     domain = NULL)
@@ -214,12 +214,16 @@ get_aws_filelist = function(version = 2.1,
                      length.out = num, 
                      by = paste(meta$timestep, ifelse(meta$timestep > 10, "minutes", "hours")))
 
-  glue(meta$http_pattern,
+  urls = glue(meta$http_pattern,
        bucket = meta$bucket,
        config = meta$config,
        output = meta$output,
        YYYY = format(dates, "%Y"),
        YYYYMMDDHHMM = format(dates, "%Y%m%d%H%M"))
+  
+  data.frame(dateTime = dates, 
+             urls      = urls,
+             output    = output)
 }
 
 
@@ -277,21 +281,29 @@ get_nomads_filelist2 = function(config = "short_range",
   tmp2     = glue('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/{version}/nwm.{YYYYMMDD}/{meta$bucket}/')
   
   files   = tryCatch({
+    date <<- YYYYMMDD
     html_attr(html_elements(read_html(tmp2), "a"), "href")
+    date <<- YYYYMMDD
   }, error = function(e){
     tmp2     <<- glue('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/{version}/nwm.{YYYYMMDD2}/{meta$bucket}/')
+    date <<- YYYYMMDD2
     html_attr(html_elements(read_html(tmp2), "a"), "href")
+   
   })
   
   files  = grep(meta$output, files, value = TRUE)
   
   if(is.null(hour)){
     current = strsplit(tail(files, 1), "\\.")[[1]][[2]]
-    files  = grep(current, files, value = TRUE)[1:num]
-  } else {
-    files  = grep(paste("t", hour, "z"), files, value = TRUE)[1:num]
-  }
+    hour = gsub("t", "", gsub("z", "", current))
+  } 
+
+  files  = grep(paste0("t", hour, "z"), files, value = TRUE)[1:num]
+  dates  = lubridate::ymd_hm(paste0(date, hour, "00")) + lubridate::hours(0:(num-1))
   
-  paste0(tmp2, files)
+  data.frame(dateTime = dates, 
+             urls     =  paste0(tmp2, files),
+             output   = output)
+
 }
  
