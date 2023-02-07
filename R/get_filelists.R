@@ -247,14 +247,14 @@ get_aws_filelist = function(version = 2.1,
 #' @importFrom xml2 read_html
 
 get_nomads_filelist2 = function(config = "short_range",
-                               domain = "conus",
-                               date = NULL, 
-                               hour = NULL,
-                               minute = "00",
-                               num, 
-                               ensemble = NULL, 
-                               output = "channel_rt",
-                               version = "prod") {
+                                domain = "conus",
+                                date = NULL, 
+                                hour = NULL,
+                                minute = "00",
+                                num, 
+                                ensemble = NULL, 
+                                output = "channel_rt",
+                                version = "prod") {
   
   
   meta = nwm_filter(source = "nomads", 

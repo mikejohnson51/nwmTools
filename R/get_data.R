@@ -111,7 +111,7 @@ get_timeseries = function(fileList,
 #' @param varname the name of the variable to extract
 #' @return data.frame
 #' @export
-#' @importFrom terra rast
+#' @importFrom terra rast nlyr writeCDF
 #' @importFrom glue glue
 
 

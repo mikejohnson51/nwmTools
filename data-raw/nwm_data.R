@@ -113,7 +113,7 @@ scrape_nomads = function(url, version = 'para'){
         filter(!grepl(".shef$|.ncdf$", link)) %>% 
         tidyr::separate_wider_delim(link, delim = ".",
                                     names = c("model", "time", "config", "output", 'forward', "domain", "ext")) %>% 
-        mutate(model = NULL, ext = NULL, source = "nomads", version = "para", startDate = "..", endDate = "..",
+        mutate(model = NULL, ext = NULL, source = "nomads", version = version, startDate = "..", endDate = "..",
                time = readr::parse_number(time),
                forward = readr::parse_number(forward),
                prefix =  gsub('[[:digit:]]+', '', forward),
@@ -179,6 +179,7 @@ i = scrape_nomads('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "v2.2")
 #'https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/'
 j = scrape_nomads(url = 'https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', version = "para")
 k = scrape_nomads('https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "v3.0")
+
 
 nwm_data = bind_rows(a,b,c,d,e,f,g,h,i,j,k)
 
