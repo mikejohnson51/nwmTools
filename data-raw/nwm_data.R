@@ -94,7 +94,53 @@ scrape_gcp = function(version, token = "nwm.20190620", startDate, endDate){
  return(a)
 }
 
+# NOMADS Scrapping Function ------------------------------
+
+scrape_nomads = function(url, version = 'para'){
+  
+  URL  = paste0(url, version, "/")
+  URL2 = paste0(URL, html_attr(html_nodes(read_html(URL), "a"), "href")[2])
+  all_urls = paste0(URL2, html_attr(html_nodes(read_html(URL2), "a"), "href")[-1])
+  
+  o = list()
+  
+  for(i in 1:length(all_urls)){
+    o[[i]] = tryCatch({
+      data.frame(
+        bucket = basename(all_urls[i]),
+        link = html_attr(html_nodes(read_html(all_urls[i]), "a"), "href")[-1]
+      ) %>% 
+        filter(!grepl(".shef$|.ncdf$", link)) %>% 
+        tidyr::separate_wider_delim(link, delim = ".",
+                                    names = c("model", "time", "config", "output", 'forward', "domain", "ext")) %>% 
+        mutate(model = NULL, ext = NULL, source = "nomads", version = "para", startDate = "..", endDate = "..",
+               time = readr::parse_number(time),
+               forward = readr::parse_number(forward),
+               prefix =  gsub('[[:digit:]]+', '', forward),
+               ensemble = suppressWarnings({ as.numeric(gsub(".*?([0-9]+).*", "\\1", output)) }),
+               output = gsub('_[[:digit:]]+', '', output)) %>% 
+        group_by(bucket, config, output, domain) %>% 
+        mutate(timestep = max(diff(forward), na.rm = TRUE),
+               horizion = n()) %>% 
+        ungroup() %>% 
+        mutate(http_pattern = paste0(URL, 'nwm.{YYYYDDMM}/', config, '/nwm.t{HH}z.', config, '.',
+                                     output, '{ifelse(!is.na(ensemble), paste0("_", ensemble), "")}', '.', prefix, '{foward}.',domain,'.nc'),
+               forward = NULL, 
+               time = NULL) %>% 
+        select(bucket, config, output, domain, horizion, prefix, timestep, ensemble, source, version, startDate, endDate, http_pattern) %>% 
+        distinct() 
+    }, error = function(e){
+      NULL
+    }, warning = function(w){
+      NULL
+    })
+  }
+  
+  bind_rows(o)
+}
+
 ## DATA CHANGES ON nwm.20190619 ###
+
 
 a = scrape_gcp(version = "2.1", token = "nwm.20181029", startDate = "2018-09-17", endDate = "2019-06-18")
 
@@ -103,10 +149,8 @@ b = scrape_gcp(version = "2.2", token = "nwm.20221029", startDate = "2019-06-19"
 c = scrape_aws(version = "2.1", 
                bucket = "s3://noaa-nwm-retrospective-2-1-pds",  
                config = "model_output",  year = 2015,
-               startDate = as.character(get_nwm_meta(version = "2.1")$minDate), 
-               endDate   = as.character(get_nwm_meta(version = "2.1")$maxDate))
-
-table(c$output)
+               startDate = as.character(get_nwm_meta(version = "2.1")$minDate),
+               endDate   =  as.character(get_nwm_meta(version = "2.1")$maxDate))
 
 d = scrape_aws(version = "2.1", bucket = "s3://noaa-nwm-retrospective-2-1-pds",  
                config = "forcing", year = 2015,
@@ -125,25 +169,19 @@ f = scrape_aws(version = "2.0", bucket = "s3://noaa-nwm-retro-v2.0-pds",
 
 g = scrape_aws(version = "1.2", bucket = "s3://nwm-archive", 
                config = NA, year = 2015,
-               startDate = as.character(get_nwm_meta(version = "1.2")$minDate), 
+               startDate = as.character(get_nwm_meta(version  = "1.2")$minDate), 
                endDate   =  as.character(get_nwm_meta(version = "1.2")$maxDate))
 
-h = b %>% 
-  mutate(source = "nomads", version = "v2.2", stateDate = "..", endDate = "..") %>% 
-  mutate(http_pattern = paste0('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/',version,
-                 '/nwm.{YYYYDDMM}/', config, '/nwm.t{HH}z.', config, '.',
-                 output, '.', prefix, '{foward}.',domain,'.nc'))
+#'https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/'
+h = scrape_nomads('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "prod")
+i = scrape_nomads('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "v2.2")
 
-i =  b %>% 
-  mutate(source = "nomads", version = "prod", stateDate = "..", endDate = "..") %>% 
-  mutate(http_pattern = paste0('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/',version,
-                               '/nwm.{YYYYDDMM}/', config, '/nwm.t{HH}z.', config, '.',
-                               output, '.', prefix, '{foward}.',domain,'.nc'))
+#'https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/'
+j = scrape_nomads(url = 'https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', version = "para")
+k = scrape_nomads('https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "v3.0")
 
-nwm_data = bind_rows(a,b,c,d,e,f,g,h,i)
-
+nwm_data = bind_rows(a,b,c,d,e,f,g,h,i,j,k)
 
 usethis::use_data(nwm_data, overwrite = TRUE, internal = TRUE)
-
 
 

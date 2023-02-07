@@ -12,8 +12,8 @@ nwmHistoric_agg = function(rawData, cols, fun, na.rm = TRUE ){
   time_col = grep("dateTime", names(rawData), value = TRUE)
   flow_col = grep("flow_cms", names(rawData), value = TRUE)
   
-  if(length(time_col) != 1 | length(flow_col) != 1){
-    stop("rawData must have a flow and time column")
+  if(length(time_col) != 1){
+    stop("rawData must have a single time column")
   }
   
   df = split_time(rawData, time_col = time_col)
@@ -23,7 +23,7 @@ nwmHistoric_agg = function(rawData, cols, fun, na.rm = TRUE ){
 
   group_by_at(df, cols)  %>%  
     add_tally(name = 'obs') %>%  
-    summarize_at(vars(flow_col, 'obs'), fun)  %>%  
+    summarize_at(dplyr::vars(flow_col), fun)  %>%  
     ungroup()
 }
 

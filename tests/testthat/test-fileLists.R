@@ -47,6 +47,8 @@ test_that("testfile lists", {
                      ensemble = NULL, 
                      output = "channel_rt")
   
+  
+  
   expect_true(nrow(gcp) == 4)
   
   res = httr::GET(gcp$urls[1])
@@ -136,8 +138,12 @@ test_that("testfile land lists", {
                          output = 'LDASOUT',
                          date = "2015-01-01",
                          num = 2)
+    
+    r = get_gridded_data(aws,
+                         AOI = AOI::aoi_get(state = "CO"),
+                         varname = "QSNOW")
   
-  
+
     xx = sds(paste0("/vsicurl/", aws))
     var = "QRAIN"
     l = list()

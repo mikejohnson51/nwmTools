@@ -56,19 +56,27 @@ get_timeseries = function(fileList,
   
   urls =  glue('HDF5:"/vsicurl/{fileList$urls}"')
   
-  all_ids = get_values(url = urls[1], index_id)
-  
-  if(is.null(ids)){
-    ind = NULL
-    ids = all_ids
+  if(!is.null(index_id)){
+    all_ids = get_values(url = urls[1], index_id)
+    
+    if(is.null(ids)){
+      ind = NULL
+      ids = all_ids
+    } else {
+      ind = which(all_ids %in% ids)
+    }
   } else {
-    ind = which(all_ids %in% ids)
+    ind = NULL
+    ids = NULL
   }
+    
   
+  g = expand.grid(urls, varname)
+  names(g) = c("urls", "varname")
   
-  values = lapply(1:length(urls), FUN = function(x){
+  values = lapply(1:nrow(g), FUN = function(x){
     tryCatch({
-      get_values(url = urls[x], varname, ind)
+      get_values(url = g$urls[x], g$varname[x], ind)
       }, error = function(e){
         message('Broken at: ', urls[x] )
       })
@@ -81,7 +89,7 @@ get_timeseries = function(fileList,
   time = as.POSIXct(unlist(time) * 60, origin = "1970-01-01", tz = "UTC")
   
   out = data.frame(do.call('cbind',  c(list(ids), values)))
-  names(out) = c(index_id, as.character(time))
+  names(out) = c(index_id, paste0(varname, "_", as.character(time)))
   
   if(!is.null(outfile)){
     write_timeseries_nc(data = out, 
@@ -97,7 +105,7 @@ get_timeseries = function(fileList,
 }
 
 
-#' Extract Timeseries from fileList
+#' Extract Gridded Data from fileList
 #' @param fileList a list of gridded NWM outputs
 #' @param AOI area of interest (sf POLYGON) to subset
 #' @param varname the name of the variable to extract

@@ -7,7 +7,7 @@ get_nwm_meta = function(version = NULL){
   
   df = data.frame(
              version = c(1.2, 2.0, 2.1), 
-             type = c("hydroshare", "hydroshare", "USGS"),
+             type = c("USGS", "USGS", "USGS"),
              minDate = c(ymd_hm("1993-01-01 00:00"), 
                          ymd_hm("1993-01-01 00:00"),
                          ymd_hm("1979-02-02 18:00")),

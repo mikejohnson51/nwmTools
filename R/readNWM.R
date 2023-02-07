@@ -66,13 +66,22 @@ check_pkg <- function(pkg) {
 #' readNWMdata(comid = 101, tz = "US/Pacific")
 #' }
 
-readNWMdata = function(comid  = NULL,
+readNWMdata = function(AOI = NULL,
+                       comid  = NULL,
                        siteID = NULL,
                        startDate = NULL,
                        endDate   = NULL,
                        tz = "UTC",
                        version = 2.1,
-                       addObs = FALSE) {
+                       addObs = FALSE, 
+                       add_nhd = FALSE) {
+  
+  if (!is.null(AOI)) { 
+    check_pkg('nhdplusTools')
+    suppressMessages({
+      comid = unique(c(comid, nhdplusTools::get_nhdplus(AOI = AOI)$comid))
+    })
+  }
   
   if(is.null(siteID) & addObs){
     stop("addObs is only avaliable when siteID is not NULL")
@@ -85,7 +94,7 @@ readNWMdata = function(comid  = NULL,
   
   if (!is.null(siteID)) { 
     check_pkg('dataRetrieval')
-    comid = unique(c(comid, dataRetrieval::findNLDI(nwis = siteID)$comid))
+    comid = unique(c(comid, dataRetrieval::findNLDI(nwis = siteID)[[1]]$comid))
     cols = c('comid', 'dateTime', "siteID")
   } else {
     cols = c('comid', 'dateTime')
@@ -94,21 +103,21 @@ readNWMdata = function(comid  = NULL,
   res = lapply(1:nrow(base), function(x) { 
     .readNWMinside(comid, siteID, tz, base = base[x,]) 
   })
+
   
   if(length(res) == 1){
     res = res[[1]]
-    res[[paste0("flow_cms_v", gsub("NWM", "", res$model[1]))]] = res$flow_cms
+    res[[paste0("flow_cms_v", gsub("NWM", "", res$model[1]))]] = replace(res$flow_cms, res$flow_cms == -999900, NA)
     res$flow_cms = NULL
     res$model = NULL
   } else {
     out = lapply(1:length(res), function(x){
-      res[[x]][[paste0("flow_cms_v", gsub("NWM", "", res[[x]]$model[1]))]] = res[[x]]$flow_cms
+      res[[x]][[paste0("flow_cms_v", gsub("NWM", "", res[[x]]$model[1]))]] = replace(res[[x]]$flow_cms, res[[x]]$flow_cms == -999900, NA) 
       res[[x]]$flow_cms = NULL
       res[[x]]$model = NULL
       res[[x]]
     })
 
-    
     res = Reduce(function(dtf1,dtf2) merge(dtf1, dtf2, by = cols), out )
   }
   
@@ -129,8 +138,27 @@ readNWMdata = function(comid  = NULL,
       res$Date = NULL
     }
   } 
-  
+
   res
  
+}
+
+
+add_nhd = function(data){
+  
+  if(!"comid" %in% names(data)){
+    stop("comid must be in input data")
+  } 
+  
+  check_pkg('nhdplusTools')
+  
+  suppressMessages({
+      res = nhdplusTools::get_nhdplus(comid = data$comid) %>% 
+        select(comid) %>% 
+        left_join(data)
+  })
+  
+  res
+
 }
 

@@ -25,6 +25,7 @@ nwm_filter = function(source, version = NULL, config = NULL, ensemble = NULL,
          validate("output", output) %>% 
          validate("config", config) %>% 
          validate("ensemble", ensemble) 
+  
 
   # Date ------------------------------------------------------------------ 
   if(!is.null(date)){
@@ -42,7 +43,7 @@ nwm_filter = function(source, version = NULL, config = NULL, ensemble = NULL,
   }
   
   
-  if(nrow(meta) > 1){stop('More then one viable source found...')}
+  if(nrow(meta) > 1){warning('More then one viable source found...', call. = FALSE)}
   
   meta
 }
@@ -262,8 +263,10 @@ get_nomads_filelist2 = function(config = "short_range",
                     output = output,
                     ensemble = ensemble, 
                     domain = domain)
+  
+  meta = meta[1,]
 
-  tmp     = glue('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/{version}')
+  tmp     = glue(strsplit(meta$http_pattern, 'nwm\\.')[[1]][1])
   
   dates   = html_attr(html_elements(read_html(tmp), "a"), "href")
   dates = gsub("/", "", gsub("nwm.", "", dates))
@@ -278,20 +281,17 @@ get_nomads_filelist2 = function(config = "short_range",
     YYYYMMDD2 = NULL
   }
   
-  tmp2     = glue('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/{version}/nwm.{YYYYMMDD}/{meta$bucket}/')
   
   files   = tryCatch({
-    date <<- YYYYMMDD
-    html_attr(html_elements(read_html(tmp2), "a"), "href")
-    date <<- YYYYMMDD
+    date <<-YYYYMMDD
+    html_attr(html_elements(read_html(glue('{tmp}/nwm.{YYYYMMDD}/{meta$bucket}')), "a"), "href")
   }, error = function(e){
-    tmp2     <<- glue('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/{version}/nwm.{YYYYMMDD2}/{meta$bucket}/')
-    date <<- YYYYMMDD2
-    html_attr(html_elements(read_html(tmp2), "a"), "href")
-   
+    date <<-YYYYMMDD2
+    html_attr(html_elements(read_html(glue('{tmp}/nwm.{YYYYMMDD2}/{meta$bucket}')), "a"), "href")
   })
   
   files  = grep(meta$output, files, value = TRUE)
+  files  = grep(".nc$", files, value = TRUE)
   
   if(is.null(hour)){
     current = strsplit(tail(files, 1), "\\.")[[1]][[2]]
@@ -302,7 +302,7 @@ get_nomads_filelist2 = function(config = "short_range",
   dates  = lubridate::ymd_hm(paste0(date, hour, "00")) + lubridate::hours(0:(num-1))
   
   data.frame(dateTime = dates, 
-             urls     =  paste0(tmp2, files),
+             urls     =  glue('{tmp}/nwm.{date}/{meta$bucket}/{files}'),
              output   = output)
 
 }
