@@ -278,7 +278,7 @@ get_nomads_filelist2 = function(config = "short_range",
     stop(date, " not avaliable")
   } else {
     YYYYMMDD = gsub("-", "", date)
-    YYYYMMDD2 = NULL
+    YYYYMMDD2 = gsub("-", "", date)
   }
   
   
