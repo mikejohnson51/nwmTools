@@ -13,6 +13,7 @@ deployment](https://github.com/mikejohnson51/nwmTools/actions/workflows/pkgdown.
 Check](https://github.com/mikejohnson51/nwmTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mikejohnson51/nwmTools/actions/workflows/R-CMD-check.yaml)
 [![Project Status:
 Concept](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
+[![codecov](https://codecov.io/gh/mikejohnson51/nwmTools/branch/master/graph/badge.svg?token=H5YHXYZ1WH)](https://codecov.io/gh/mikejohnson51/nwmTools)
 <!-- badges: end -->
 
 # Description
