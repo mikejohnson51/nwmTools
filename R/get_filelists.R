@@ -1,7 +1,7 @@
 nwm_filter = function(source, version = NULL, config = NULL, ensemble = NULL, 
                       output= NULL, domain = NULL, date = NULL){
   
-  
+  startDate <- endDate <- NULL
   validate = function(complete, field, value){
     
     if(field %in% names(complete) & !is.null(value)){
@@ -98,6 +98,13 @@ error_checking_type = function(type, ensemble){
   
 }
 
+#' @title Error Checking for configuration/ensemble pairs
+#' @param type a NWM configuration
+#' @param ensemble an ensemble member number
+#' @return a kosher configuration
+#' @noRd
+#' @keywords internal
+
 error_checking_hour = function(type, hours){
   
   if(type == "short_range" & dplyr::between(hour, 0, 23)){
@@ -113,6 +120,13 @@ error_checking_hour = function(type, hours){
   }
 }
 
+#' @title Error Checking for configuration/ensemble pairs
+#' @param type a NWM configuration
+#' @param ensemble an ensemble member number
+#' @return a kosher configuration
+#' @noRd
+#' @keywords internal
+#' 
 error_checking_num = function(type, num, pad){
   
   if(type == "short_range" & num <= 18){
@@ -128,6 +142,13 @@ error_checking_num = function(type, num, pad){
   }
 }
 
+#' @title Error Checking for configuration/ensemble pairs
+#' @param type a NWM configuration
+#' @param ensemble an ensemble member number
+#' @return a kosher configuration
+#' @noRd
+#' @keywords internal
+
 error_checking_date = function(date){
   
   date = as.Date(date)
@@ -139,19 +160,16 @@ error_checking_date = function(date){
 }
 
 #' Get GCP file list
-#' @param config 
-#' @param domain 
-#' @param date 
-#' @param hour 
-#' @param minute 
-#' @param num 
-#' @param ensemble 
-#' @param output 
-#'
-#' @return character vector
+#' @param config the NWM model configurarion
+#' @param domain the NWM model domain
+#' @param date date of interest
+#' @param hour hour of interest
+#' @param minute minute of interest
+#' @param num number of files to get (forward from provides data-hour-minute)
+#' @param ensemble the NWM ensemble number
+#' @param output the NWM model output type
+#' @return data.frame
 #' @export
-#' @importFrom dplyr filter mutate
-#' @importFrom glue glue
 
 get_gcp_urls = function(config = "short_range",
                         domain = "conus",
@@ -159,7 +177,7 @@ get_gcp_urls = function(config = "short_range",
                         hour = "00",
                         minute = "00",
                         num, 
-                        ensemble = NA, 
+                        ensemble = NULL, 
                         output = "channel_rt"){
   
   meta = nwm_filter(source = "gcp",
@@ -188,12 +206,18 @@ get_gcp_urls = function(config = "short_range",
        ensemble = meta$ensemble[1], 
        prefix = meta$prefix[1])
   
-  dates  = lubridate::ymd_hm(paste0(date[1], hour, "00")) + lubridate::hours(0:(num-1))
+  dates  = ymd_hm(paste0(date[1], hour, "00")) + hours(0:(num-1))
 
   data.frame(dateTime = dates, 
              urls      = urls,
              output    = output)
 }
+
+#' Get GCP file list
+#' @inheritParams get_gcp_urls
+#' @param version NWM model version
+#' @return data.frame
+#' @export
 
 get_aws_filelist = function(version = 2.1, 
                             output  = "CHRTOUT", 
@@ -230,23 +254,13 @@ get_aws_filelist = function(version = 2.1,
 
 
 #' Get NOMADs File List
-#'
-#' @param config 
-#' @param domain 
-#' @param date 
-#' @param hour 
-#' @param minute 
-#' @param num 
-#' @param ensemble 
-#' @param output 
-#' @param version 
-#'
-#' @return character vector
+#' @inheritParams get_gcp_urls
+#' @param version server version (prod or para)
+#' @return data.frame
 #' @export
-#' @importFrom rvest html_attr html_elements
-#' @importFrom xml2 read_html
 
-get_nomads_filelist2 = function(config = "short_range",
+
+get_nomads_filelist = function(config = "short_range",
                                 domain = "conus",
                                 date = NULL, 
                                 hour = NULL,
@@ -299,7 +313,7 @@ get_nomads_filelist2 = function(config = "short_range",
   } 
 
   files  = grep(paste0("t", hour, "z"), files, value = TRUE)[1:num]
-  dates  = lubridate::ymd_hm(paste0(date, hour, "00")) + lubridate::hours(0:(num-1))
+  dates  = ymd_hm(paste0(date, hour, "00")) + hours(0:(num-1))
   
   data.frame(dateTime = dates, 
              urls     =  glue('{tmp}/nwm.{date}/{meta$bucket}/{files}'),

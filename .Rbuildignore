@@ -15,3 +15,5 @@ README.Rmd
 ^_pkgdown\.yaml$
 ^LICENSE\.md$
 .github
+local
+data-raw

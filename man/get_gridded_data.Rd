@@ -2,9 +2,9 @@
 % Please edit documentation in R/get_data.R
 \name{get_gridded_data}
 \alias{get_gridded_data}
-\title{Extract Timeseries from fileList}
+\title{Extract Gridded Data from fileList}
 \usage{
-get_gridded_data(fileList, AOI, varname, outfile = NULL, ...)
+get_gridded_data(fileList, AOI, varname, outfile = NULL)
 }
 \arguments{
 \item{fileList}{a list of gridded NWM outputs}
@@ -12,10 +12,12 @@ get_gridded_data(fileList, AOI, varname, outfile = NULL, ...)
 \item{AOI}{area of interest (sf POLYGON) to subset}
 
 \item{varname}{the name of the variable to extract}
+
+\item{outfile}{filepath to save data (with .nc extension)}
 }
 \value{
 data.frame
 }
 \description{
-Extract Timeseries from fileList
+Extract Gridded Data from fileList
 }

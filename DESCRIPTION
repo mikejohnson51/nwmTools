@@ -1,6 +1,8 @@
 Package: nwmTools
-Title: Tools for working with National Water Model Output
-Version: 0.0.1
+Type: Package
+Title: nwmTools
+Description: Tools for working with operational and historic National Water Model Output.
+Version: 0.0.2
 Authors@R: 
     c(person(given = "Mike", 
     family = "Johnson", 
@@ -10,34 +12,30 @@ Authors@R:
     person(given = "Lilit", 
     family = "Yeghiazarian", 
     role = "fnd"))
-Description: Collection of tools for using historic and operational data from the National Water Model.
-License: MIT + file LICENSE
+Maintainer: Mike Johnson <mikecp11@gmail.com>
 URL: https://github.com/mikejohnson51/nwmTools
 BugReports: https://github.com/mikejohnson51/nwmTools/issues
-Depends: R(>= 3.5.0)
+Depends: 
+    R(>= 3.5.0)
 Imports: 
+    dataRetrieval,
     dplyr,
-    httr,
     glue,
-    rvest,
-    xml2,
+    httr,
     lubridate,
+    nhdplusTools,
     RNetCDF,
+    rvest,
     terra,
-    sys
+    xml2,
+    utils
 Encoding: UTF-8
 LazyData: true
-Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
-VignetteBuilder: knitr
 Suggests: 
     AOI,
-    dataRetrieval,
-    ggplot2,
-    knitr,
-    ncmeta,
-    rmarkdown,
     testthat (>= 3.0.0)
-Config/testthat/edition: 3
 Remotes: 
     mikejohnson51/AOI
+Config/testthat/edition: 3
+License: CC0

@@ -76,59 +76,6 @@ find_f = function(type, files, domain){
   as.numeric(gsub(pattern, '', files))
 }
 
-#' @title Build file metadata for most current NWM configuration
-#' @param type a NWM configuration
-#' @param ensemble an ensemble member number
-#' @param num a number of files to download, default = all
-#' @return a list of meta.data information
-#' @export
-#' @examples
-#' \dontrun{
-#'  urls     <-  get_nomads_filelist(type = "medium_range", num = 20,  ensemble = 4)
-#'  in_files <-  download_nomads(urls, dir = tempdir())
-#' }
-
-get_nomads_filelist = function(type = NULL,
-                               ensemble = NULL,
-                               num = 6) {
-  
-  time     <-  f <- NULL
-  type     <-  error_checking(type, ensemble)
-  ensemble <-  paste0("_mem", ensemble)
-  
-  if(grepl("hawaii", type)){
-    domain = 'hawaii'
-    base.type = gsub("_hawaii", "", type)
-  } else {
-    domain = "conus"
-    base.type = type
-  }
-  
-  tmp = 'https://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/prod/'
-  
-  avail.days = grep("nwm\\.", readLines(tmp), value = TRUE)
-  avail.days = gsub(".*[m.]([^.]+)[<].*", "\\1", avail.days)
-  date = max(as.Date(gsub("/", "", avail.days), format = "%Y%m%d"))
-  
-  files    <- tryCatch({
-    suppressMessages(readLines( make_url(date, type), warn = FALSE))}, 
-    error = function(e){
-      date <<- date - 1
-      suppressMessages(readLines(make_url(date, type), warn = FALSE))
-    },
-    warning = function(w){
-      date <<- date - 1
-      suppressMessages(readLines(make_url(date, type), warn = FALSE))
-    })
-  
-  filenames = regmatches(files, gregexpr('(\").*?(\")', files, perl = TRUE))
-  filenames = filenames[grep(paste0(gsub(ensemble, "", base.type),".channel"), filenames)] 
-  fileList = gsub("^\"|\"$", "", filenames)
-  
-  if(is.null(num)){num = 100000}
-  
-  paste0(make_url(date, type), fileList[1:num])
-}
 
 #' @title Download NOMADs files
 #'
@@ -136,7 +83,6 @@ get_nomads_filelist = function(type = NULL,
 #' @param dir a directory to write data to
 #' @param quiet should messages be silenced? Default = FALSE
 #' @return a list of meta.data information
-#' @importFrom httr GET write_disk
 #' @export
 #' @examples 
 #' \dontrun{

@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Build Status](https://travis-ci.org/mikejohnson51/nwmHistoric.svg?branch=master)](https://travis-ci.org/mikejohnson51/nwmHistoric)
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
-[![Dependencies](https://img.shields.io/badge/dependencies-9/33-orange?style=flat)](#)
+[![Dependencies](https://img.shields.io/badge/dependencies-11/65-red?style=flat)](#)
 [![LifeCycle](man/figures/lifecycle/lifecycle-experimental.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Website deployment](https://github.com/mikejohnson51/nwmTools/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mikejohnson51/nwmTools/actions/workflows/pkgdown.yaml)
 [![R CMD Check](https://github.com/mikejohnson51/nwmTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mikejohnson51/nwmTools/actions/workflows/R-CMD-check.yaml)

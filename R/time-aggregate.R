@@ -17,7 +17,6 @@
 #' @param rawData data extracted with \code{readNWMdata} 
 #' @param fun 	function to be applied to the flows column default  = 'mean'
 #' @param na.rm a logical value indicating whether NA values should be stripped before the computation proceeds.
-#' @importFrom lubridate year month day
 #' @family aggregate functions
 #' @examples 
 #' \dontrun{
@@ -109,7 +108,6 @@ aggregate_wy  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
 #' @family aggregate functions
-#' @importFrom lubridate ymd
 #' @export
 aggregate_ym  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "year", "month")
@@ -152,7 +150,6 @@ aggregate_j  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
 #' @family aggregate functions
-#' @importFrom lubridate ymd
 #' @export
 aggregate_ymd = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "year", "month", "day")
@@ -181,7 +178,6 @@ aggregate_ys  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
 #' @family aggregate functions
-#' @importFrom lubridate ymd
 #' @export
 aggregate_wym  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "wy", "month")
@@ -196,7 +192,6 @@ aggregate_wym  = function(rawData, fun = "mean", na.rm = TRUE){
 #' @inherit aggregate_record examples
 #' @inheritParams aggregate_record
 #' @family aggregate functions
-#' @importFrom lubridate ymd
 #' @export
 aggregate_wymd = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', "wy", "month", "day")

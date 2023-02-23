@@ -3,7 +3,6 @@
 #' @param AOI a sf polygon
 #' @return SpatRast object (x cropped to AOI)
 #' @export
-#' @importFrom  terra ext crs align ext project vect ymax ymin xmin xmax flip crop
 
 crop_flipped_nwm <- function(x, AOI) {
   
@@ -32,25 +31,25 @@ crop_flipped_nwm <- function(x, AOI) {
   z
 }
 
-#' Extract Timeseries from fileList
+#' Extract Timeseries from file list
 #' @param fileList a list of non-gridded NWM outputs
 #' @param ids a set of ids to limit the returned data to
 #' @param index_id the name of the id attributes
 #' @param varname the name of the variable
+#' @param outfile file path to save data to (.nc extension)
 #' @return data.frame
 #' @export
-#' @importFrom terra values rast
-#' @importFrom glue glue
+
 
 get_timeseries = function(fileList,
                           ids = NULL,
                           index_id = "feature_id",
                           varname = "streamflow",
-                          outfile = NULL,
-                          ...){
+                          outfile = NULL){
+  
   
   get_values = function(url, var, ind = NULL){
-    v = suppressWarnings(values(rast(glue("{url}://{var}")), mat = FALSE))
+    v = suppressWarnings(values(terra::rast(glue("{url}://{var}"))))
     if(!is.null(ind)){ v[ind] } else { v }
   }
   
@@ -76,9 +75,9 @@ get_timeseries = function(fileList,
   
   values = lapply(1:nrow(g), FUN = function(x){
     tryCatch({
-      get_values(url = g$urls[x], g$varname[x], ind)
+      get_values(url = g$urls[x], var = g$varname[x], ind)
       }, error = function(e){
-        message('Broken at: ', urls[x] )
+        message('Broken at: ', g$varname[x] )
       })
   })
   
@@ -109,18 +108,15 @@ get_timeseries = function(fileList,
 #' @param fileList a list of gridded NWM outputs
 #' @param AOI area of interest (sf POLYGON) to subset
 #' @param varname the name of the variable to extract
+#' @param outfile filepath to save data (with .nc extension)
 #' @return data.frame
 #' @export
-#' @importFrom terra rast nlyr writeCDF
-#' @importFrom glue glue
-
 
 get_gridded_data = function(fileList,
                             AOI, 
                             varname,
-                            outfile = NULL,
-                            ...){
-  
+                            outfile = NULL){
+
   urls = fileList$urls
   lyrs =   suppressWarnings( names(rast(paste0("/vsicurl/", urls[1]))) )
   goodnames = grep(paste(varname, collapse = "|"), lyrs, value = TRUE)
@@ -144,7 +140,7 @@ get_gridded_data = function(fileList,
   
   
   if(!is.null(outfile)){
-    write_gridded_data(rast_list, outfile, ...)
+    write_gridded_data(rast_list, outfile)
   }
   
   rast_list

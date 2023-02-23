@@ -2,15 +2,14 @@
 % Please edit documentation in R/get_data.R
 \name{get_timeseries}
 \alias{get_timeseries}
-\title{Extract Timeseries from fileList}
+\title{Extract Timeseries from file list}
 \usage{
 get_timeseries(
   fileList,
   ids = NULL,
   index_id = "feature_id",
   varname = "streamflow",
-  outfile = NULL,
-  ...
+  outfile = NULL
 )
 }
 \arguments{
@@ -21,10 +20,12 @@ get_timeseries(
 \item{index_id}{the name of the id attributes}
 
 \item{varname}{the name of the variable}
+
+\item{outfile}{file path to save data to (.nc extension)}
 }
 \value{
 data.frame
 }
 \description{
-Extract Timeseries from fileList
+Extract Timeseries from file list
 }

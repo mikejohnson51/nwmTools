@@ -61,7 +61,6 @@ get_tds = function(type = "hydroshare"){
 #' @param endDate a user defined end Date ("YYYY-MM-DD") 
 #' @param tz a user defined timezone  
 #' @param version a user defined model version
-#' @importFrom lubridate with_tz hours
 #' @return a list containing the model version, NCML path, and time requests
 #' @keywords internal
 #' @noRd
@@ -132,9 +131,7 @@ error.checks = function(startDate, endDate, tz, version){
 #' @description build out THREDDs call and meta information
 #' @param comid an NHD COMID(s)
 #' @param meta.obj a metadata object generated with `error.check`
-#' @importFrom lubridate ymd_hm with_tz
-#' @importFrom RNetCDF open.nc var.get.nc
-#' @return a data.frame and opend DAP object
+#' @return a data.frame and DAP object
 #' @keywords internal
 #' @noRd
 
@@ -187,7 +184,6 @@ retro_call = function(comid, meta.obj){
 #' @param i index of meta.calls data
 #' @param urls meta.calls data.frame
 #' @param dap open DAP connection
-#' @importFrom RNetCDF var.get.nc
 #' @return data.frame
 #' @keywords internal
 #' @noRd
@@ -207,23 +203,10 @@ extract_thredds = function(i, urls, dap) {
 }
 
 
-# library(RNetCDF)
-# time_steps <- utcal.nc(
-#   unitstring = att.get.nc(dap, 'time', "units"),
-#   value = var.get.nc(dap, 'time'),
-#   type = "c"
-# )
-# 
-# table(time_steps) |> names() |> min()
-# max(names(table(time_steps))) - length()
-# 
-# lubridate::ymd_hms(max(names(table(time_steps)))) - lubridate::hours(length(time_steps))
-
 #' @title Time Sequence Generator
 #' @description Construct time series from start and end data
 #' @param startDate 
 #' @param endDate 
-#' @importFrom lubridate with_tz
 #' @return vector of dates
 #' @keywords internal
 #' @noRd

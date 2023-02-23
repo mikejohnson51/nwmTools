@@ -1,17 +1,3 @@
-#' Check for a package
-#' @param pkg package name
-#' @noRd
-
-check_pkg <- function(pkg) {
-  if (!requireNamespace(pkg, quietly = TRUE))
-    stop("Package '",
-         pkg,
-         "' is required for this functionality, but is not installed. \nTry `install.packages('",
-         pkg,
-         "')`", call. = FALSE)
-}
-
-
 #' Internal NWM read 
 #' @param comid a NHD common identifier
 #' @param siteID a USGS NWIS site identifier (eight digits)
@@ -47,6 +33,7 @@ check_pkg <- function(pkg) {
 #' Water Model version 1.2 or 2.0. Returned data is available between 
 #' "1993-01-01 00" and "2017-12-31 23" but can be 
 #' subset using a startDate and endDate.
+#' @param AOI spatial polygon or point to extract data for
 #' @param comid a NHD common identifier
 #' @param siteID a USGS NWIS site identifier (eight digits)
 #' @param startDate a start date (YYYY-MM-DD) or (YYYY-MM-DD HH)
@@ -54,11 +41,9 @@ check_pkg <- function(pkg) {
 #' @param tz the desired timezone of the data. Can be found with \code{OlsonNames}
 #' @param version the NWM version to extract (current = 1.2 or 2 (default))
 #' @param addObs should observation data be added? Only available when !is.null(siteID)
-#' @return data.frame
+#' @param add_nhd should the NHD spatial features be added to the output
+#' @return data.frame or sf object
 #' @export
-#' @importFrom RNetCDF close.nc
-#' @importFrom lubridate with_tz tz as_datetime
-#' @importFrom httr content RETRY
 #' @examples 
 #' \dontrun{
 #' readNWMdata(comid = 101)
@@ -77,10 +62,7 @@ readNWMdata = function(AOI = NULL,
                        add_nhd = FALSE) {
   
   if (!is.null(AOI)) { 
-    check_pkg('nhdplusTools')
-    suppressMessages({
-      comid = unique(c(comid, nhdplusTools::get_nhdplus(AOI = AOI)$comid))
-    })
+      comid = unique(c(comid, get_nhdplus(AOI = AOI)$comid))
   }
   
   if(is.null(siteID) & addObs){
@@ -93,8 +75,7 @@ readNWMdata = function(AOI = NULL,
   )
   
   if (!is.null(siteID)) { 
-    check_pkg('dataRetrieval')
-    comid = unique(c(comid, dataRetrieval::findNLDI(nwis = siteID)[[1]]$comid))
+    comid = unique(c(comid, findNLDI(nwis = siteID)[[1]]$comid))
     cols = c('comid', 'dateTime', "siteID")
   } else {
     cols = c('comid', 'dateTime')
@@ -122,11 +103,10 @@ readNWMdata = function(AOI = NULL,
   }
   
   if(addObs){
-    check_pkg('dataRetrieval')
-    nwis = dataRetrieval::readNWISdv(siteNumbers = unique(res$siteID), parameterCd = "00060")
+    nwis = readNWISdv(siteNumbers = unique(res$siteID), parameterCd = "00060")
     
     if(nrow(nwis) > 0){ 
-      nwis = dataRetrieval::renameNWISColumns(nwis)
+      nwis = renameNWISColumns(nwis)
       nwis = nwis[, c("site_no",'Flow', "Date")]
       nwis$Flow = nwis$Flow * 0.028316847
       names(nwis) = c('siteID', "flow_cms_nwis", "Date")
@@ -145,15 +125,14 @@ readNWMdata = function(AOI = NULL,
 
 
 add_nhd = function(data){
+  comid = NULL
   
   if(!"comid" %in% names(data)){
     stop("comid must be in input data")
   } 
-  
-  check_pkg('nhdplusTools')
-  
+
   suppressMessages({
-      res = nhdplusTools::get_nhdplus(comid = data$comid) %>% 
+      res = get_nhdplus(comid = data$comid) %>% 
         select(comid) %>% 
         left_join(data)
   })
