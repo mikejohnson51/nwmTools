@@ -3,7 +3,7 @@
 \docType{data}
 \name{nwm_data}
 \alias{nwm_data}
-\title{NWM Data}
+\title{NWM Data Types}
 \format{
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 307 rows and 14 columns.
 }
@@ -11,6 +11,6 @@ An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) w
 nwm_data
 }
 \description{
-NWM Data
+NWM Data Types
 }
 \keyword{datasets}

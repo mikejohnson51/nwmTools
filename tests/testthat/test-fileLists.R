@@ -2,7 +2,7 @@ test_that("testfile lists", {
   
   # AWS ------------------------------
 
-  aws = get_aws_filelist(version = 2.1,
+  aws = get_aws_urls(version = 2.1,
                          output = 'CHRTOUT',
                          date = "2015-01-01",
                          num = 2)
@@ -13,7 +13,7 @@ test_that("testfile lists", {
   
   expect_true(res$status_code == 200)
   
-  aws = get_aws_filelist(version = "2.0",
+  aws = get_aws_urls(version = "2.0",
                          output = 'CHRTOUT',
                          date = "2015-01-01",
                          config = "full_physics",
@@ -25,7 +25,7 @@ test_that("testfile lists", {
   
   expect_true(res$status_code == 200)
   
-  aws = get_aws_filelist(version = 1.2,
+  aws = get_aws_urls(version = 1.2,
                          output = 'CHRTOUT',
                          date = "2015-01-01",
                          num = 2)
@@ -71,7 +71,7 @@ test_that("testfile lists", {
   expect_true(res$status_code == 200)
   
   # NOMADS ------------------------------
-  nomads = get_nomads_filelist(config = "short_range",
+  nomads = get_nomads_urls(config = "short_range",
                                 domain = "conus",
                                 num = 3, 
                                 output = "channel_rt",
@@ -85,7 +85,7 @@ test_that("testfile lists", {
   
   # Medium Range ------------------------------
   
-  nomads = get_nomads_filelist(config = "medium_range",
+  nomads = get_nomads_urls(config = "medium_range",
                                 num = 3,
                                 ensemble = 1,
                                 output = "channel_rt",
@@ -131,8 +131,12 @@ test_that("testfile lists", {
 
 test_that("testfile land lists", {
   
+  expect_error(validate(nwm_data, "source", "BLAH"))
+  
+  expect_warning(nwm_filter(source = "aws", version = 1.2))
+  
   # AWS ------------------------------
-    aws = get_aws_filelist(version = 2.1,
+    aws = get_aws_urls(version = 2.1,
                          output = 'LDASOUT',
                          date = "2015-01-01",
                          num = 2)
@@ -155,11 +159,13 @@ test_that("testfile land lists", {
     expect_true(res$status_code == 200)
     
   # NOMDAS ------------------------------
-    nomads = get_nomads_filelist(output = 'land', num = 2)
+    nomads = get_nomads_urls(output = 'land', num = 2)
     
     expect_true(nrow(nomads) == 2)
     
     res = httr::GET(nomads$urls[1])
     
     expect_true(res$status_code == 200)
+    
+    expect_error(get_nomads_urls(output = 'land', date = "2023-01-01", num = 2))
 })

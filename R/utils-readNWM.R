@@ -5,29 +5,15 @@
  
 get_nwm_meta = function(version = NULL){
   
-  df = data.frame(
-             version = c(1.2, 2.0, 2.1), 
-             type = c("USGS", "USGS", "USGS"),
-             minDate = c(ymd_hm("1993-01-01 00:00"), 
-                         ymd_hm("1993-01-01 00:00"),
-                         ymd_hm("1979-02-02 18:00")),
-             maxDate = c(ymd_hm("2017-12-31 23:00"), 
-                         ymd_hm("2018-12-31 00:00"),
-                         ymd_hm("2020-12-31 00:00")),
-             ncml = c('nwm_retro_full.ncml', 
-                      'nwm_v2_retro_full.ncml',
-                      'nwm_v21_retro_full.ncml'),
-             varname = c('feature_ids_v12', 
-                          'feature_ids_v20',
-                          'feature_ids_v21'))
+  t = nwmTools::tds_meta
   
   if(is.null(version)){
-    return(df)
+    return(t)
   } else {
-    df2 = df[df$version %in% version,]
+    df2 = t[t$version %in% version,]
     
     if (nrow(df2) == 0) {
-      stop(paste('NWM version must be one of:', paste(df$version, collapse = ", " )) , call. = F)
+      stop(paste('NWM version must be one of:', paste(t$version, collapse = ", " )) , call. = F)
     }
     df2
   }
@@ -51,6 +37,8 @@ get_tds = function(type = "hydroshare"){
     'https://cida.usgs.gov/thredds/dodsC/demo/morethredds/nwm/'
   }
   }))
+  
+  nwm
   
 }
 
@@ -86,12 +74,12 @@ error.checks = function(startDate, endDate, tz, version){
   if(!is.null(endDate))   {endDate   = as.POSIXct(endDate, tz = tz)  }
   
   if(is.null(startDate) & is.null(endDate)){
-    startDate = with_tz(this.version$minDate, "UTC")
-    endDate   = with_tz(this.version$maxDate, "UTC")
+    startDate = with_tz(this.version$startDate, "UTC")
+    endDate   = with_tz(this.version$endDate, "UTC")
   }
   
   if(is.null(startDate)){
-    startDate = with_tz(this.version$minDate, "UTC")
+    startDate = with_tz(this.version$startDate, "UTC")
   }
   
   if(is.null(endDate)){
@@ -109,17 +97,17 @@ error.checks = function(startDate, endDate, tz, version){
   df$usr.utc.end = with_tz(df$usr.tz.end, tzone = "UTC")
   df$version = this.version$version
   df$url = paste0(get_tds(this.version$type), this.version$ncml)
-  df$minDate = this.version$minDate
-  df$maxDate = this.version$maxDate
+  df$minDate = this.version$startDate
+  df$maxDate = this.version$endDate
   df$varname = this.version$varname
   
   ## Check startDate
-  if(any(df$usr.utc.start < this.version$minDate)){
-    stop("First values for version ", version, ' is ', this.version$minDate, " 00:00:00 UTC \n")
+  if(any(df$usr.utc.start < this.version$startDate)){
+    stop("First values for version ", version, ' is ', this.version$startDate, " 00:00:00 UTC \n")
   }
   ## Check endDate
-  if(any(df$usr.utc.end > this.version$maxDate)){
-    stop("Last values for version ", version, ' is ', this.version$maxDate,  " UTC.")
+  if(any(df$usr.utc.end > this.version$endDate)){
+    stop("Last values for version ", version, ' is ', this.version$endDate,  " UTC.")
   }
 
   
@@ -140,41 +128,46 @@ retro_call = function(comid, meta.obj){
   comid = comid[!is.na(comid)]
   
   if(length(comid) > 0){
-  
-  ids_file = open.nc(system.file("extdata", "retro_feature_ids.nc", package = "nwmTools"))
-  id  = match(comid, var.get.nc(ids_file, meta.obj$varname))
-  close.nc(ids_file)
+    
+    nc = open.nc(meta.obj$url)
+    time   = utcal.nc(att.get.nc(nc,"time", "units"), var.get.nc(nc, 'time'), type = "c")
+    feat   = var.get.nc(nc, 'feature_id')
 
-  if(length(id) > 0){
-    s  = meta.obj$usr.utc.start
-    e  = meta.obj$usr.utc.end
-    model = hour_seq(meta.obj$minDate, meta.obj$maxDate, "UTC")
-    s1 = which(s == model)
-    e1 = which(e == model)
-    rm(model)
+    start  = match(meta.obj$usr.tz.start, time) 
+    end    = match(meta.obj$usr.tz.end, time) 
+    count  = end - start + 1
     
-    call.meta = data.frame(
-              COMID = comid,
-              index = id,
-              startDate  = s,
-              endDate    = e,
-              startIndex = s1, 
-              endIndex   = e1,
-              count = (e1-s1) + 1,
-              version = meta.obj$version,
-              url = meta.obj$url,
-              stringsAsFactors = FALSE) 
+    comid = comid[comid %in% feat]
     
-    call.meta = call.meta[!is.na(call.meta$index),]
-   
-    if(nrow(call.meta) > 0 ){
-      return(list(rows = nrow(call.meta),
-                  call.meta = call.meta, 
-                  open.dap.file = open.nc(call.meta$url[1])))
-    } else { 
-      return(NULL) 
+    ll = list()
+    
+    if(length(comid) > 0){
+      for(i in 1:length(comid)){
+        
+        index  = match(comid[i], feat)
+        
+        if(is.na(index)){
+          message("comid: ", comid[i], " not found.")
+          ll[[i]] = NULL
+        } else {
+          ll[[i]] = data.frame(
+            model     = paste0('NWM', meta.obj$version),
+            comid     = comid[i],
+            dateTime  = hour_seq(meta.obj$usr.tz.start, meta.obj$usr.tz.end, "UTC"),
+            flow_cms  = var.get.nc(nc, "streamflow",
+                                   start = c(start, index),
+                                   count = c(count, 1),
+                                   unpack = TRUE)
+          )
+        }
+      }
+    } else {
+      return(NULL)
     }
-  }
+
+    return(bind_rows(ll))
+    
+  
   } else {
     return(NULL)
   }

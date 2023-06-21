@@ -1,25 +1,28 @@
+validate = function(complete, field, value){
+  
+  if(field %in% names(complete) & !is.null(value)){
+    opts = unique(complete[[field]])
+    
+    if(any(grepl(value, opts))){
+      return(filter(complete, grepl(!!value, get(field))))
+    } else {
+      stop(glue("{value} not a valid {field}. Choose from: {paste(opts, collapse = ', ')}"))
+    }
+  } else {
+    return(complete)
+  }
+}
+
 nwm_filter = function(source, version = NULL, config = NULL, ensemble = NULL, 
                       output= NULL, domain = NULL, date = NULL){
   
   startDate <- endDate <- NULL
-  validate = function(complete, field, value){
-    
-    if(field %in% names(complete) & !is.null(value)){
-      opts = unique(complete[[field]])
-      
-      if(any(grepl(value, opts))){
-        return(filter(complete, grepl(!!value, get(field))))
-      } else {
-        stop(glue("{value} not a valid {field}. Choose from: {paste(opts, collapse = ', ')}"))
-      }
-    } else {
-      return(complete)
-    }
-  }
+  
+
   
   # Source ------------------------------------------------------------------
   
-  meta = validate(nwm_data, "source", source) %>% 
+  meta = validate(nwmTools::nwm_data, "source", source) %>% 
          validate("domain", domain) %>% 
          validate("version", version) %>% 
          validate("output", output) %>% 
@@ -46,117 +49,6 @@ nwm_filter = function(source, version = NULL, config = NULL, ensemble = NULL,
   if(nrow(meta) > 1){warning('More then one viable source found...', call. = FALSE)}
   
   meta
-}
-
-
-#' @title Error Checking for configuration/ensemble pairs
-#' @param type a NWM configuration
-#' @param ensemble an ensemble member number
-#' @return a kosher configuration
-#' @noRd
-#' @keywords internal
-
-error_checking_type = function(type, ensemble){
-  
-  current_type =  c('analysis_assim', 
-                    'analysis_assim_extend',
-                    'analysis_assim_long',
-                    'analysis_assim_hawaii',
-                    'long_range',
-                    'medium_range',
-                    'short_range',
-                    'short_range_hawaii')
-  
-  if(!type %in% current_type){
-    stop("type must be one of:\n\t ", paste(current_type, collapse = ",\n\t "), call. = F)
-  }
-  
-  if(type %in% c('long_range', 'medium_range')){
-    if(is.null(ensemble)){
-      stop("Ensemble member needed for ", type, ": member 1 selected", call. = F)
-      ensemble <- 1
-    }
-    
-    if(type == "medium_range"){
-      check = ensemble %in% c(1:7)
-      if(!check){
-        stop('Only 7 medium range ensembles available', call. = FALSE)
-      }
-    }
-    
-    if(type == "long_range"){
-      check = ensemble %in% c(1:4)
-      if(!check){
-        stop('Only 4 long range ensembles available', call. = FALSE)
-      }
-    }
-    
-    type = paste0(type, "_mem", ensemble)
-  }
-  
-  return(type)
-  
-}
-
-#' @title Error Checking for configuration/ensemble pairs
-#' @param type a NWM configuration
-#' @param ensemble an ensemble member number
-#' @return a kosher configuration
-#' @noRd
-#' @keywords internal
-
-error_checking_hour = function(type, hours){
-  
-  if(type == "short_range" & dplyr::between(hour, 0, 23)){
-    return(sprintf("%02s", hour))
-  } else {
-    stop("short range hours must be between 0:23")
-  }
-  
-  if(type == "medium_range" & type %in% c(0,6,12,18)){
-    return(sprintf("%02s", hour))
-  } else {
-    stop("medium range hours must be 0,6,12 or 18")
-  }
-}
-
-#' @title Error Checking for configuration/ensemble pairs
-#' @param type a NWM configuration
-#' @param ensemble an ensemble member number
-#' @return a kosher configuration
-#' @noRd
-#' @keywords internal
-#' 
-error_checking_num = function(type, num, pad){
-  
-  if(type == "short_range" & num <= 18){
-    return(sprintf(paste0("%0", pad, "s"), 1:num))
-  } else {
-    stop("short range steps must be <= 18")
-  }
-  
-  if(type == "medium_range" & num <= 80){
-    return(sprintf(paste0("%0", pad, "s"), 1:num*3))
-  } else {
-    stop("medium range steps must be <= 18")
-  }
-}
-
-#' @title Error Checking for configuration/ensemble pairs
-#' @param type a NWM configuration
-#' @param ensemble an ensemble member number
-#' @return a kosher configuration
-#' @noRd
-#' @keywords internal
-
-error_checking_date = function(date){
-  
-  date = as.Date(date)
-  if(date > as.Date('2018-09-17') & date < Sys.Date()){
-    return(gsub("-", "", date))
-  } else {
-    stop("Date not valid")
-  }
 }
 
 #' Get GCP file list
@@ -219,7 +111,7 @@ get_gcp_urls = function(config = "short_range",
 #' @return data.frame
 #' @export
 
-get_aws_filelist = function(version = 2.1, 
+get_aws_urls = function(version = 2.1, 
                             output  = "CHRTOUT", 
                             config  = NULL,
                             ensemble  = NULL,
@@ -260,7 +152,7 @@ get_aws_filelist = function(version = 2.1,
 #' @export
 
 
-get_nomads_filelist = function(config = "short_range",
+get_nomads_urls = function(config = "short_range",
                                 domain = "conus",
                                 date = NULL, 
                                 hour = NULL,

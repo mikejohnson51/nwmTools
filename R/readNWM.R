@@ -9,24 +9,20 @@
   
   rc  <- retro_call(comid, meta.obj = base)
   
-  if (!is.null(rc)) {
-
-    res = do.call('rbind', lapply(1:rc$rows, FUN  = extract_thredds,  urls = rc$call.meta,  dap  = rc$open.dap.file))
+  if(!is.null(rc)){
+    rc$dateTime = with_tz(rc$dateTime, tz)
     
-    close.nc(rc$open.dap.file)
+    if (!is.null(siteID)) { rc$siteID = siteID }
     
-    res$dateTime = with_tz(res$dateTime, tz)
-    
-    if (!is.null(siteID)) { res$siteID = siteID }
-    
-    res
+    rc
     
   } else {
-    message("The requested feature ID is not in the NWM v", base$version, " archive.")
+    
     NULL
+  
   }
   
-}
+} 
 
 #' @title NWM Reanalysis Extraction
 #' @description Download hourly flow values for an NHD COMID from the National 
@@ -81,12 +77,13 @@ readNWMdata = function(AOI = NULL,
     cols = c('comid', 'dateTime')
   }
 
-  res = lapply(1:nrow(base), function(x) { 
-    .readNWMinside(comid, siteID, tz, base = base[x,]) 
-  })
-
+  res = lapply(1:nrow(base), function(x) { .readNWMinside(comid, siteID, tz, base = base[x,]) })
+  res = res[lengths(res) != 0]
   
-  if(length(res) == 1){
+  if(length(res) == 0 ){
+    message("No data for IDs ", paste(comid, collapse = ", "), " found for v", version)
+    return(NULL)
+  } else if(length(res) == 1){
     res = res[[1]]
     res[[paste0("flow_cms_v", gsub("NWM", "", res$model[1]))]] = replace(res$flow_cms, res$flow_cms == -999900, NA)
     res$flow_cms = NULL
@@ -118,6 +115,9 @@ readNWMdata = function(AOI = NULL,
       res$Date = NULL
     }
   } 
+  
+  
+  if(add_nhd){ res = add_nhd(res) }
 
   res
  
@@ -125,16 +125,22 @@ readNWMdata = function(AOI = NULL,
 
 
 add_nhd = function(data){
+  
   comid = NULL
   
   if(!"comid" %in% names(data)){
     stop("comid must be in input data")
   } 
+  
+  
+  if(any(is.character(data$comid))){
+    data$comid = as.numeric(data$comid)
+  } 
 
   suppressMessages({
       res = get_nhdplus(comid = data$comid) %>% 
         select(comid) %>% 
-        left_join(data)
+        left_join(data, multiple = "all", by = "comid")
   })
   
   res

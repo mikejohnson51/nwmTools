@@ -2,16 +2,16 @@ Package: nwmTools
 Type: Package
 Title: nwmTools
 Description: Tools for working with operational and historic National Water Model Output.
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
     c(person(given = "Mike", 
     family = "Johnson", 
     role = c("aut", "cre"), 
     email = "mikecp11@gmail.com", 
     comment = c(ORCID = "0000-0002-5288-8350")),
-    person(given = "Lilit", 
-    family = "Yeghiazarian", 
-    role = "fnd"))
+    person(given = "CUAHSI",  role = "fnd"),
+    person(given = "NSF",  role = "fnd"),
+    person(given = "Lynker",  role = "fnd"))
 Maintainer: Mike Johnson <mikecp11@gmail.com>
 URL: https://github.com/mikejohnson51/nwmTools
 BugReports: https://github.com/mikejohnson51/nwmTools/issues

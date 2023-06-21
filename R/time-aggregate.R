@@ -66,18 +66,6 @@ aggregate_m   = function(rawData, fun = "mean", na.rm = TRUE){
   nwmHistoric_agg(rawData, cols, fun, na.rm) 
 }
 
-#' @title Aggregate by Julien Day
-#' @inherit aggregate_record description
-#' @inherit aggregate_record details
-#' @inherit aggregate_record examples
-#' @inheritParams aggregate_record
-#' @family aggregate functions
-#' @export
-aggregate_j   = function(rawData, fun = "mean", na.rm = TRUE){
-  cols = c("model", 'comid', 'julian')
-  nwmHistoric_agg(rawData, cols, fun, na.rm) 
-}
-
 #' @title Aggregate by Season
 #' @inherit aggregate_record description
 #' @inherit aggregate_record details
@@ -227,7 +215,6 @@ aggregate_dowy  = function(rawData, fun = "mean", na.rm = TRUE){
   cols = c("model", 'comid', 'DOWY')
   
   out = nwmHistoric_agg(rawData, cols, fun, na.rm)
-  out$wy = add_waterYear(rawData$time)
   out
 }
 

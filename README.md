@@ -47,5 +47,3 @@ This effort is supported by the Consortium of Universities for the
 Advancement of Hydrologic Science, Inc. under the 2020 HydroInformatics
 Fellowship. See program
 [here](https://www.cuahsi.org/data-models/hydroinformatics-innovation-fellowship/)
-
-<img src="man/figures/cuahsi-logo.png" width=180 height = 40 align="right" />

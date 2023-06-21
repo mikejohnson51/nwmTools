@@ -157,8 +157,10 @@ write_gridded_data = function(data, outfile, overwrite = TRUE){
 write_timeseries_nc = function(data, outfile, index_id, varname,
                                na_val = -999900 , scale = .01, offset = 0){
   
+  
+  
   comids = data[[index_id]]
-  time = as.POSIXct(names(data)[2:ncol(data)], tz="UTC")
+  time = lubridate::parse_date_time(gsub(paste0(paste(varname, collapse = "|"), "_"), "",names(data)[2:ncol(data)]), "ymd HMS", tz = "UTC")
   values = as.matrix(dplyr::select(data, -!!index_id))
   
   unlink(outfile)
