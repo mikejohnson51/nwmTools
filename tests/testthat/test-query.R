@@ -34,7 +34,6 @@ test_that("query success", {
   expect_true(min(q$dateTime) == as.POSIXlt("1993-01-01 00:00:00", tz = "UTC"))
   expect_true(max(q$dateTime) == as.POSIXlt("2017-12-31 23:00:00 UTC", tz = "UTC"))
   
-  
   expect_equal(nrow(aggregate_s(q)), 4)
   expect_equal(nrow(aggregate_y(q)), 25)
   expect_equal(nrow(aggregate_m(q)), 12)

@@ -149,40 +149,55 @@ b = scrape_gcp(version = "2.2", token = "nwm.20221029", startDate = "2019-06-19"
 c = scrape_aws(version = "2.1", 
                bucket = "s3://noaa-nwm-retrospective-2-1-pds",  
                config = "model_output",  year = 2015,
-               startDate = as.character(get_nwm_meta(version = "2.1")$minDate),
-               endDate   =  as.character(get_nwm_meta(version = "2.1")$maxDate))
+               startDate = as.character(get_nwm_meta(version = "2.1")$startDate),
+               endDate   =  as.character(get_nwm_meta(version = "2.1")$endDate))
 
 d = scrape_aws(version = "2.1", bucket = "s3://noaa-nwm-retrospective-2-1-pds",  
                config = "forcing", year = 2015,
-               startDate =  as.character(get_nwm_meta(version = "2.1")$minDate), 
-               endDate   =  as.character(get_nwm_meta(version = "2.1")$maxDate))
+               startDate =  as.character(get_nwm_meta(version = "2.1")$startDate), 
+               endDate   =  as.character(get_nwm_meta(version = "2.1")$endDate))
 
 e = scrape_aws(version = "2.0", bucket = "s3://noaa-nwm-retro-v2.0-pds",  
                config = "full_physics", year = 2015,
-               startDate =  as.character(get_nwm_meta(version = "2")$minDate), 
-               endDate   =  as.character(get_nwm_meta(version = "2")$maxDate))
+               startDate =  as.character(get_nwm_meta(version = "2")$startDate), 
+               endDate   =  as.character(get_nwm_meta(version = "2")$endDate))
 
 f = scrape_aws(version = "2.0", bucket = "s3://noaa-nwm-retro-v2.0-pds",
                config = "long_range", year = 2015,
-               startDate =  as.character(get_nwm_meta(version = "2")$minDate), 
-               endDate   =  as.character(get_nwm_meta(version = "2")$maxDate))
+               startDate =  as.character(get_nwm_meta(version = "2")$startDate), 
+               endDate   =  as.character(get_nwm_meta(version = "2")$endDate))
 
 g = scrape_aws(version = "1.2", bucket = "s3://nwm-archive", 
                config = NA, year = 2015,
-               startDate = as.character(get_nwm_meta(version  = "1.2")$minDate), 
-               endDate   =  as.character(get_nwm_meta(version = "1.2")$maxDate))
+               startDate = as.character(get_nwm_meta(version  = "1.2")$startDate), 
+               endDate   =  as.character(get_nwm_meta(version = "1.2")$endDate))
 
-#'https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/'
+#'http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/'
 h = scrape_nomads('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "prod")
 i = scrape_nomads('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "v2.2")
+j = scrape_nomads('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "para")
+k = scrape_nomads('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "v3.0")
+
 
 #'https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/'
-j = scrape_nomads(url = 'https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', version = "para")
-k = scrape_nomads('https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "v3.0")
+l = scrape_nomads(url = 'https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', version = "para")
+m = scrape_nomads('https://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', version = "v3.0")
 
 
-nwm_data = bind_rows(a,b,c,d,e,f,g,h,i,j,k)
+nwm_data = bind_rows(a,
+                     b,
+                     c,
+                     d,
+                     e,
+                     f,
+                     g,
+                     h,
+                     i,
+                     j,
+                     k,
+                     l,
+                     m)
 
-usethis::use_data(nwm_data, overwrite = TRUE, internal = TRUE)
+usethis::use_data(nwm_data, overwrite = TRUE)
 
 

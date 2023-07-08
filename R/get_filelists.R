@@ -18,8 +18,6 @@ nwm_filter = function(source, version = NULL, config = NULL, ensemble = NULL,
   
   startDate <- endDate <- NULL
   
-
-  
   # Source ------------------------------------------------------------------
   
   meta = validate(nwmTools::nwm_data, "source", source) %>% 
@@ -153,14 +151,14 @@ get_aws_urls = function(version = 2.1,
 
 
 get_nomads_urls = function(config = "short_range",
-                                domain = "conus",
-                                date = NULL, 
-                                hour = NULL,
-                                minute = "00",
-                                num, 
-                                ensemble = NULL, 
-                                output = "channel_rt",
-                                version = "prod") {
+                           domain = "conus",
+                           date = NULL, 
+                           hour = NULL,
+                           minute = "00",
+                           num, 
+                           ensemble = NULL, 
+                           output = "channel_rt",
+                           version = "prod") {
   
   
   meta = nwm_filter(source = "nomads", 
