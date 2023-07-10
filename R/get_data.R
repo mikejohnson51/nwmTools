@@ -49,6 +49,7 @@ get_timeseries = function(fileList,
   
   
   get_values = function(url, var, ind = NULL){
+    Sys.sleep(1)
     v = suppressWarnings(values(terra::rast(glue("{url}://{var}"))))
     if(!is.null(ind)){ v[ind] } else { v }
   }
