@@ -12,7 +12,8 @@ get_aws_urls(
   date = "2010-10-29",
   hour = "00",
   minute = "00",
-  num = 3
+  num = 3,
+  outdir = NULL
 )
 }
 \arguments{

@@ -98,9 +98,15 @@ get_gcp_urls = function(config = "short_range",
   
   dates  = ymd_hm(paste0(date[1], hour, "00")) + hours(0:(num-1))
 
-  data.frame(dateTime = dates, 
+  df = data.frame(dateTime = dates, 
              urls      = urls,
              output    = output)
+  
+  if(!is.null(outdir)){
+    df = download_files(df,  outdir = outdir)
+  }
+  
+  return(df)
 }
 
 #' Get GCP file list
@@ -116,7 +122,8 @@ get_aws_urls = function(version = 2.1,
                             date    = "2010-10-29", 
                             hour    = "00", 
                             minute  = "00",
-                            num      = 3){
+                            num      = 3,
+                            outdir = NULL){
   
   meta = nwm_filter(source = "aws", 
                     version = version, 
@@ -136,9 +143,15 @@ get_aws_urls = function(version = 2.1,
        YYYY = format(dates, "%Y"),
        YYYYMMDDHHMM = format(dates, "%Y%m%d%H%M"))
   
-  data.frame(dateTime = dates, 
+  df = data.frame(dateTime = dates, 
              urls      = urls,
              output    = output)
+  
+  if(!is.null(outdir)){
+    df = download_files(df,  outdir = outdir)
+  }
+  
+  return(df)
 }
 
 
@@ -158,8 +171,8 @@ get_nomads_urls = function(config = "short_range",
                            num, 
                            ensemble = NULL, 
                            output = "channel_rt",
-                           version = "prod") {
-  
+                           version = "prod",
+                           outdir = NULL) {
   
   meta = nwm_filter(source = "nomads", 
                     version = version, 
@@ -185,12 +198,11 @@ get_nomads_urls = function(config = "short_range",
     YYYYMMDD2 = gsub("-", "", date)
   }
   
-  
   files   = tryCatch({
-    date <<-YYYYMMDD
+    date <<- YYYYMMDD
     html_attr(html_elements(read_html(glue('{tmp}/nwm.{YYYYMMDD}/{meta$bucket}')), "a"), "href")
   }, error = function(e){
-    date <<-YYYYMMDD2
+    date <<- YYYYMMDD2
     html_attr(html_elements(read_html(glue('{tmp}/nwm.{YYYYMMDD2}/{meta$bucket}')), "a"), "href")
   })
   
@@ -205,9 +217,15 @@ get_nomads_urls = function(config = "short_range",
   files  = grep(paste0("t", hour, "z"), files, value = TRUE)[1:num]
   dates  = ymd_hm(paste0(date, hour, "00")) + hours(0:(num-1))
   
-  data.frame(dateTime = dates, 
+  df = data.frame(dateTime = dates, 
              urls     =  glue('{tmp}/nwm.{date}/{meta$bucket}/{files}'),
-             output   = output)
+             output   =  output)
+  
+  if(!is.null(outdir)){
+    df = download_files(df,  outdir = outdir)
+  }
+  
+  return(df)
 
 }
  

@@ -13,7 +13,8 @@ get_nomads_urls(
   num,
   ensemble = NULL,
   output = "channel_rt",
-  version = "prod"
+  version = "prod",
+  outdir = NULL
 )
 }
 \arguments{
