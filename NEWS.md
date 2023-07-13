@@ -3,3 +3,5 @@
 * Added a local download option accessable with outdir = ... in get_nomads_urls, get_aws_urls, and get_gcp urls
 
 * get_timeseries now can work off of local fileLists objects
+
+* get_gridded_data now can work off of local fileLists objects
