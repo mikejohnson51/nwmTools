@@ -13,7 +13,7 @@
 #' @importFrom lubridate ymd_hm hours with_tz tz as_datetime year month day hour yday ymd
 #' @importFrom rvest html_attr html_elements
 #' @importFrom xml2 read_html
-#' @importFrom httr content RETRY GET write_disk
+#' @importFrom httr content RETRY GET write_disk progress
 #' @importFrom nhdplusTools get_nhdplus 
 #' @importFrom dataRetrieval findNLDI readNWISdv renameNWISColumns
 #' @importFrom utils tail

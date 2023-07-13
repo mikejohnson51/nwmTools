@@ -40,68 +40,75 @@ crop_flipped_nwm <- function(x, AOI) {
 #' @return data.frame
 #' @export
 
-
 get_timeseries = function(fileList,
                           ids = NULL,
                           index_id = "feature_id",
                           varname = "streamflow",
                           outfile = NULL){
   
-  
-  get_values = function(url, var, ind = NULL){
-    Sys.sleep(1)
-    v = suppressWarnings(values(terra::rast(glue("{url}://{var}"))))
-    if(!is.null(ind)){ v[ind] } else { v }
-  }
-  
-  urls =  glue('HDF5:"/vsicurl/{fileList$urls}"')
-  
-  if(!is.null(index_id)){
-    all_ids = get_values(url = urls[1], index_id)
-    
-    if(is.null(ids)){
-      ind = NULL
-      ids = all_ids
-    } else {
-      ind = which(all_ids %in% ids)
-    }
+  if(!is.null(fileList$outfiles)){
+    get_timeseries_local(
+      fileList,
+      ids = ids,
+      index_id = index_id,
+      varname = varname,
+      outfile = outfile
+    )
   } else {
-    ind = NULL
-    ids = NULL
-  }
     
-  
-  g = expand.grid(urls, varname)
-  names(g) = c("urls", "varname")
-  
-  values = lapply(1:nrow(g), FUN = function(x){
-    tryCatch({
-      get_values(url = g$urls[x], var = g$varname[x], ind)
+    
+    get_values = function(url, var, ind = NULL){
+      Sys.sleep(1)
+      v = suppressWarnings(values(terra::rast(glue("{url}://{var}"))))
+      if(!is.null(ind)){ v[ind] } else { v }
+    }
+    
+    urls =  glue('HDF5:"/vsicurl/{fileList$urls}"')
+    
+    if(!is.null(index_id)){
+      all_ids = get_values(url = urls[1], index_id)
+      
+      if(is.null(ids)){
+        ind = NULL
+        ids = all_ids
+      } else {
+        ind = which(all_ids %in% ids)
+      }
+    } else {
+      ind = NULL
+      ids = NULL
+    }
+    
+    g = expand.grid(urls, varname)
+    names(g) = c("urls", "varname")
+    
+    values = lapply(1:nrow(g), FUN = function(x){
+      tryCatch({
+        get_values(url = g$urls[x], var = g$varname[x], ind)
       }, error = function(e){
         message('Broken at: ', g$varname[x] )
       })
-  })
-  
-  time = lapply(1:length(urls), FUN = function(x){
-    get_values(url = urls[x], "time")
-  })
-  
-  time = as.POSIXct(unlist(time) * 60, origin = "1970-01-01", tz = "UTC")
-  
-  out = data.frame(do.call('cbind',  c(list(ids), values)))
-  names(out) = c(index_id, paste0(varname, "_", as.character(time)))
-  
-  if(!is.null(outfile)){
-    write_timeseries_nc(data = out, 
-                        outfile = outfile, 
-                        index_id = index_id, 
-                        varname = varname)
-    return(outfile)
-  } else {
-    return(out)
+    })
+    
+    time = lapply(1:length(urls), FUN = function(x){
+      get_values(url = urls[x], "time")
+    })
+    
+    time = as.POSIXct(unlist(time) * 60, origin = "1970-01-01", tz = "UTC")
+    
+    out = data.frame(do.call('cbind',  c(list(ids), values)))
+    names(out) = c(index_id, paste0(varname, "_", as.character(time)))
+    
+    if(!is.null(outfile)){
+      write_timeseries_nc(data = out, 
+                          outfile = outfile, 
+                          index_id = index_id, 
+                          varname = varname)
+      return(outfile)
+    } else {
+      return(out)
+    }
   }
-  
-  
 }
 
 
