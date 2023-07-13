@@ -103,5 +103,39 @@ get_timeseries_local = function(fileList,
           } else {
             return(df)
           }
-      }
+}
+
+#' Extract Gridded Data from local fileList
+#' @param fileList a list of gridded NWM outputs
+#' @param AOI area of interest (sf POLYGON) to subset
+#' @param varname the name of the variable to extract
+#' @param outfile filepath to save data (with .nc extension)
+#' @return data.frame
+#' @export
+#' 
+get_gridded_local = function(fileList,
+                             AOI, 
+                             varname,
+                             outfile = NULL){
+  rast_list = list()
+  
+  for(i in 1:length(varname)){
+    
+    l = list()
+    
+    for(j in 1:nrow(fileList)){
+      l[[j]] = suppressWarnings({
+        rast(fileList$outfiles[j], lyr = varname[i])
+      })
+    }
+    
+    d = crop(rast(l), project(vect(AOI), crs(l[[1]])))
+    names(d) =  paste0(varname[i], "_", 1:nlyr(d))
+    time(d) =  fileList$dateTime
+    
+    rast_list[[varname[i]]] = d
+  }
+  
+  rast_list
+}
   

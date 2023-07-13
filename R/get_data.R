@@ -1,3 +1,4 @@
+
 #' Crop Flipped Raster
 #' @param x  SpatRast object
 #' @param AOI a sf polygon
@@ -125,6 +126,13 @@ get_gridded_data = function(fileList,
                             varname,
                             outfile = NULL){
 
+  if(!is.null(fileList$outfiles)){
+    get_gridded_local(fileList = fileList,
+                      AOI = AOI, 
+                      varname = varname,
+                      outfile = outfile)
+  } else {
+  
   urls = fileList$urls
   lyrs =   suppressWarnings( names(rast(paste0("/vsicurl/", urls[1]))) )
   goodnames = grep(paste(varname, collapse = "|"), lyrs, value = TRUE)
@@ -152,6 +160,7 @@ get_gridded_data = function(fileList,
   }
   
   rast_list
+  }
 }
 
 

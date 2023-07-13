@@ -162,7 +162,6 @@ get_aws_urls = function(version = 2.1,
 #' @return data.frame
 #' @export
 
-
 get_nomads_urls = function(config = "short_range",
                            domain = "conus",
                            date = NULL, 
