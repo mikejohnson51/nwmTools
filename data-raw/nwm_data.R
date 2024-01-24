@@ -2,7 +2,7 @@ pacman::p_load(dplyr, glue, tidyr, readr, xml2, rvest)
 
 # AWS Scrapping Function ------------------------------
 
-scrape_aws = function(version, bucket, config, year, startDate, endDate){
+scrape_aws = function(version, bucket, config, year, startDate, endDate, domain, format){
   
   unlink('data/aws_scrape.csv')
   
@@ -15,7 +15,17 @@ scrape_aws = function(version, bucket, config, year, startDate, endDate){
     http_pattern = "{gsub('s3', 'http', {bucket})}.s3.amazonaws.com/{YYYY}/{YYYYMMDDHHMM}.{output}.comp"
     system(glue('aws s3 ls {pattern} >> data/aws_scrape.csv'))
   }
-  
+  if(version == '3.0' | version == '3'){
+    pattern = glue('{bucket}/{domain}/{format}/{config}/{year}/{year}')
+    system(glue('aws s3 ls {pattern} >> data/aws_scrape.csv'))
+    if(domain != 'CONUS' & config == 'FORCING'){
+      http_pattern = "{gsub('s3', 'http', {bucket})}.s3.amazonaws.com/{domain}/{format}/{config}/{YYYY}/{YYYYMMDDHH}.{output}"
+      system(glue('aws s3 ls {pattern} >> data/aws_scrape.csv'))
+    }
+    else{
+      http_pattern = "{gsub('s3', 'http', {bucket})}.s3.amazonaws.com/{domain}/{format}/{config}/{YYYY}/{YYYYMMDDHHMM}.{output}"
+    }
+  }
   yy = data.table::fread("data/aws_scrape.csv") %>% 
     select(path = V4) %>% 
     filter(path != "") %>% 
@@ -24,18 +34,23 @@ scrape_aws = function(version, bucket, config, year, startDate, endDate){
     separate(path, sep = "\\.", c("date", "output", "ext")) %>% 
     mutate(http_pattern = http_pattern,
            hour = as.numeric(substr(date,9,10)),
+           minute = ifelse(str_length(date) <= 10, 0, as.numeric(substr(date, 11, 12))),
            date = NULL,
            ext = NULL) %>% 
     distinct() %>% 
     group_by(output) %>% 
     arrange(hour) %>% 
-    mutate(timestep = median(hour - lag(hour), na.rm  = TRUE),
-           domain = "conus", 
+    mutate(timestep = ifelse(median(minute - lag(minute), na.rm = TRUE) == 15, 
+                             0.25, 
+                             median(hour - lag(hour), na.rm  = TRUE)),
+           domain = domain, 
            hour = NULL,
            horizion = 1,
            prefix = "",
            version = !!version,
            startDate = startDate, endDate = endDate) %>% 
+    select(-c(minute)) %>%
+    distinct() %>%
     ungroup() %>% 
     distinct()
 
@@ -172,6 +187,131 @@ g = scrape_aws(version = "1.2", bucket = "s3://nwm-archive",
                startDate = as.character(get_nwm_meta(version  = "1.2")$startDate), 
                endDate   =  as.character(get_nwm_meta(version = "1.2")$endDate))
 
+n1 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'FORCING', year = 2010, domain = 'Alaska', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("12/31/19 23:00"))
+n2 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'CHRTOUT', year = 2010, domain = 'Alaska', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("12/31/19 23:00"))
+n3 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'GWOUT', year = 2010, domain = 'Alaska', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("12/31/19 23:00"))
+n4 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'LAKEOUT', year = 2010, domain = 'Alaska', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("12/31/19 23:00"))
+n5 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'LDASOUT', year = 2010, domain = 'Alaska', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("12/31/19 23:00"))
+n6 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'RTOUT', year = 2010, domain = 'Alaska', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("12/31/19 23:00"))
+
+o1 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'FORCING', year = 2010, domain = 'CONUS', format = 'netcdf',
+               startDate =  as.character("2/1/79 1:00"),
+               endDate   =  as.character("12/31/23 23:00"))
+o2 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'CHRTOUT', year = 2010, domain = 'CONUS', format = 'netcdf',
+               startDate =  as.character("2/1/79 1:00"),
+               endDate   =  as.character("12/31/23 23:00"))
+o3 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'GWOUT', year = 2010, domain = 'CONUS', format = 'netcdf',
+               startDate =  as.character("2/1/79 1:00"),
+               endDate   =  as.character("12/31/23 23:00"))
+o4 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'LAKEOUT', year = 2010, domain = 'CONUS', format = 'netcdf',
+               startDate =  as.character("2/1/79 1:00"),
+               endDate   =  as.character("12/31/23 23:00"))
+o5 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'LDASOUT', year = 2010, domain = 'CONUS', format = 'netcdf',
+               startDate =  as.character("2/1/79 1:00"),
+               endDate   =  as.character("12/31/23 23:00"))
+o6 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'RTOUT', year = 2010, domain = 'CONUS', format = 'netcdf',
+               startDate =  as.character("2/1/79 1:00"),
+               endDate   =  as.character("12/31/23 23:00"))
+o7 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'CHANOBS', year = 2010, domain = 'CONUS', format = 'netcdf',
+               startDate =  as.character("2/1/79 1:00"),
+               endDate   =  as.character("12/31/23 23:00"))
+
+p1 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'FORCING', year = 2010, domain = 'Hawaii', format = 'netcdf',
+               startDate =  as.character("1/1/94 1:00"),
+               endDate   =  as.character("1/1/14 23:00"))
+p2 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'CHRTOUT', year = 2010, domain = 'Hawaii', format = 'netcdf',
+               startDate =  as.character("1/1/94 1:00"),
+               endDate   =  as.character("1/1/14 23:00"))
+p3 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'GWOUT', year = 2010, domain = 'Hawaii', format = 'netcdf',
+               startDate =  as.character("1/1/94 1:00"),
+               endDate   =  as.character("1/1/14 23:00"))
+p4 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'LAKEOUT', year = 2010, domain = 'Hawaii', format = 'netcdf',
+               startDate =  as.character("1/1/94 1:00"),
+               endDate   =  as.character("1/1/14 23:00"))
+p5 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'LDASOUT', year = 2010, domain = 'Hawaii', format = 'netcdf',
+               startDate =  as.character("1/1/94 1:00"),
+               endDate   =  as.character("1/1/14 23:00"))
+p6 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'RTOUT', year = 2010, domain = 'Hawaii', format = 'netcdf',
+               startDate =  as.character("1/1/94 1:00"),
+               endDate   =  as.character("1/1/14 23:00"))
+p7 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'CHANOBS', year = 2010, domain = 'Hawaii', format = 'netcdf',
+               startDate =  as.character("1/1/94 1:00"),
+               endDate   =  as.character("1/1/14 23:00"))
+p8 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'OUTPUT_RTOUT_COMPRESSED', year = 2010, domain = 'Hawaii', format = 'netcdf',
+               startDate =  as.character("1/1/94 1:00"),
+               endDate   =  as.character("1/1/14 23:00"))
+p9 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+                config = 'OUTPUT_LDASOUT_COMPRESSED', year = 2010, domain = 'Hawaii', format = 'netcdf',
+                startDate =  as.character("1/1/94 1:00"),
+                endDate   =  as.character("1/1/14 23:00"))
+p10 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+                config = 'OUTPUT_LAKEOUT', year = 2010, domain = 'Hawaii', format = 'netcdf',
+                startDate =  as.character("1/1/94 1:00"),
+                endDate   =  as.character("1/1/14 23:00"))
+
+q1 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'FORCING', year = 2010, domain = 'PR', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("5/1/23 23:00"))
+q2 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'CHRTOUT', year = 2010, domain = 'PR', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("5/1/23 23:00"))
+q3 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'GWOUT', year = 2010, domain = 'PR', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("5/1/23 23:00"))
+q4 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'LAKEOUT', year = 2010, domain = 'PR', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("5/1/23 23:00"))
+q5 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'LDASOUT', year = 2010, domain = 'PR', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("5/1/23 23:00"))
+q6 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'RTOUT', year = 2010, domain = 'PR', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("5/1/23 23:00"))
+q7 = scrape_aws(version = "3.0", bucket = "s3://noaa-nwm-retrospective-3-0-pds",
+               config = 'CHANOBS', year = 2010, domain = 'PR', format = 'netcdf',
+               startDate =  as.character("1/1/81 1:00"),
+               endDate   =  as.character("5/1/23 23:00"))
+
+
 #'http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/'
 h = scrape_nomads('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "prod")
 i = scrape_nomads('http://nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/', "v2.2")
@@ -196,7 +336,12 @@ nwm_data = bind_rows(a,
                      j,
                      k,
                      l,
-                     m)
+                     m,
+                     n1, n2, n3, n4, n5, n6,
+                     o1, o2, o3, o4, o5, o6, o7,
+                     p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
+                     q1, q2, q3, q4, q5, q6, q7
+                     )
 
 usethis::use_data(nwm_data, overwrite = TRUE)
 
