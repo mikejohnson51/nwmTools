@@ -2,6 +2,7 @@ validate = function(complete, field, value){
   
   if(field %in% names(complete) & !is.null(value)){
     opts = unique(complete[[field]])
+
     
     if(any(grepl(value, opts))){
       return(filter(complete, grepl(!!value, get(field))))
@@ -119,6 +120,7 @@ get_aws_urls = function(version = 2.1,
                             output  = "CHRTOUT", 
                             config  = NULL,
                             ensemble  = NULL,
+                            domain = 'conus',
                             date    = "2010-10-29", 
                             hour    = "00", 
                             minute  = "00",
@@ -130,7 +132,7 @@ get_aws_urls = function(version = 2.1,
                     config = config, 
                     output = output,
                     ensemble = NULL, 
-                    domain = NULL)
+                    domain = domain)
   
   dates = seq.POSIXt(as.POSIXlt(paste(date, hour, minute), tz = 'UTC'), 
                      length.out = num, 
@@ -138,7 +140,9 @@ get_aws_urls = function(version = 2.1,
 
   urls = glue(meta$http_pattern,
        bucket = meta$bucket,
+       domain = meta$domain,
        config = meta$config,
+       format = 'netcdf',
        output = meta$output,
        YYYY = format(dates, "%Y"),
        YYYYMMDDHHMM = format(dates, "%Y%m%d%H%M"))
